@@ -14,6 +14,26 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/color": "^3.0.2",
+    "@types/jest": "^27.0.3",
+    "@types/jest-when": "^2.7.3",
+    "@types/lodash": "^4.14.178",
+    "color": "^4.1.0",
+    "jest": "^27.4.4",
+    "jest-when": "^3.4.2",
+    "just-kebab-case": "^4.0.1",
+    "just-unique": "^4.0.1",
+    "lodash": "^4.17.21",
+    "tailwindcss": "2.2.19",
+    "ts-jest": "^27.1.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.3"
+  },
+  "peerDependencies": {
+    "tailwindcss": "2.2.19"
   }
 }
