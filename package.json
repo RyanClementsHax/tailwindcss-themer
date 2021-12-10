@@ -1,0 +1,19 @@
+{
+  "name": "tailwindcss-theming",
+  "version": "0.0.1",
+  "author": "ryanclementshax",
+  "license": "MIT",
+  "description": "A tailwindcss plugin to handle multiple themes for you automatically",
+  "homepage": "https://github.com/RyanClementsHax/tailwindcss-theming#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RyanClementsHax/tailwindcss-theming.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RyanClementsHax/tailwindcss-theming/issues"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
