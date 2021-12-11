@@ -1,19 +1,19 @@
 import {
   resolveThemeExtensionAsCustomProps,
   resolveThemeExtensionsAsTailwindExtension,
-} from "./themeUtils";
-import { TailwindExtension, ExtensionValue, Theme, ThemeCb } from "tailwindcss";
-import { Helpers } from "tailwindcss/plugin";
+} from './themeUtils';
+import { TailwindExtension, ExtensionValue, Theme, ThemeCb } from 'tailwindcss';
+import { Helpers } from 'tailwindcss/plugin';
 
-describe("themeUtils", () => {
+describe('themeUtils', () => {
   let theme: Theme;
   let opacityConfig: { opacityVariable: string; opacityValue: string };
 
   beforeEach(() => {
     theme = jest.fn((x) => x);
     opacityConfig = {
-      opacityValue: "opacityValue",
-      opacityVariable: "--opacity-variable",
+      opacityValue: 'opacityValue',
+      opacityVariable: '--opacity-variable',
     };
   });
 
@@ -23,14 +23,14 @@ describe("themeUtils", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any => {
     if (
-      typeof themeExtensionValue === "string" ||
-      typeof themeExtensionValue === "number" ||
-      typeof themeExtensionValue === "undefined" ||
+      typeof themeExtensionValue === 'string' ||
+      typeof themeExtensionValue === 'number' ||
+      typeof themeExtensionValue === 'undefined' ||
       Array.isArray(themeExtensionValue)
     ) {
       return themeExtensionValue;
     }
-    if (typeof themeExtensionValue === "function") {
+    if (typeof themeExtensionValue === 'function') {
       return themeExtensionValue(opacityConfig);
     }
     return Object.entries(themeExtensionValue).reduce(
@@ -49,7 +49,7 @@ describe("themeUtils", () => {
       (acc, [key, value]) => ({
         ...acc,
         [key]:
-          typeof value === "function"
+          typeof value === 'function'
             ? (value as ThemeCb<ExtensionValue>)(theme)
             : value,
       }),
@@ -65,115 +65,115 @@ describe("themeUtils", () => {
     return extensionWithResolvedThemeCbs;
   };
 
-  describe("resolveThemeExtensionsAsTailwindExtension", () => {
-    it("resolves an empty themes array as an empty config", () => {
+  describe('resolveThemeExtensionsAsTailwindExtension', () => {
+    it('resolves an empty themes array as an empty config', () => {
       expect(resolveThemeExtensionsAsTailwindExtension([])).toEqual({});
     });
 
-    it("resolves and merges top level values as custom props", () => {
+    it('resolves and merges top level values as custom props', () => {
       expect(
         resolveThemeExtensionsAsTailwindExtension([
           {
-            name: "first",
+            name: 'first',
             extend: {
-              top1: "level",
-              same: "prop",
+              top1: 'level',
+              same: 'prop',
             },
           },
           {
-            name: "second",
+            name: 'second',
             extend: {
-              top2: "level",
-              same: "prop",
+              top2: 'level',
+              same: 'prop',
             },
           },
           {
-            name: "third",
+            name: 'third',
             extend: {
-              top3: "level",
-              same: "prop",
+              top3: 'level',
+              same: 'prop',
             },
           },
         ])
       ).toEqual({
-        top1: "var(--top1)",
-        top2: "var(--top2)",
-        top3: "var(--top3)",
-        same: "var(--same)",
+        top1: 'var(--top1)',
+        top2: 'var(--top2)',
+        top3: 'var(--top3)',
+        same: 'var(--same)',
       });
     });
 
-    it("resolves and merges nested values as custom props", () => {
+    it('resolves and merges nested values as custom props', () => {
       expect(
         resolveThemeExtensionsAsTailwindExtension([
           {
-            name: "first",
+            name: 'first',
             extend: {
               colors: {
-                primary: "first",
+                primary: 'first',
               },
               foo: {
                 bar: {
-                  bing: "bazz",
+                  bing: 'bazz',
                 },
               },
             },
           },
           {
-            name: "second",
+            name: 'second',
             extend: {
               colors: {
-                secondary: "second",
+                secondary: 'second',
               },
               foo: {
                 bar: {
-                  different: "bazz",
+                  different: 'bazz',
                 },
-                thing: "value1",
+                thing: 'value1',
               },
             },
           },
           {
-            name: "third",
+            name: 'third',
             extend: {
               colors: {
-                secondary: "third",
+                secondary: 'third',
               },
               veryDifferent: {
                 bar: {
-                  different: "bazz",
+                  different: 'bazz',
                 },
-                thing: "value2",
+                thing: 'value2',
               },
             },
           },
         ])
       ).toEqual({
         colors: {
-          primary: "var(--colors-primary)",
-          secondary: "var(--colors-secondary)",
+          primary: 'var(--colors-primary)',
+          secondary: 'var(--colors-secondary)',
         },
         foo: {
           bar: {
-            bing: "var(--foo-bar-bing)",
-            different: "var(--foo-bar-different)",
+            bing: 'var(--foo-bar-bing)',
+            different: 'var(--foo-bar-different)',
           },
-          thing: "var(--foo-thing)",
+          thing: 'var(--foo-thing)',
         },
         veryDifferent: {
           bar: {
-            different: "var(--very-different-bar-different)",
+            different: 'var(--very-different-bar-different)',
           },
-          thing: "var(--very-different-thing)",
+          thing: 'var(--very-different-thing)',
         },
       });
     });
 
-    it("resolves non overlapping arrays", () => {
+    it('resolves non overlapping arrays', () => {
       expect(
         resolveThemeExtensionsAsTailwindExtension([
           {
-            name: "first",
+            name: 'first',
             extend: {
               myArray1: [
                 {
@@ -186,7 +186,7 @@ describe("themeUtils", () => {
             },
           },
           {
-            name: "second",
+            name: 'second',
             extend: {
               myArray2: [
                 {
@@ -202,28 +202,28 @@ describe("themeUtils", () => {
       ).toEqual({
         myArray1: [
           {
-            thing: "var(--my-array1-0-thing)",
+            thing: 'var(--my-array1-0-thing)',
           },
           {
-            thing: "var(--my-array1-1-thing)",
+            thing: 'var(--my-array1-1-thing)',
           },
         ],
         myArray2: [
           {
-            thing: "var(--my-array2-0-thing)",
+            thing: 'var(--my-array2-0-thing)',
           },
           {
-            thing: "var(--my-array2-1-thing)",
+            thing: 'var(--my-array2-1-thing)',
           },
         ],
       });
     });
 
-    it("resolves overlapping arrays", () => {
+    it('resolves overlapping arrays', () => {
       expect(
         resolveThemeExtensionsAsTailwindExtension([
           {
-            name: "first",
+            name: 'first',
             extend: {
               myArray: [
                 {
@@ -236,7 +236,7 @@ describe("themeUtils", () => {
             },
           },
           {
-            name: "second",
+            name: 'second',
             extend: {
               myArray: [
                 {
@@ -252,33 +252,33 @@ describe("themeUtils", () => {
       ).toEqual({
         myArray: [
           {
-            thing1: "var(--my-array-0-thing1)",
-            thing2: "var(--my-array-0-thing2)",
+            thing1: 'var(--my-array-0-thing1)',
+            thing2: 'var(--my-array-0-thing2)',
           },
           {
-            thing1: "var(--my-array-1-thing1)",
-            thing2: "var(--my-array-1-thing2)",
+            thing1: 'var(--my-array-1-thing1)',
+            thing2: 'var(--my-array-1-thing2)',
           },
         ],
       });
     });
 
-    it("resolves arrays with string values", () => {
+    it('resolves arrays with string values', () => {
       expect(
         resolveThemeExtensionsAsTailwindExtension([
           {
-            name: "first",
+            name: 'first',
             extend: {
               fontFamily: {
-                serif: ["Times New Roman", "Times", "serif"],
+                serif: ['Times New Roman', 'Times', 'serif'],
               },
             },
           },
           {
-            name: "second",
+            name: 'second',
             extend: {
               fontFamily: {
-                serif: ["Times New Roman", "Times", "serif"],
+                serif: ['Times New Roman', 'Times', 'serif'],
               },
             },
           },
@@ -286,32 +286,32 @@ describe("themeUtils", () => {
       ).toEqual({
         fontFamily: {
           serif: [
-            "var(--font-family-serif-0)",
-            "var(--font-family-serif-1)",
-            "var(--font-family-serif-2)",
+            'var(--font-family-serif-0)',
+            'var(--font-family-serif-1)',
+            'var(--font-family-serif-2)',
           ],
         },
       });
     });
 
-    it("drops DEFAULT keys from custom vars when resolving", () => {
+    it('drops DEFAULT keys from custom vars when resolving', () => {
       expect(
         resolveThemeExtensionsAsTailwindExtension([
           {
-            name: "first",
+            name: 'first',
             extend: {
               colors: {
                 red: {
-                  DEFAULT: "thing",
+                  DEFAULT: 'thing',
                 },
               },
               foo: {
-                DEFAULT: "thing",
+                DEFAULT: 'thing',
               },
             },
           },
           {
-            name: "second",
+            name: 'second',
             extend: {
               myArray: [
                 {
@@ -324,46 +324,46 @@ describe("themeUtils", () => {
       ).toEqual({
         colors: {
           red: {
-            DEFAULT: "var(--colors-red)",
+            DEFAULT: 'var(--colors-red)',
           },
         },
         foo: {
-          DEFAULT: "var(--foo)",
+          DEFAULT: 'var(--foo)',
         },
         myArray: [
           {
-            DEFAULT: "var(--my-array-0)",
+            DEFAULT: 'var(--my-array-0)',
           },
         ],
       });
     });
 
-    it("merges primitive values as DEFAULT values on that key", () => {
+    it('merges primitive values as DEFAULT values on that key', () => {
       expect(
         resolveThemeExtensionsAsTailwindExtension([
           {
-            name: "first",
+            name: 'first',
             extend: {
               colors: {
-                red: "primitive",
+                red: 'primitive',
               },
               foo: {
                 bar: {
-                  DEFAULT: "primitive",
+                  DEFAULT: 'primitive',
                 },
               },
             },
           },
           {
-            name: "second",
+            name: 'second',
             extend: {
               colors: {
                 red: {
-                  DEFAULT: "non primitive",
+                  DEFAULT: 'non primitive',
                 },
               },
               foo: {
-                bar: "primitive",
+                bar: 'primitive',
               },
             },
           },
@@ -371,34 +371,34 @@ describe("themeUtils", () => {
       ).toEqual({
         colors: {
           red: {
-            DEFAULT: "var(--colors-red)",
+            DEFAULT: 'var(--colors-red)',
           },
         },
         foo: {
           bar: {
-            DEFAULT: "var(--foo-bar)",
+            DEFAULT: 'var(--foo-bar)',
           },
         },
       });
     });
 
-    it("doesnt convert primitives to DEFAULT values if no conflict with other themes", () => {
+    it('doesnt convert primitives to DEFAULT values if no conflict with other themes', () => {
       expect(
         resolveThemeExtensionsAsTailwindExtension([
           {
-            name: "first",
+            name: 'first',
             extend: {
               colors: {
-                red: "primitive",
+                red: 'primitive',
               },
             },
           },
           {
-            name: "second",
+            name: 'second',
             extend: {
               foo: {
                 bar: {
-                  DEFAULT: "primitive",
+                  DEFAULT: 'primitive',
                 },
               },
             },
@@ -406,21 +406,21 @@ describe("themeUtils", () => {
         ])
       ).toEqual({
         colors: {
-          red: "var(--colors-red)",
+          red: 'var(--colors-red)',
         },
         foo: {
           bar: {
-            DEFAULT: "var(--foo-bar)",
+            DEFAULT: 'var(--foo-bar)',
           },
         },
       });
     });
 
-    it("ignores null values", () => {
+    it('ignores null values', () => {
       expect(
         resolveThemeExtensionsAsTailwindExtension([
           {
-            name: "first",
+            name: 'first',
             extend: {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-expect-error
@@ -430,7 +430,7 @@ describe("themeUtils", () => {
             },
           },
           {
-            name: "second",
+            name: 'second',
             extend: {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-expect-error
@@ -450,11 +450,11 @@ describe("themeUtils", () => {
       });
     });
 
-    it("ignores undefined values", () => {
+    it('ignores undefined values', () => {
       expect(
         resolveThemeExtensionsAsTailwindExtension([
           {
-            name: "first",
+            name: 'first',
             extend: {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-expect-error
@@ -464,7 +464,7 @@ describe("themeUtils", () => {
             },
           },
           {
-            name: "second",
+            name: 'second',
             extend: {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-expect-error
@@ -484,24 +484,24 @@ describe("themeUtils", () => {
       });
     });
 
-    describe("callbacks", () => {
-      it("resolves non overlapping callbacks", () => {
+    describe('callbacks', () => {
+      it('resolves non overlapping callbacks', () => {
         expect(
           resolveCallbacks(
             resolveThemeExtensionsAsTailwindExtension([
               {
-                name: "first",
+                name: 'first',
                 extend: {
                   colors: (theme) => ({
-                    primary: theme("some.key"),
+                    primary: theme('some.key'),
                   }),
                 },
               },
               {
-                name: "second",
+                name: 'second',
                 extend: {
                   somethingElse: (theme) => ({
-                    foo: theme("some.different.key"),
+                    foo: theme('some.different.key'),
                   }),
                 },
               },
@@ -509,31 +509,31 @@ describe("themeUtils", () => {
           )
         ).toEqual({
           colors: {
-            primary: "var(--colors-primary)",
+            primary: 'var(--colors-primary)',
           },
           somethingElse: {
-            foo: "var(--something-else-foo)",
+            foo: 'var(--something-else-foo)',
           },
         });
       });
 
-      it("resolves overlapping callbacks", () => {
+      it('resolves overlapping callbacks', () => {
         expect(
           resolveCallbacks(
             resolveThemeExtensionsAsTailwindExtension([
               {
-                name: "first",
+                name: 'first',
                 extend: {
                   colors: (theme) => ({
-                    primary: theme("some.key"),
+                    primary: theme('some.key'),
                   }),
                 },
               },
               {
-                name: "second",
+                name: 'second',
                 extend: {
                   colors: (theme) => ({
-                    secondary: theme("some.different.key"),
+                    secondary: theme('some.different.key'),
                   }),
                 },
               },
@@ -541,29 +541,29 @@ describe("themeUtils", () => {
           )
         ).toEqual({
           colors: {
-            primary: "var(--colors-primary)",
-            secondary: "var(--colors-secondary)",
+            primary: 'var(--colors-primary)',
+            secondary: 'var(--colors-secondary)',
           },
         });
       });
 
-      it("resolves callbacks when they overlap with static values", () => {
+      it('resolves callbacks when they overlap with static values', () => {
         expect(
           resolveCallbacks(
             resolveThemeExtensionsAsTailwindExtension([
               {
-                name: "first",
+                name: 'first',
                 extend: {
                   colors: {
-                    primary: "first",
+                    primary: 'first',
                   },
                 },
               },
               {
-                name: "second",
+                name: 'second',
                 extend: {
                   colors: (theme) => ({
-                    secondary: theme("some.different.key"),
+                    secondary: theme('some.different.key'),
                   }),
                 },
               },
@@ -571,28 +571,28 @@ describe("themeUtils", () => {
           )
         ).toEqual({
           colors: {
-            primary: "var(--colors-primary)",
-            secondary: "var(--colors-secondary)",
+            primary: 'var(--colors-primary)',
+            secondary: 'var(--colors-secondary)',
           },
         });
       });
 
-      it("throws when a callback resolves to a type mismatch with a different theme", () => {
+      it('throws when a callback resolves to a type mismatch with a different theme', () => {
         expect(() =>
           resolveCallbacks(
             resolveThemeExtensionsAsTailwindExtension([
               {
-                name: "first",
+                name: 'first',
                 extend: {
                   colors: {
-                    primary: "first",
+                    primary: 'first',
                   },
                 },
               },
               {
-                name: "second",
+                name: 'second',
                 extend: {
-                  colors: (theme) => theme("some.other.key"),
+                  colors: (theme) => theme('some.other.key'),
                 },
               },
             ])
@@ -600,22 +600,22 @@ describe("themeUtils", () => {
         ).toThrow();
       });
 
-      it("throws when a callback resolves to a type mismatch with another callback defined in a different theme", () => {
+      it('throws when a callback resolves to a type mismatch with another callback defined in a different theme', () => {
         expect(() =>
           resolveCallbacks(
             resolveThemeExtensionsAsTailwindExtension([
               {
-                name: "first",
+                name: 'first',
                 extend: {
                   colors: (theme) => ({
-                    primary: theme("first"),
+                    primary: theme('first'),
                   }),
                 },
               },
               {
-                name: "second",
+                name: 'second',
                 extend: {
-                  colors: (theme) => theme("some.other.key"),
+                  colors: (theme) => theme('some.other.key'),
                 },
               },
             ])
@@ -623,27 +623,27 @@ describe("themeUtils", () => {
         ).toThrow();
       });
 
-      it("throws if it finds a callback not on the top level", () => {
+      it('throws if it finds a callback not on the top level', () => {
         expect(() =>
           resolveThemeExtensionsAsTailwindExtension([
             {
-              name: "first",
+              name: 'first',
               extend: {
                 foo: {
                   bar: {
-                    primary: "orange",
+                    primary: 'orange',
                   },
                 },
               },
             },
             {
-              name: "second",
+              name: 'second',
               extend: {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //@ts-expect-error
                 foo: {
                   bar: (theme: Theme) => ({
-                    primary: theme("some.key"),
+                    primary: theme('some.key'),
                   }),
                 },
               },
@@ -652,23 +652,23 @@ describe("themeUtils", () => {
         ).toThrow();
       });
 
-      it("resolves color properties with opacity", () => {
+      it('resolves color properties with opacity', () => {
         expect(
           resolveCallbacks(
             resolveThemeExtensionsAsTailwindExtension([
               {
-                name: "first",
+                name: 'first',
                 extend: {
                   colors: {
-                    primary: "orange",
+                    primary: 'orange',
                   },
                 },
               },
               {
-                name: "second",
+                name: 'second',
                 extend: {
                   colors: {
-                    secondary: "purple",
+                    secondary: 'purple',
                   },
                 },
               },
@@ -676,15 +676,15 @@ describe("themeUtils", () => {
           )
         ).toEqual({
           colors: {
-            primary: "rgba(var(--colors-primary), opacityValue)",
-            secondary: "rgba(var(--colors-secondary), opacityValue)",
+            primary: 'rgba(var(--colors-primary), opacityValue)',
+            secondary: 'rgba(var(--colors-secondary), opacityValue)',
           },
         });
       });
     });
   });
 
-  describe("resolveThemeExtensionAsCustomProps", () => {
+  describe('resolveThemeExtensionAsCustomProps', () => {
     let helpers: Helpers;
 
     beforeEach(() => {
@@ -697,45 +697,45 @@ describe("themeUtils", () => {
       };
     });
 
-    it("resolves an empty extension as no custom props", () => {
+    it('resolves an empty extension as no custom props', () => {
       expect(resolveThemeExtensionAsCustomProps({}, helpers)).toEqual({});
     });
 
-    it("resolves top level props", () => {
+    it('resolves top level props', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
-            foo: "thing",
+            foo: 'thing',
           },
           helpers
         )
       ).toEqual({
-        "--foo": "thing",
+        '--foo': 'thing',
       });
     });
 
-    it("resolves nested props", () => {
+    it('resolves nested props', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
             colors: {
-              primary: "thing",
+              primary: 'thing',
             },
             foo: {
               bar: {
-                bazz: "value",
+                bazz: 'value',
               },
             },
           },
           helpers
         )
       ).toEqual({
-        "--colors-primary": "thing",
-        "--foo-bar-bazz": "value",
+        '--colors-primary': 'thing',
+        '--foo-bar-bazz': 'value',
       });
     });
 
-    it("resolves arrays", () => {
+    it('resolves arrays', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
@@ -753,54 +753,54 @@ describe("themeUtils", () => {
           helpers
         )
       ).toEqual({
-        "--foo-bar-0-thing": "1",
-        "--foo-bar-1-thing": "2",
+        '--foo-bar-0-thing': '1',
+        '--foo-bar-1-thing': '2',
       });
     });
 
-    it("resolves arrays with strings", () => {
+    it('resolves arrays with strings', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
             fontFamily: {
-              serif: ["Times New Roman", "Times", "serif"],
+              serif: ['Times New Roman', 'Times', 'serif'],
             },
           },
           helpers
         )
       ).toEqual({
-        "--font-family-serif-0": "Times New Roman",
-        "--font-family-serif-1": "Times",
-        "--font-family-serif-2": "serif",
+        '--font-family-serif-0': 'Times New Roman',
+        '--font-family-serif-1': 'Times',
+        '--font-family-serif-2': 'serif',
       });
     });
 
-    it("resolves colors as rgb", () => {
+    it('resolves colors as rgb', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
             colors: {
-              primary: "#114611",
+              primary: '#114611',
             },
           },
           helpers
         )
       ).toEqual({
-        "--colors-primary": "17, 70, 17",
+        '--colors-primary': '17, 70, 17',
       });
     });
 
-    it("drops DEFAULT keys from custom vars when resolving", () => {
+    it('drops DEFAULT keys from custom vars when resolving', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
             colors: {
               red: {
-                DEFAULT: "thing",
+                DEFAULT: 'thing',
               },
             },
             foo: {
-              DEFAULT: "thing",
+              DEFAULT: 'thing',
             },
             myArray: [
               {
@@ -811,13 +811,13 @@ describe("themeUtils", () => {
           helpers
         )
       ).toEqual({
-        "--colors-red": "thing",
-        "--foo": "thing",
-        "--my-array-0": "1",
+        '--colors-red': 'thing',
+        '--foo': 'thing',
+        '--my-array-0': '1',
       });
     });
 
-    it("ignores null values", () => {
+    it('ignores null values', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
@@ -837,7 +837,7 @@ describe("themeUtils", () => {
       ).toEqual({});
     });
 
-    it("ignores undefined values", () => {
+    it('ignores undefined values', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
@@ -857,23 +857,23 @@ describe("themeUtils", () => {
       ).toEqual({});
     });
 
-    describe("callbacks", () => {
-      it("resolves top level callbacks", () => {
+    describe('callbacks', () => {
+      it('resolves top level callbacks', () => {
         expect(
           resolveThemeExtensionAsCustomProps(
             {
               colors: (theme) => ({
-                primary: theme("some.key"),
+                primary: theme('some.key'),
               }),
             },
             helpers
           )
         ).toEqual({
-          "--colors-primary": "some.key",
+          '--colors-primary': 'some.key',
         });
       });
 
-      it("throws if it finds a callback not at the top level", () => {
+      it('throws if it finds a callback not at the top level', () => {
         expect(() =>
           resolveThemeExtensionAsCustomProps(
             {
@@ -881,7 +881,7 @@ describe("themeUtils", () => {
               //@ts-expect-error
               foo: {
                 bar: (theme: Theme) => ({
-                  primary: theme("some.key"),
+                  primary: theme('some.key'),
                 }),
               },
             },

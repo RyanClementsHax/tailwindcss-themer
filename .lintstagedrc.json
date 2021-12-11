@@ -1,0 +1,5 @@
+{
+  "*.@(ts|tsx|js|jsx)": ["yarn lint:js", "yarn format"],
+  "*.json|*.*rc": ["yarn format"],
+  "*.@(css|scss)": ["yarn lint:styles", "yarn format"]
+}

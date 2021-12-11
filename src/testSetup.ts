@@ -10,16 +10,16 @@ declare global {
 
 expect.extend({
   func(received, cb) {
-    if (typeof received !== "function") {
+    if (typeof received !== 'function') {
       return {
         pass: false,
-        message: () => "expected received to be a function",
+        message: () => 'expected received to be a function',
       };
     } else {
       cb?.(received);
       return {
         pass: true,
-        message: () => "expected received not to be a function",
+        message: () => 'expected received not to be a function',
       };
     }
   },

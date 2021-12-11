@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    "stylelint.vscode-stylelint",
+    "bradlc.vscode-tailwindcss",
+    "csstools.postcss"
+  ]
+}

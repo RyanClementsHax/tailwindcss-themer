@@ -2,8 +2,13 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-    setupFilesAfterEnv: ['<rootDir>/src/testSetup.ts'],
-};
+  watchPlugins: [
+    'jest-watch-typeahead/filename',
+    'jest-watch-typeahead/testname'
+  ],
+  setupFilesAfterEnv: ['<rootDir>/src/testSetup.ts'],
+  resetMocks: true
+}
 
 // module.exports = {
 //   preset: 'ts-jest',
