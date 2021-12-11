@@ -99,13 +99,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "exclude": ["node_modules", "lib"],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.mjs",
-    "**/*.jsx",
-    "*.json"
-  ]
+  "include": ["src"]
 }
