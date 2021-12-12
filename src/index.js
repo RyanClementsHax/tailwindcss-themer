@@ -6,16 +6,19 @@ const {
 } = require('tailwindcss/lib/util/pluginUtils')
 const prefixSelector = require('tailwindcss/lib/util/prefixSelector').default
 
-const { getThemesFromOptions, defaultThemeName } = require('./optionsUtils')
+const {
+  getThemesFromOptions,
+  defaultThemeName
+} = require('./utils/optionsUtils')
 const {
   resolveThemeExtensionsAsTailwindExtension,
   resolveThemeExtensionAsCustomProps
-} = require('./themeUtils')
+} = require('./utils/themeUtils')
 
 /**
  * @typedef {import('tailwindcss/plugin').Helpers} Helpers
- * @typedef {import('./optionsUtils').MultiThemePluginOptions} MultiThemePluginOptions
- * @typedef {import('./optionsUtils').ThemeConfig} ThemeConfig
+ * @typedef {import('./utils/optionsUtils').MultiThemePluginOptions} MultiThemePluginOptions
+ * @typedef {import('./utils/optionsUtils').ThemeConfig} ThemeConfig
  */
 
 /**

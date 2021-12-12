@@ -1,21 +1,21 @@
 import {
   resolveThemeExtensionAsCustomProps,
-  resolveThemeExtensionsAsTailwindExtension,
-} from './themeUtils';
-import { TailwindExtension, ExtensionValue, Theme, ThemeCb } from 'tailwindcss';
-import { Helpers } from 'tailwindcss/plugin';
+  resolveThemeExtensionsAsTailwindExtension
+} from './themeUtils'
+import { TailwindExtension, ExtensionValue, Theme, ThemeCb } from 'tailwindcss'
+import { Helpers } from 'tailwindcss/plugin'
 
 describe('themeUtils', () => {
-  let theme: Theme;
-  let opacityConfig: { opacityVariable: string; opacityValue: string };
+  let theme: Theme
+  let opacityConfig: { opacityVariable: string; opacityValue: string }
 
   beforeEach(() => {
-    theme = jest.fn((x) => x);
+    theme = jest.fn(x => x)
     opacityConfig = {
       opacityValue: 'opacityValue',
-      opacityVariable: '--opacity-variable',
-    };
-  });
+      opacityVariable: '--opacity-variable'
+    }
+  })
 
   const resolveOpacityCallbacks = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,19 +28,19 @@ describe('themeUtils', () => {
       typeof themeExtensionValue === 'undefined' ||
       Array.isArray(themeExtensionValue)
     ) {
-      return themeExtensionValue;
+      return themeExtensionValue
     }
     if (typeof themeExtensionValue === 'function') {
-      return themeExtensionValue(opacityConfig);
+      return themeExtensionValue(opacityConfig)
     }
     return Object.entries(themeExtensionValue).reduce(
       (acc, [key, value]) => ({
         ...acc,
-        [key]: resolveOpacityCallbacks(value),
+        [key]: resolveOpacityCallbacks(value)
       }),
       {}
-    );
-  };
+    )
+  }
 
   const resolveCallbacks = (
     extension: TailwindExtension
@@ -51,24 +51,24 @@ describe('themeUtils', () => {
         [key]:
           typeof value === 'function'
             ? (value as ThemeCb<ExtensionValue>)(theme)
-            : value,
+            : value
       }),
       {}
-    ) as TailwindExtension;
+    ) as TailwindExtension
 
     if (extensionWithResolvedThemeCbs.colors) {
       extensionWithResolvedThemeCbs.colors = resolveOpacityCallbacks(
         extensionWithResolvedThemeCbs.colors
-      );
+      )
     }
 
-    return extensionWithResolvedThemeCbs;
-  };
+    return extensionWithResolvedThemeCbs
+  }
 
   describe('resolveThemeExtensionsAsTailwindExtension', () => {
     it('resolves an empty themes array as an empty config', () => {
-      expect(resolveThemeExtensionsAsTailwindExtension([])).toEqual({});
-    });
+      expect(resolveThemeExtensionsAsTailwindExtension([])).toEqual({})
+    })
 
     it('resolves and merges top level values as custom props', () => {
       expect(
@@ -77,31 +77,31 @@ describe('themeUtils', () => {
             name: 'first',
             extend: {
               top1: 'level',
-              same: 'prop',
-            },
+              same: 'prop'
+            }
           },
           {
             name: 'second',
             extend: {
               top2: 'level',
-              same: 'prop',
-            },
+              same: 'prop'
+            }
           },
           {
             name: 'third',
             extend: {
               top3: 'level',
-              same: 'prop',
-            },
-          },
+              same: 'prop'
+            }
+          }
         ])
       ).toEqual({
         top1: 'var(--top1)',
         top2: 'var(--top2)',
         top3: 'var(--top3)',
-        same: 'var(--same)',
-      });
-    });
+        same: 'var(--same)'
+      })
+    })
 
     it('resolves and merges nested values as custom props', () => {
       expect(
@@ -110,64 +110,64 @@ describe('themeUtils', () => {
             name: 'first',
             extend: {
               colors: {
-                primary: 'first',
+                primary: 'first'
               },
               foo: {
                 bar: {
-                  bing: 'bazz',
-                },
-              },
-            },
+                  bing: 'bazz'
+                }
+              }
+            }
           },
           {
             name: 'second',
             extend: {
               colors: {
-                secondary: 'second',
+                secondary: 'second'
               },
               foo: {
                 bar: {
-                  different: 'bazz',
+                  different: 'bazz'
                 },
-                thing: 'value1',
-              },
-            },
+                thing: 'value1'
+              }
+            }
           },
           {
             name: 'third',
             extend: {
               colors: {
-                secondary: 'third',
+                secondary: 'third'
               },
               veryDifferent: {
                 bar: {
-                  different: 'bazz',
+                  different: 'bazz'
                 },
-                thing: 'value2',
-              },
-            },
-          },
+                thing: 'value2'
+              }
+            }
+          }
         ])
       ).toEqual({
         colors: {
           primary: 'var(--colors-primary)',
-          secondary: 'var(--colors-secondary)',
+          secondary: 'var(--colors-secondary)'
         },
         foo: {
           bar: {
             bing: 'var(--foo-bar-bing)',
-            different: 'var(--foo-bar-different)',
+            different: 'var(--foo-bar-different)'
           },
-          thing: 'var(--foo-thing)',
+          thing: 'var(--foo-thing)'
         },
         veryDifferent: {
           bar: {
-            different: 'var(--very-different-bar-different)',
+            different: 'var(--very-different-bar-different)'
           },
-          thing: 'var(--very-different-thing)',
-        },
-      });
-    });
+          thing: 'var(--very-different-thing)'
+        }
+      })
+    })
 
     it('resolves non overlapping arrays', () => {
       expect(
@@ -177,47 +177,47 @@ describe('themeUtils', () => {
             extend: {
               myArray1: [
                 {
-                  thing: 1,
+                  thing: 1
                 },
                 {
-                  thing: 2,
-                },
-              ],
-            },
+                  thing: 2
+                }
+              ]
+            }
           },
           {
             name: 'second',
             extend: {
               myArray2: [
                 {
-                  thing: 1,
+                  thing: 1
                 },
                 {
-                  thing: 2,
-                },
-              ],
-            },
-          },
+                  thing: 2
+                }
+              ]
+            }
+          }
         ])
       ).toEqual({
         myArray1: [
           {
-            thing: 'var(--my-array1-0-thing)',
+            thing: 'var(--my-array1-0-thing)'
           },
           {
-            thing: 'var(--my-array1-1-thing)',
-          },
+            thing: 'var(--my-array1-1-thing)'
+          }
         ],
         myArray2: [
           {
-            thing: 'var(--my-array2-0-thing)',
+            thing: 'var(--my-array2-0-thing)'
           },
           {
-            thing: 'var(--my-array2-1-thing)',
-          },
-        ],
-      });
-    });
+            thing: 'var(--my-array2-1-thing)'
+          }
+        ]
+      })
+    })
 
     it('resolves overlapping arrays', () => {
       expect(
@@ -227,41 +227,41 @@ describe('themeUtils', () => {
             extend: {
               myArray: [
                 {
-                  thing1: 1,
+                  thing1: 1
                 },
                 {
-                  thing1: 2,
-                },
-              ],
-            },
+                  thing1: 2
+                }
+              ]
+            }
           },
           {
             name: 'second',
             extend: {
               myArray: [
                 {
-                  thing2: 1,
+                  thing2: 1
                 },
                 {
-                  thing2: 2,
-                },
-              ],
-            },
-          },
+                  thing2: 2
+                }
+              ]
+            }
+          }
         ])
       ).toEqual({
         myArray: [
           {
             thing1: 'var(--my-array-0-thing1)',
-            thing2: 'var(--my-array-0-thing2)',
+            thing2: 'var(--my-array-0-thing2)'
           },
           {
             thing1: 'var(--my-array-1-thing1)',
-            thing2: 'var(--my-array-1-thing2)',
-          },
-        ],
-      });
-    });
+            thing2: 'var(--my-array-1-thing2)'
+          }
+        ]
+      })
+    })
 
     it('resolves arrays with string values', () => {
       expect(
@@ -270,29 +270,29 @@ describe('themeUtils', () => {
             name: 'first',
             extend: {
               fontFamily: {
-                serif: ['Times New Roman', 'Times', 'serif'],
-              },
-            },
+                serif: ['Times New Roman', 'Times', 'serif']
+              }
+            }
           },
           {
             name: 'second',
             extend: {
               fontFamily: {
-                serif: ['Times New Roman', 'Times', 'serif'],
-              },
-            },
-          },
+                serif: ['Times New Roman', 'Times', 'serif']
+              }
+            }
+          }
         ])
       ).toEqual({
         fontFamily: {
           serif: [
             'var(--font-family-serif-0)',
             'var(--font-family-serif-1)',
-            'var(--font-family-serif-2)',
-          ],
-        },
-      });
-    });
+            'var(--font-family-serif-2)'
+          ]
+        }
+      })
+    })
 
     it('drops DEFAULT keys from custom vars when resolving', () => {
       expect(
@@ -302,41 +302,41 @@ describe('themeUtils', () => {
             extend: {
               colors: {
                 red: {
-                  DEFAULT: 'thing',
-                },
+                  DEFAULT: 'thing'
+                }
               },
               foo: {
-                DEFAULT: 'thing',
-              },
-            },
+                DEFAULT: 'thing'
+              }
+            }
           },
           {
             name: 'second',
             extend: {
               myArray: [
                 {
-                  DEFAULT: 1,
-                },
-              ],
-            },
-          },
+                  DEFAULT: 1
+                }
+              ]
+            }
+          }
         ])
       ).toEqual({
         colors: {
           red: {
-            DEFAULT: 'var(--colors-red)',
-          },
+            DEFAULT: 'var(--colors-red)'
+          }
         },
         foo: {
-          DEFAULT: 'var(--foo)',
+          DEFAULT: 'var(--foo)'
         },
         myArray: [
           {
-            DEFAULT: 'var(--my-array-0)',
-          },
-        ],
-      });
-    });
+            DEFAULT: 'var(--my-array-0)'
+          }
+        ]
+      })
+    })
 
     it('merges primitive values as DEFAULT values on that key', () => {
       expect(
@@ -345,42 +345,42 @@ describe('themeUtils', () => {
             name: 'first',
             extend: {
               colors: {
-                red: 'primitive',
+                red: 'primitive'
               },
               foo: {
                 bar: {
-                  DEFAULT: 'primitive',
-                },
-              },
-            },
+                  DEFAULT: 'primitive'
+                }
+              }
+            }
           },
           {
             name: 'second',
             extend: {
               colors: {
                 red: {
-                  DEFAULT: 'non primitive',
-                },
+                  DEFAULT: 'non primitive'
+                }
               },
               foo: {
-                bar: 'primitive',
-              },
-            },
-          },
+                bar: 'primitive'
+              }
+            }
+          }
         ])
       ).toEqual({
         colors: {
           red: {
-            DEFAULT: 'var(--colors-red)',
-          },
+            DEFAULT: 'var(--colors-red)'
+          }
         },
         foo: {
           bar: {
-            DEFAULT: 'var(--foo-bar)',
-          },
-        },
-      });
-    });
+            DEFAULT: 'var(--foo-bar)'
+          }
+        }
+      })
+    })
 
     it('doesnt convert primitives to DEFAULT values if no conflict with other themes', () => {
       expect(
@@ -389,32 +389,32 @@ describe('themeUtils', () => {
             name: 'first',
             extend: {
               colors: {
-                red: 'primitive',
-              },
-            },
+                red: 'primitive'
+              }
+            }
           },
           {
             name: 'second',
             extend: {
               foo: {
                 bar: {
-                  DEFAULT: 'primitive',
-                },
-              },
-            },
-          },
+                  DEFAULT: 'primitive'
+                }
+              }
+            }
+          }
         ])
       ).toEqual({
         colors: {
-          red: 'var(--colors-red)',
+          red: 'var(--colors-red)'
         },
         foo: {
           bar: {
-            DEFAULT: 'var(--foo-bar)',
-          },
-        },
-      });
-    });
+            DEFAULT: 'var(--foo-bar)'
+          }
+        }
+      })
+    })
 
     it('ignores null values', () => {
       expect(
@@ -425,9 +425,9 @@ describe('themeUtils', () => {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-expect-error
               colors: {
-                primary: null,
-              },
-            },
+                primary: null
+              }
+            }
           },
           {
             name: 'second',
@@ -435,20 +435,20 @@ describe('themeUtils', () => {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-expect-error
               foo: {
-                secondary: null,
-              },
-            },
-          },
+                secondary: null
+              }
+            }
+          }
         ])
       ).toEqual({
         colors: {
-          primary: null,
+          primary: null
         },
         foo: {
-          secondary: null,
-        },
-      });
-    });
+          secondary: null
+        }
+      })
+    })
 
     it('ignores undefined values', () => {
       expect(
@@ -459,9 +459,9 @@ describe('themeUtils', () => {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-expect-error
               colors: {
-                secondary: undefined,
-              },
-            },
+                secondary: undefined
+              }
+            }
           },
           {
             name: 'second',
@@ -469,20 +469,20 @@ describe('themeUtils', () => {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-expect-error
               foo: {
-                secondary: undefined,
-              },
-            },
-          },
+                secondary: undefined
+              }
+            }
+          }
         ])
       ).toEqual({
         colors: {
-          secondary: undefined,
+          secondary: undefined
         },
         foo: {
-          secondary: undefined,
-        },
-      });
-    });
+          secondary: undefined
+        }
+      })
+    })
 
     describe('callbacks', () => {
       it('resolves non overlapping callbacks', () => {
@@ -492,30 +492,30 @@ describe('themeUtils', () => {
               {
                 name: 'first',
                 extend: {
-                  colors: (theme) => ({
-                    primary: theme('some.key'),
-                  }),
-                },
+                  colors: theme => ({
+                    primary: theme('some.key')
+                  })
+                }
               },
               {
                 name: 'second',
                 extend: {
-                  somethingElse: (theme) => ({
-                    foo: theme('some.different.key'),
-                  }),
-                },
-              },
+                  somethingElse: theme => ({
+                    foo: theme('some.different.key')
+                  })
+                }
+              }
             ])
           )
         ).toEqual({
           colors: {
-            primary: 'var(--colors-primary)',
+            primary: 'var(--colors-primary)'
           },
           somethingElse: {
-            foo: 'var(--something-else-foo)',
-          },
-        });
-      });
+            foo: 'var(--something-else-foo)'
+          }
+        })
+      })
 
       it('resolves overlapping callbacks', () => {
         expect(
@@ -524,28 +524,28 @@ describe('themeUtils', () => {
               {
                 name: 'first',
                 extend: {
-                  colors: (theme) => ({
-                    primary: theme('some.key'),
-                  }),
-                },
+                  colors: theme => ({
+                    primary: theme('some.key')
+                  })
+                }
               },
               {
                 name: 'second',
                 extend: {
-                  colors: (theme) => ({
-                    secondary: theme('some.different.key'),
-                  }),
-                },
-              },
+                  colors: theme => ({
+                    secondary: theme('some.different.key')
+                  })
+                }
+              }
             ])
           )
         ).toEqual({
           colors: {
             primary: 'var(--colors-primary)',
-            secondary: 'var(--colors-secondary)',
-          },
-        });
-      });
+            secondary: 'var(--colors-secondary)'
+          }
+        })
+      })
 
       it('resolves callbacks when they overlap with static values', () => {
         expect(
@@ -555,27 +555,27 @@ describe('themeUtils', () => {
                 name: 'first',
                 extend: {
                   colors: {
-                    primary: 'first',
-                  },
-                },
+                    primary: 'first'
+                  }
+                }
               },
               {
                 name: 'second',
                 extend: {
-                  colors: (theme) => ({
-                    secondary: theme('some.different.key'),
-                  }),
-                },
-              },
+                  colors: theme => ({
+                    secondary: theme('some.different.key')
+                  })
+                }
+              }
             ])
           )
         ).toEqual({
           colors: {
             primary: 'var(--colors-primary)',
-            secondary: 'var(--colors-secondary)',
-          },
-        });
-      });
+            secondary: 'var(--colors-secondary)'
+          }
+        })
+      })
 
       it('throws when a callback resolves to a type mismatch with a different theme', () => {
         expect(() =>
@@ -585,20 +585,20 @@ describe('themeUtils', () => {
                 name: 'first',
                 extend: {
                   colors: {
-                    primary: 'first',
-                  },
-                },
+                    primary: 'first'
+                  }
+                }
               },
               {
                 name: 'second',
                 extend: {
-                  colors: (theme) => theme('some.other.key'),
-                },
-              },
+                  colors: theme => theme('some.other.key')
+                }
+              }
             ])
           )
-        ).toThrow();
-      });
+        ).toThrow()
+      })
 
       it('throws when a callback resolves to a type mismatch with another callback defined in a different theme', () => {
         expect(() =>
@@ -607,21 +607,21 @@ describe('themeUtils', () => {
               {
                 name: 'first',
                 extend: {
-                  colors: (theme) => ({
-                    primary: theme('first'),
-                  }),
-                },
+                  colors: theme => ({
+                    primary: theme('first')
+                  })
+                }
               },
               {
                 name: 'second',
                 extend: {
-                  colors: (theme) => theme('some.other.key'),
-                },
-              },
+                  colors: theme => theme('some.other.key')
+                }
+              }
             ])
           )
-        ).toThrow();
-      });
+        ).toThrow()
+      })
 
       it('throws if it finds a callback not on the top level', () => {
         expect(() =>
@@ -631,10 +631,10 @@ describe('themeUtils', () => {
               extend: {
                 foo: {
                   bar: {
-                    primary: 'orange',
-                  },
-                },
-              },
+                    primary: 'orange'
+                  }
+                }
+              }
             },
             {
               name: 'second',
@@ -643,14 +643,14 @@ describe('themeUtils', () => {
                 //@ts-expect-error
                 foo: {
                   bar: (theme: Theme) => ({
-                    primary: theme('some.key'),
-                  }),
-                },
-              },
-            },
+                    primary: theme('some.key')
+                  })
+                }
+              }
+            }
           ])
-        ).toThrow();
-      });
+        ).toThrow()
+      })
 
       it('resolves color properties with opacity', () => {
         expect(
@@ -660,32 +660,32 @@ describe('themeUtils', () => {
                 name: 'first',
                 extend: {
                   colors: {
-                    primary: 'orange',
-                  },
-                },
+                    primary: 'orange'
+                  }
+                }
               },
               {
                 name: 'second',
                 extend: {
                   colors: {
-                    secondary: 'purple',
-                  },
-                },
-              },
+                    secondary: 'purple'
+                  }
+                }
+              }
             ])
           )
         ).toEqual({
           colors: {
             primary: 'rgba(var(--colors-primary), opacityValue)',
-            secondary: 'rgba(var(--colors-secondary), opacityValue)',
-          },
-        });
-      });
-    });
-  });
+            secondary: 'rgba(var(--colors-secondary), opacityValue)'
+          }
+        })
+      })
+    })
+  })
 
   describe('resolveThemeExtensionAsCustomProps', () => {
-    let helpers: Helpers;
+    let helpers: Helpers
 
     beforeEach(() => {
       helpers = {
@@ -693,47 +693,47 @@ describe('themeUtils', () => {
         addVariant: jest.fn(),
         config: jest.fn(),
         e: jest.fn(),
-        theme: jest.fn((x) => x),
-      };
-    });
+        theme: jest.fn(x => x)
+      }
+    })
 
     it('resolves an empty extension as no custom props', () => {
-      expect(resolveThemeExtensionAsCustomProps({}, helpers)).toEqual({});
-    });
+      expect(resolveThemeExtensionAsCustomProps({}, helpers)).toEqual({})
+    })
 
     it('resolves top level props', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
-            foo: 'thing',
+            foo: 'thing'
           },
           helpers
         )
       ).toEqual({
-        '--foo': 'thing',
-      });
-    });
+        '--foo': 'thing'
+      })
+    })
 
     it('resolves nested props', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
             colors: {
-              primary: 'thing',
+              primary: 'thing'
             },
             foo: {
               bar: {
-                bazz: 'value',
-              },
-            },
+                bazz: 'value'
+              }
+            }
           },
           helpers
         )
       ).toEqual({
         '--colors-primary': 'thing',
-        '--foo-bar-bazz': 'value',
-      });
-    });
+        '--foo-bar-bazz': 'value'
+      })
+    })
 
     it('resolves arrays', () => {
       expect(
@@ -742,53 +742,53 @@ describe('themeUtils', () => {
             foo: {
               bar: [
                 {
-                  thing: 1,
+                  thing: 1
                 },
                 {
-                  thing: 2,
-                },
-              ],
-            },
+                  thing: 2
+                }
+              ]
+            }
           },
           helpers
         )
       ).toEqual({
         '--foo-bar-0-thing': '1',
-        '--foo-bar-1-thing': '2',
-      });
-    });
+        '--foo-bar-1-thing': '2'
+      })
+    })
 
     it('resolves arrays with strings', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
             fontFamily: {
-              serif: ['Times New Roman', 'Times', 'serif'],
-            },
+              serif: ['Times New Roman', 'Times', 'serif']
+            }
           },
           helpers
         )
       ).toEqual({
         '--font-family-serif-0': 'Times New Roman',
         '--font-family-serif-1': 'Times',
-        '--font-family-serif-2': 'serif',
-      });
-    });
+        '--font-family-serif-2': 'serif'
+      })
+    })
 
     it('resolves colors as rgb', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
             colors: {
-              primary: '#114611',
-            },
+              primary: '#114611'
+            }
           },
           helpers
         )
       ).toEqual({
-        '--colors-primary': '17, 70, 17',
-      });
-    });
+        '--colors-primary': '17, 70, 17'
+      })
+    })
 
     it('drops DEFAULT keys from custom vars when resolving', () => {
       expect(
@@ -796,26 +796,26 @@ describe('themeUtils', () => {
           {
             colors: {
               red: {
-                DEFAULT: 'thing',
-              },
+                DEFAULT: 'thing'
+              }
             },
             foo: {
-              DEFAULT: 'thing',
+              DEFAULT: 'thing'
             },
             myArray: [
               {
-                DEFAULT: 1,
-              },
-            ],
+                DEFAULT: 1
+              }
+            ]
           },
           helpers
         )
       ).toEqual({
         '--colors-red': 'thing',
         '--foo': 'thing',
-        '--my-array-0': '1',
-      });
-    });
+        '--my-array-0': '1'
+      })
+    })
 
     it('ignores null values', () => {
       expect(
@@ -824,18 +824,18 @@ describe('themeUtils', () => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-expect-error
             colors: {
-              primary: null,
+              primary: null
             },
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-expect-error
             foo: {
-              secondary: null,
-            },
+              secondary: null
+            }
           },
           helpers
         )
-      ).toEqual({});
-    });
+      ).toEqual({})
+    })
 
     it('ignores undefined values', () => {
       expect(
@@ -844,34 +844,34 @@ describe('themeUtils', () => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-expect-error
             colors: {
-              primary: undefined,
+              primary: undefined
             },
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-expect-error
             foo: {
-              secondary: undefined,
-            },
+              secondary: undefined
+            }
           },
           helpers
         )
-      ).toEqual({});
-    });
+      ).toEqual({})
+    })
 
     describe('callbacks', () => {
       it('resolves top level callbacks', () => {
         expect(
           resolveThemeExtensionAsCustomProps(
             {
-              colors: (theme) => ({
-                primary: theme('some.key'),
-              }),
+              colors: theme => ({
+                primary: theme('some.key')
+              })
             },
             helpers
           )
         ).toEqual({
-          '--colors-primary': 'some.key',
-        });
-      });
+          '--colors-primary': 'some.key'
+        })
+      })
 
       it('throws if it finds a callback not at the top level', () => {
         expect(() =>
@@ -881,14 +881,14 @@ describe('themeUtils', () => {
               //@ts-expect-error
               foo: {
                 bar: (theme: Theme) => ({
-                  primary: theme('some.key'),
-                }),
-              },
+                  primary: theme('some.key')
+                })
+              }
             },
             helpers
           )
-        ).toThrow();
-      });
-    });
-  });
-});
+        ).toThrow()
+      })
+    })
+  })
+})

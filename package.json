@@ -14,7 +14,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "build": "yarn clean && tsc",
+    "build": "yarn clean && tsc --project tsconfig.build.json",
     "clean": "tsc --build --clean",
     "type-check": "tsc --pretty --noEmit",
     "format": "prettier --write",
