@@ -11,5 +11,6 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.markdownlint": true,
     "source.fixAll.stylelint": true
-  }
+  },
+  "stylelint.validate": ["css", "scss"]
 }
