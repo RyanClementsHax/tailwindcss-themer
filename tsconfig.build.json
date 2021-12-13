@@ -1,4 +1,11 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "./types",
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "paths": {}
+  },
   "exclude": ["node_modules", "lib", "src/**/*.spec.ts", "src/testSetup.ts"]
 }
