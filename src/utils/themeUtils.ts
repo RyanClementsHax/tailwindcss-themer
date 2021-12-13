@@ -4,8 +4,8 @@ import {
   toCustomPropName,
   toCustomPropValue
 } from './customPropUtils'
-import { ThemeCb, TailwindExtension } from 'tailwindcss'
-import { Helpers } from 'tailwindcss/plugin'
+import { ThemeCb, TailwindExtension } from '@/types/config'
+import { Helpers } from '@/types/plugin'
 import { ThemeConfig } from './optionsUtils'
 
 /**

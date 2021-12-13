@@ -2,8 +2,13 @@ import {
   resolveThemeExtensionAsCustomProps,
   resolveThemeExtensionsAsTailwindExtension
 } from './themeUtils'
-import { TailwindExtension, ExtensionValue, Theme, ThemeCb } from 'tailwindcss'
-import { Helpers } from 'tailwindcss/plugin'
+import {
+  TailwindExtension,
+  ExtensionValue,
+  Theme,
+  ThemeCb
+} from '@/types/config'
+import { Helpers } from '@/types/plugin'
 
 describe('themeUtils', () => {
   let theme: Theme

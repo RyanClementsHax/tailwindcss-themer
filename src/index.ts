@@ -1,9 +1,10 @@
-import plugin, { Helpers } from 'tailwindcss/plugin'
+import plugin from 'tailwindcss/plugin'
 import {
   transformAllSelectors,
   updateLastClasses
 } from 'tailwindcss/lib/util/pluginUtils'
 import prefixSelector from 'tailwindcss/lib/util/prefixSelector'
+import { Helpers } from '@/types/plugin'
 
 import {
   getThemesFromOptions,

@@ -1,5 +1,5 @@
 import color from 'color'
-import { OpacityCb } from 'tailwindcss'
+import { OpacityCb } from '@/types/config'
 
 /**
  * @typedef {import('tailwindcss').OpacityCb} OpacityCb

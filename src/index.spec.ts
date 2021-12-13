@@ -1,6 +1,6 @@
 import { when } from 'jest-when'
-import { Theme } from 'tailwindcss'
-import { Helpers } from 'tailwindcss/plugin'
+import { Theme } from '@/types/config'
+import { Helpers } from '@/types/plugin'
 import multiThemePlugin from '.'
 import { MultiThemePluginOptions } from './utils/optionsUtils'
 import { defaultThemeName } from './utils/optionsUtils'
