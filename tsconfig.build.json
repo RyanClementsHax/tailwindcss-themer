@@ -4,8 +4,7 @@
     "declaration": true,
     "declarationDir": "./types",
     "emitDeclarationOnly": true,
-    "noEmit": false,
-    "paths": {}
+    "noEmit": false
   },
   "exclude": ["node_modules", "lib", "src/**/*.spec.ts", "src/testSetup.ts"]
 }

@@ -2,17 +2,17 @@
 // https://www.typescriptlang.org/docs/handbook/modules.html#export--and-import--require
 
 declare module 'just-kebab-case' {
-  declare function kebabCase(value: string): string
+  function kebabCase(value: string): string
   export = kebabCase
 }
 
 declare module 'just-unique' {
-  declare function unique(
+  function unique(
     arr: string[],
     sorted: boolean | null,
     strings: true
   ): string[]
-  declare function unique<T>(
+  function unique<T>(
     arr: T[],
     sorted?: boolean | null,
     strings?: false | null

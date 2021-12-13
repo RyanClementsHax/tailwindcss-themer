@@ -1,5 +1,5 @@
 import unique from 'just-unique'
-import { TailwindExtension } from '@/types/config'
+import { TailwindExtension } from '@/config'
 
 export interface ThemeConfig {
   name: string

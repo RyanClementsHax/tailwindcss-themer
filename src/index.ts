@@ -4,7 +4,7 @@ import {
   updateLastClasses
 } from 'tailwindcss/lib/util/pluginUtils'
 import prefixSelector from 'tailwindcss/lib/util/prefixSelector'
-import { Helpers } from '@/types/plugin'
+import { Helpers } from '@/plugin'
 
 import {
   getThemesFromOptions,

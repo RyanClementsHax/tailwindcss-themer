@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 declare module 'tailwindcss/plugin' {
-  import { TailwindPlugin } from '@/types/plugin'
+  import { TailwindPlugin } from '@/plugin'
 
   const plugin: TailwindPlugin
 
@@ -9,7 +9,7 @@ declare module 'tailwindcss/plugin' {
 }
 
 declare module 'tailwindcss/lib/util/pluginUtils' {
-  import { AddVariantCb } from '@/types/plugin'
+  import { AddVariantCb } from '@/plugin'
 
   export function transformAllSelectors(
     cb: (selector: string) => void
