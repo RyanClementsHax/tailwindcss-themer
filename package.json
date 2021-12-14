@@ -12,7 +12,8 @@
   "bugs": {
     "url": "https://github.com/RyanClementsHax/tailwindcss-theming/issues"
   },
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "yarn clean && tsc --project tsconfig.build.json",
     "clean": "tsc --build --clean",
