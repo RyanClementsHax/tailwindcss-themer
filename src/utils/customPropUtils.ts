@@ -2,10 +2,6 @@ import { isColor, toRgb, withOpacity } from './colorUtils'
 import kebabCase from 'just-kebab-case'
 
 /**
- * @typedef {import('./colorUtils').withOpacity} withOpacity
- */
-
-/**
  * @param value - a custom prop value
  * @return the value converted to a string of its rgb components comma separated if it is a color else it returns the value unaltered
  */

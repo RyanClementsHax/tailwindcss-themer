@@ -1,6 +1,6 @@
 import { when } from 'jest-when'
-import { Theme } from '@/config'
-import { Helpers } from '@/plugin'
+import { Theme } from './config'
+import { Helpers } from './plugin'
 import multiThemePlugin from '.'
 import { MultiThemePluginOptions } from './utils/optionsUtils'
 import { defaultThemeName } from './utils/optionsUtils'

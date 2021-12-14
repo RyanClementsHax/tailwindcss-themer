@@ -1,10 +1,5 @@
 import color from 'color'
-import { OpacityCb } from '@/config'
-
-/**
- * @typedef {import('tailwindcss').OpacityCb} OpacityCb
- */
-
+import { OpacityCb } from '../config'
 /**
  * @param value - a color represented as a string (hex, rgb, rgba, hsl, hsla, etc)
  * @return the color represented as its rgb values with alpha channel stripped
