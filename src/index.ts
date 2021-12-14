@@ -4,7 +4,7 @@ import {
   updateLastClasses
 } from 'tailwindcss/lib/util/pluginUtils'
 import prefixSelector from 'tailwindcss/lib/util/prefixSelector'
-import { Helpers } from './plugin'
+import { Helpers, MultiThemePlugin } from './plugin'
 
 import {
   getThemesFromOptions,
@@ -67,14 +67,6 @@ const addThemeStyles = (themes: ThemeConfig[], helpers: Helpers): void => {
   )
 }
 
-/**
- * @throws an {@link Error} if the options are invalid
- * @throws an {@link Error} if any callbacks are found in places not supported by tailwind
- */
-// because there aren't any official tailwind plugin types, I'm not sure how to type this return value
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type MultiThemePlugin = (options: MultiThemePluginOptions) => any
-
 const multiThemePlugin: MultiThemePlugin =
   plugin.withOptions<MultiThemePluginOptions>(
     (options = defaultOptions) =>
@@ -92,4 +84,4 @@ const multiThemePlugin: MultiThemePlugin =
     })
   )
 
-export default multiThemePlugin
+export = multiThemePlugin
