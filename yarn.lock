@@ -618,14 +618,7 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jest-when@^2.7.3":
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/@types/jest-when/-/jest-when-2.7.3.tgz#40735b320d8655ebff01123cb58afbdaf8274658"
-  integrity sha512-BdDZnKj3ZO1VsRlJFyRx6yLa0hG9++qetnBKhESjCGRVAm6S4aaKXXLm9xGFmtAQpzuMC44wxhvkG2cl6axvyQ==
-  dependencies:
-    "@types/jest" "*"
-
-"@types/jest@*", "@types/jest@^27.0.3":
+"@types/jest@^27.0.3":
   version "27.0.3"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-27.0.3.tgz#0cf9dfe9009e467f70a342f0f94ead19842a783a"
   integrity sha512-cmmwv9t7gBYt7hNKH5Spu7Kuu/DotGa+Ff+JGRKZ4db5eh8PnKS4LuebJ3YLUoyOyIHraTGyULn23YtEAm0VSg==
@@ -2572,11 +2565,6 @@ jest-watcher@^27.0.0, jest-watcher@^27.4.2:
     chalk "^4.0.0"
     jest-util "^27.4.2"
     string-length "^4.0.1"
-
-jest-when@^3.4.2:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/jest-when/-/jest-when-3.5.0.tgz#364ab8dc149a5d683f9cc14e44d73d03b84b0d97"
-  integrity sha512-/IkPkG5lo2tyXH3a+VraYe7t/ma6UK9VPQko7hr6YgEtjoHyfAPpLXzyhnSNxxKRzNQDrw8YoGPCOkdTLR4mHA==
 
 jest-worker@^27.4.5:
   version "27.4.5"

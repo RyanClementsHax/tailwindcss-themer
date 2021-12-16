@@ -691,8 +691,8 @@ describe('themeUtils', () => {
       helpers = {
         addBase: jest.fn(),
         addVariant: jest.fn(),
-        config: jest.fn(),
-        e: jest.fn(),
+        prefix: jest.fn(selector => `prefix-${selector}`),
+        e: jest.fn(x => `escaped-${x}`),
         theme: jest.fn(x => x)
       }
     })

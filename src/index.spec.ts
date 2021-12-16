@@ -1,4 +1,3 @@
-import { when } from 'jest-when'
 import { Theme } from './config'
 import { Helpers } from './plugin'
 import multiThemePlugin from '.'
@@ -34,11 +33,10 @@ describe('multiThemePlugin', () => {
       helpers = {
         addBase: jest.fn(),
         addVariant: jest.fn(),
-        config: jest.fn(() => ''),
-        e: jest.fn(x => x),
+        prefix: jest.fn(selector => `prefix-${selector}`),
+        e: jest.fn(x => `escaped-${x}`),
         theme: jest.fn(x => x)
       }
-      when(helpers.config).calledWith('separator').mockReturnValue('_')
     })
 
     it('adds variants for each theme', () => {
@@ -49,8 +47,8 @@ describe('multiThemePlugin', () => {
         ...(config?.themes?.map(x => x.name) ?? [])
       ]) {
         expect(helpers.addVariant).toHaveBeenCalledWith(
-          themeName,
-          expect.func()
+          themeName === defaultThemeName ? 'defaultTheme' : themeName,
+          `.escaped-${themeName} &`
         )
       }
     })
@@ -65,7 +63,7 @@ describe('multiThemePlugin', () => {
       })
       for (const theme of config.themes ?? []) {
         expect(helpers.addBase).toHaveBeenCalledWith({
-          [`.${theme.name}`]: {
+          [`prefix-.escaped-${theme.name}`]: {
             '--colors-primary': 'another',
             '--colors-secondary': 'something'
           }
