@@ -1,5 +1,5 @@
 {
-  "name": "tailwindcss-theming",
+  "name": "tailwindcss-themer",
   "version": "0.0.1",
   "author": "ryanclementshax",
   "license": "MIT",
@@ -14,6 +14,9 @@
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "yarn clean && tsc --project tsconfig.build.json",
     "clean": "tsc --build --clean",
