@@ -1,1 +1,1 @@
-# tailwindcss-theming
+# tailwindcss-themer

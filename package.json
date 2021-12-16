@@ -7,18 +7,19 @@
   "keywords": [
     "tailwind",
     "theming",
+    "themer",
     "dark",
     "mode",
     "themes",
     "plugin"
   ],
-  "homepage": "https://github.com/RyanClementsHax/tailwindcss-theming#readme",
+  "homepage": "https://github.com/RyanClementsHax/tailwindcss-themer#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RyanClementsHax/tailwindcss-theming.git"
+    "url": "git+https://github.com/RyanClementsHax/tailwindcss-themer.git"
   },
   "bugs": {
-    "url": "https://github.com/RyanClementsHax/tailwindcss-theming/issues"
+    "url": "https://github.com/RyanClementsHax/tailwindcss-themer/issues"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
