@@ -1,9 +1,4 @@
 import plugin from 'tailwindcss/plugin'
-import {
-  transformAllSelectors,
-  updateLastClasses
-} from 'tailwindcss/lib/util/pluginUtils'
-import prefixSelector from 'tailwindcss/lib/util/prefixSelector'
 import { Helpers, MultiThemePlugin } from './plugin'
 
 import {
@@ -30,41 +25,27 @@ const defaultOptions: MultiThemePluginOptions = {
  */
 const addThemeVariants = (
   themes: ThemeConfig[],
-  { addVariant, config, e }: Helpers
-): void => {
-  themes.map(({ name }) =>
+  { addVariant, e }: Helpers
+): void =>
+  void themes.map(({ name }) =>
     addVariant(
-      name,
-      transformAllSelectors(selector => {
-        const variantSelector = updateLastClasses(selector, className => {
-          return `${name}${config('separator')}${className}`
-        })
-
-        if (variantSelector === selector) {
-          return null
-        }
-
-        const themeSelector = prefixSelector(config('prefix'), `.${e(name)}`)
-
-        return `${themeSelector} ${variantSelector}`
-      })
+      name === defaultThemeName ? 'defaultTheme' : name,
+      `.${e(name)} &`
     )
   )
-}
+
 /**
  * @param themes the themes to add as variants
  * @param helpers the tailwind plugin helpers
  */
 const addThemeStyles = (themes: ThemeConfig[], helpers: Helpers): void => {
-  const { addBase, e, config } = helpers
-  themes.forEach(({ name, extend }) =>
+  const { addBase, e, prefix } = helpers
+  themes.forEach(({ name, extend }) => {
     addBase({
-      [name === defaultThemeName
-        ? ':root'
-        : prefixSelector(config('prefix'), `.${e(name)}`)]:
+      [name === defaultThemeName ? ':root' : prefix(`.${e(name)}`)]:
         resolveThemeExtensionAsCustomProps(extend, helpers)
     })
-  )
+  })
 }
 
 const multiThemePlugin: MultiThemePlugin =
