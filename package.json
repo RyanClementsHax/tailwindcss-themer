@@ -4,6 +4,14 @@
   "author": "ryanclementshax",
   "license": "MIT",
   "description": "A tailwindcss plugin to handle multiple themes for you automatically",
+  "keywords": [
+    "tailwind",
+    "theming",
+    "dark",
+    "mode",
+    "themes",
+    "plugin"
+  ],
   "homepage": "https://github.com/RyanClementsHax/tailwindcss-theming#readme",
   "repository": {
     "type": "git",
