@@ -1,4 +1,6 @@
-import { mergeWith, merge, MergeWithCustomizer } from 'lodash'
+import merge from 'lodash.merge'
+import mergeWith from 'lodash.mergewith'
+import { MergeWithCustomizer } from 'lodash'
 import {
   asCustomProp,
   toCustomPropName,

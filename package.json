@@ -45,12 +45,14 @@
     "color": "^4.1.0",
     "just-kebab-case": "^4.0.1",
     "just-unique": "^4.0.1",
-    "lodash": "^4.17.21"
+    "lodash.merge": "^4.6.2",
+    "lodash.mergewith": "^4.6.2"
   },
   "devDependencies": {
     "@types/color": "^3.0.2",
     "@types/jest": "^27.0.3",
-    "@types/lodash": "^4.14.178",
+    "@types/lodash.merge": "^4.6.6",
+    "@types/lodash.mergewith": "^4.6.6",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
     "@typescript-eslint/parser": "^5.6.0",
     "eslint": "^8.4.1",
