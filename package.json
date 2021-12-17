@@ -39,7 +39,8 @@
     "lint:styles:all": "yarn lint:styles ./**/*.{scss,css}",
     "test": "jest",
     "test:all": "yarn lint:all && yarn type-check && yarn test",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
     "color": "^4.1.0",
