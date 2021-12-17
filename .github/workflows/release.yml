@@ -1,0 +1,39 @@
+name: Publish
+on:
+  release:
+    types: [created]
+jobs:
+  checkout:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: restore cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - name: install
+        run: yarn install --frozen-lockfile --check-files
+        # cache the working directory so we can use it in other jobs without having to checkout and install
+      - uses: actions/cache@v2
+        with:
+          path: ./**
+          key: ${{ github.sha }}
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: restore source code
+        uses: actions/cache@v2
+        with:
+          path: ./**
+          key: ${{ github.sha }}
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
