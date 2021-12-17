@@ -20,7 +20,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ./**
-          key: ${{ github.sha }}
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
   publish:
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./**
-          key: ${{ github.sha }}
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v2
         with:
