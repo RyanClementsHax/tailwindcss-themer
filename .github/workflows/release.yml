@@ -23,6 +23,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
   publish:
     runs-on: ubuntu-latest
+    needs: checkout
     steps:
       - name: restore source code
         uses: actions/cache@v2
