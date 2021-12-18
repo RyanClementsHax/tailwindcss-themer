@@ -1,6 +1,6 @@
 {
   "name": "tailwindcss-themer",
-  "version": "0.0.4",
+  "version": "0.0.0-development",
   "author": "ryanclementshax",
   "license": "MIT",
   "description": "A tailwindcss plugin to handle multiple themes for you automatically",
@@ -16,7 +16,7 @@
   "homepage": "https://github.com/RyanClementsHax/tailwindcss-themer#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RyanClementsHax/tailwindcss-themer.git"
+    "url": "https://github.com/RyanClementsHax/tailwindcss-themer.git"
   },
   "bugs": {
     "url": "https://github.com/RyanClementsHax/tailwindcss-themer/issues"
@@ -40,7 +40,8 @@
     "test": "jest",
     "test:all": "yarn lint:all && yarn type-check && yarn test",
     "prepare": "husky install",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "color": "^4.1.0",
@@ -73,7 +74,8 @@
     "tailwindcss": "^3.0.5",
     "ts-jest": "^27.1.1",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.3"
+    "typescript": "^4.5.3",
+    "semantic-release": "^18.0.1"
   },
   "peerDependencies": {
     "tailwindcss": "^3.0.5"
