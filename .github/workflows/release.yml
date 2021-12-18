@@ -24,8 +24,7 @@ jobs:
           key: ${{ github.sha }}
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
-          registry-url: https://registry.npmjs.org/
+          node-version: 'lts/*'
       - run: npx semantic-release@17
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
