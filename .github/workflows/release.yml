@@ -26,7 +26,7 @@ jobs:
         with:
           path: ./**
           key: ${{ github.sha }}
-      - run: npx semantic-release@17
+      - run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
           GH_TOKEN: ${{secrets.GH_TOKEN}}
