@@ -13,19 +13,7 @@ jobs:
         with:
           node-version: 'lts/*'
           registry-url: https://registry.npmjs.org/
-      - name: restore cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - name: install
-        run: yarn install --frozen-lockfile --check-files
-        # cache the working directory so we can use it in other jobs without having to checkout and install
-      - uses: actions/cache@v2
-        with:
-          path: ./**
-          key: ${{ github.sha }}
+      - uses: bahmutov/npm-install@v1
       - run: yarn release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
