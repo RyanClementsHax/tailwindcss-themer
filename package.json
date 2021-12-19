@@ -5,6 +5,7 @@
   "license": "MIT",
   "description": "A tailwindcss plugin to handle multiple themes for you automatically",
   "keywords": [
+    "tailwindcss",
     "tailwind",
     "theming",
     "themer",
