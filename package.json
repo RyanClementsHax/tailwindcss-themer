@@ -39,7 +39,6 @@
     "lint:styles:all": "yarn lint:styles ./**/*.{scss,css}",
     "test": "jest",
     "test:all": "yarn lint:all && yarn type-check && yarn test",
-    "commit": "cz",
     "prepare": "husky install",
     "prepublishOnly": "yarn build",
     "release": "semantic-release"
