@@ -3,7 +3,7 @@
   "version": "0.0.0-development",
   "author": "ryanclementshax",
   "license": "MIT",
-  "description": "A tailwindcss plugin to handle multiple themes for you automatically",
+  "description": "An unopinionated, scalable, tailwindcss theming solution",
   "keywords": [
     "tailwindcss",
     "tailwind",
