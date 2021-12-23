@@ -4,11 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
+    "watch": "tailwindcss -i input.css -o ./dist/output.css --watch",
+    "serve": "serve",
+    "dev": "concurrently --kill-others \"yarn watch\" \"yarn serve\""
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "concurrently": "^6.5.1",
+    "serve": "^13.0.2",
     "tailwindcss": "^3.0.7",
     "tailwindcss-themer": "^0.0.5"
   }
