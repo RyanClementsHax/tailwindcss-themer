@@ -168,6 +168,7 @@ require('tailwindcss-themer')({
 
   - This contains all of the defaults (i.e. what styles are applied when no theme is active)
   - This is fine to leave out if you don't have any defaults you want to apply
+  - This is essentially just another theme config, but without a `name` (since its the default)
   - `extend` (**Required**)
     - This takes an object representing a [tailwind extension](https://tailwindcss.com/docs/theme#extending-the-default-theme)
     - Anything you can express in a tailwind extension, you can put here
@@ -210,3 +211,182 @@ require('tailwindcss-themer')({
 
 - This takes an object representing a [tailwind extension](https://tailwindcss.com/docs/theme#extending-the-default-theme)
 - Anything you can express in a tailwind extension, you can put here
+
+For example, you could add colors to your theme
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: {
+          // here I'm specifying a custom default
+          500: 'blue'
+        }
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'dark',
+      extend: {
+        colors: {
+          // here I'm overriding a tailwind default
+          red: {
+            500: 'darkred'
+          },
+          // here I'm overriding a custom default
+          primary: {
+            500: 'darkblue'
+          }
+        }
+      }
+    },
+    {
+      name: 'neon',
+      extend: {
+        color: {
+          red: {
+            // here I'm overwriting a tailwind default again
+            500: '#ff0000' // as red as it gets
+          }
+          // im not overwriting the custom color I made ... I wonder what will happen ??? 🤔🤔🤔
+        }
+      }
+    }
+    // ...
+  ]
+})
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body>
+    <!-- this has a color of "blue" since that is what the default config specifies -->
+    <h1 class="text-primary-500">This is colored as my primary 500 color</h1>
+    <!-- this has a color of "#ef4444" since that is what the tailwind default specifies -->
+    <p class="text-red-500">This is colored as my red 500 color</p>
+  </body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body class="dark">
+    <!-- this has a color of "darkblue" since that is what the dark config specifies -->
+    <h1 class="text-primary-500">This is colored as my primary 500 color</h1>
+    <!-- this has a color of "darkred" since that is what the dark config specifies -->
+    <p class="text-red-500">This is colored as my red 500 color</p>
+  </body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body class="neon">
+    <!-- this has a color of "blue" since that is what the default config specifies and the neon theme doesn't overwrite it -->
+    <h1 class="text-primary-500">This is colored as my primary 500 color</h1>
+    <!-- this has a color of "#ff0000" since that is what the neon config specifies -->
+    <p class="text-red-500">This is colored as my red 500 color</p>
+  </body>
+</html>
+```
+
+Theming doesn't have to be just for colors. It can be for anything you want, even borders, fonts, spacing, etc. Anything you can substitute for a css variable, you can theme with this plugin.
+
+Here is an example of theming border radius.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      borderRadius: {
+        nope: '0',
+        tiny: '.1rem',
+        DEFAULT: '.125rem',
+        woahh: '.25rem'
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'special-border-radius',
+      extend: {
+        borderRadius: {
+          nope: '0',
+          tiny: '.125rem',
+          DEFAULT: '.25rem',
+          woahh: '.5rem'
+        }
+      }
+    },
+    {
+      name: 'double-border-radius',
+      extend: {
+        borderRadius: {
+          nope: '0',
+          tiny: '.25rem',
+          DEFAULT: '.5rem',
+          woahh: '1rem'
+        }
+      }
+    }
+    // ...
+  ]
+})
+```
+
+You would then use the tailwind classes as normal
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body>
+    <!-- this has a border radius of .25rem since that is the default -->
+    <input aria-label="my input" class="border rounded-woahh" />
+  </body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body class="special-border-radius">
+    <!-- this has a border radius of .5rem as specified in the special-border-radius config -->
+    <input aria-label="my input" class="border rounded-woahh" />
+  </body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body class="double-border-radius">
+    <!-- this has a border radius of 1rem as specified in the double-border-radius config -->
+    <input aria-label="my input" class="border rounded-woahh" />
+  </body>
+</html>
+```
+
+> Notice the only thing that has to change in order to enable a theme is to apply the theme name as a class to the section of the dom you want to apply it to
