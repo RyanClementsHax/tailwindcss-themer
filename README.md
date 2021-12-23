@@ -27,6 +27,8 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
   - [Installation](#installation)
   - [Add the Plugin](#add-the-plugin)
   - [Configure your themes](#configure-your-themes)
+  - [Use the classes like normal](#use-the-classes-like-normal)
+  - [Enable your other theme](#enable-your-other-theme)
 
 ## Getting Started
 
@@ -86,6 +88,7 @@ module.exports = {
       themes: [
         {
           // name your theme anything that could be a valid css selector
+          // remember what you named your theme because you will use it as a class to enable the theme
           name: 'my-theme',
           // put any overrides your theme has here
           // just as if you were to extend tailwind's theme like normal https://tailwindcss.com/docs/theme#extending-the-default-theme
@@ -100,4 +103,39 @@ module.exports = {
     // ...
   ]
 }
+```
+
+### Use the classes like normal
+
+```html
+<!-- this example uses pure html for demonstration purposes -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body>
+    <!-- this has "color: 'red'" assigned to it because that's what was specified as the default-->
+    <h1 class="text-primary">Hello world!</h1>
+  </body>
+</html>
+```
+
+### Enable your other theme
+
+You do this by adding a class of the theme's name to whatever you want themed
+
+```html
+<!-- this example uses pure html for demonstration purposes -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <!-- everything within this tag now has the "my-theme" config applied to it -->
+  <body class="my-theme">
+    <!-- this has "color: 'blue'" assigned to it because that's what was specified in the "my-theme" config -->
+    <h1 class="text-primary">Hello world!</h1>
+  </body>
+</html>
 ```
