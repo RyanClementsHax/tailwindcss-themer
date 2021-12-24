@@ -222,6 +222,9 @@ require('tailwindcss-themer')({
         primary: {
           // here I'm specifying a custom default
           500: 'blue'
+        },
+        secondary: {
+          500: 'red'
         }
       }
     }
@@ -231,11 +234,11 @@ require('tailwindcss-themer')({
       name: 'dark',
       extend: {
         colors: {
-          // here I'm overriding a tailwind default
-          red: {
+          // here I'm overriding a custom default
+          secondary: {
             500: 'darkred'
           },
-          // here I'm overriding a custom default
+          // here I'm overriding a custom default too
           primary: {
             500: 'darkblue'
           }
@@ -246,11 +249,11 @@ require('tailwindcss-themer')({
       name: 'neon',
       extend: {
         color: {
-          red: {
-            // here I'm overwriting a tailwind default again
-            500: '#ff0000' // as red as it gets
+          secondary: {
+            // here I'm overwriting a custom default again
+            500: '#90A040' // as red as it gets
           }
-          // im not overwriting the custom color I made ... I wonder what will happen ??? 🤔🤔🤔
+          // im not overwriting the custom primary color I made ... I wonder what will happen ??? 🤔🤔🤔
         }
       }
     }
@@ -268,8 +271,8 @@ require('tailwindcss-themer')({
   <body>
     <!-- this has a color of "blue" since that is what the default config specifies -->
     <h1 class="text-primary-500">This is colored as my primary 500 color</h1>
-    <!-- this has a color of "#ef4444" since that is what the tailwind default specifies -->
-    <p class="text-red-500">This is colored as my red 500 color</p>
+    <!-- this has a color of "red" since that is what the default default specifies -->
+    <p class="text-secondary-500">This is colored as my secondary 500 color</p>
   </body>
 </html>
 ```
@@ -284,7 +287,7 @@ require('tailwindcss-themer')({
     <!-- this has a color of "darkblue" since that is what the dark config specifies -->
     <h1 class="text-primary-500">This is colored as my primary 500 color</h1>
     <!-- this has a color of "darkred" since that is what the dark config specifies -->
-    <p class="text-red-500">This is colored as my red 500 color</p>
+    <p class="text-secondary-500">This is colored as my secondary 500 color</p>
   </body>
 </html>
 ```
@@ -298,8 +301,8 @@ require('tailwindcss-themer')({
   <body class="neon">
     <!-- this has a color of "blue" since that is what the default config specifies and the neon theme doesn't overwrite it -->
     <h1 class="text-primary-500">This is colored as my primary 500 color</h1>
-    <!-- this has a color of "#ff0000" since that is what the neon config specifies -->
-    <p class="text-red-500">This is colored as my red 500 color</p>
+    <!-- this has a color of "#90A040" since that is what the neon config specifies -->
+    <p class="text-secondary-500">This is colored as my secondary 500 color</p>
   </body>
 </html>
 ```

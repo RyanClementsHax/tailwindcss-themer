@@ -6,11 +6,18 @@
     <link href="dist/output.css" rel="stylesheet" />
   </head>
   <body>
-    <h1 class="text-primary">Hello world!</h1>
-    <button
-      onclick="document.querySelector('body').classList.toggle('my-theme')"
-    >
-      Change theme
+    <h1 class="text-primary-500">This is colored as my primary 500 color</h1>
+    <p class="text-secondary-500">This is colored as my secondary 500 color</p>
+    <button onclick="document.querySelector('body').className=''">
+      Change theme to default
+    </button>
+    <br />
+    <button onclick="document.querySelector('body').className='dark'">
+      Change theme to dark
+    </button>
+    <br />
+    <button onclick="document.querySelector('body').className='neon'">
+      Change theme to neon
     </button>
   </body>
 </html>

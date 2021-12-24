@@ -8,24 +8,43 @@ module.exports = {
   plugins: [
     require('tailwindcss-themer')({
       defaultTheme: {
-        // put the default values of any config you want themed
-        // just as if you were to extend tailwind's theme like normal https://tailwindcss.com/docs/theme#extending-the-default-theme
         extend: {
-          // colors is used here for demonstration purposes
           colors: {
-            primary: 'red'
+            primary: {
+              // here I'm specifying a custom default
+              500: 'blue'
+            },
+            secondary: {
+              500: 'red'
+            }
           }
         }
       },
       themes: [
         {
-          // name your theme anything that could be a valid css selector
-          name: 'my-theme',
-          // put any overrides your theme has here
-          // just as if you were to extend tailwind's theme like normal https://tailwindcss.com/docs/theme#extending-the-default-theme
+          name: 'dark',
           extend: {
             colors: {
-              primary: 'blue'
+              // here I'm overriding a custom default
+              secondary: {
+                500: 'darkred'
+              },
+              // here I'm overriding a custom default too
+              primary: {
+                500: 'darkblue'
+              }
+            }
+          }
+        },
+        {
+          name: 'neon',
+          extend: {
+            colors: {
+              secondary: {
+                // here I'm overwriting a custom default again
+                500: '#90A040' // as red as it gets
+              }
+              // im not overwriting the custom primary color I made ... I wonder what will happen ??? 🤔🤔🤔
             }
           }
         }
