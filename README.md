@@ -46,6 +46,7 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
 - [Config](#config)
   - [This plugin's config overwrites what is in the normal tailwind config](#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config)
   - [Extend](#extend)
+    - [Valid primitives](#valid-primitives)
     - [DEFAULT key](#default-key)
       - [Shorthand](#shorthand)
       - [Gotcha's](#gotchas)
@@ -53,6 +54,8 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
     - [Config mismatches](#config-mismatches)
     - [Referencing tailwind's default theme](#referencing-tailwinds-default-theme)
     - [Overwriting tailwind defaults](#overwriting-tailwind-defaults)
+- [Enabling your theme](#enabling-your-theme)
+  - [SSR](#ssr)
 - [Common problems](#common-problems)
 - [The generated css is missing classes and variables](#the-generated-css-is-missing-classes-and-variables)
 - [Want to suggest additional features?](#want-to-suggest-additional-features)
@@ -656,6 +659,7 @@ require('tailwindcss-themer')({
       - This uniquely identifies a theme from all other themes
       - This must be a valid css selector
       - The value given here is the name of the class you add to enable the theme
+      - Avoid naming a theme `dark` since this conflicts with the dark variant generated automatically by tailwind
     - `extend` (**Required**)
       - This takes an object representing a [tailwind extension](https://tailwindcss.com/docs/theme#extending-the-default-theme)
       - Anything you can express in a tailwind extension, you can put here
@@ -881,6 +885,79 @@ You would then use the tailwind classes as normal
 ```
 
 > Notice the only thing that has to change in order to enable a theme is to apply the theme name as a class to the section of the dom you want to apply it to
+
+You can also specify arrays:
+
+```js
+// 👍👍👍
+// ok
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      fontFamily: {
+        title: ['ui-sans-serif', 'system-ui']
+      },
+      someConfig: {
+        foo: [
+          {
+            key: 'value'
+          }
+        ]
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        fontFamily: {
+          title: ['ui-monospace', 'system-ui']
+        },
+        someConfig: {
+          foo: [
+            {
+              key: 'another value'
+            }
+          ]
+        }
+      }
+    }
+  ]
+})
+```
+
+You aren't limited to theming just tailwind config. You can theme plugins too! If it takes in values in the tailwind `extend` object and the plugin can handle css variable interpolations, you can theme it with this plugin.
+
+```js
+// 👍👍👍
+// ok
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      somePluginConfig: {
+        key: 'value1'
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        somePluginConfig: {
+          key: 'value2'
+        }
+      }
+    }
+  ],
+  require('somePlugin')
+})
+```
+
+The `somePlugin` plugin will now receive `var(--some-plugin-config-key)` as a value for `somePluginConfig.key`.
+
+#### Valid primitives
+
+The "leaves of config" (i.e. the actual values that get replaced with css variables) must be strings or numbers. Other primitives like regexes aren't supported. If you have a use case though, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
 
 #### DEFAULT key
 
@@ -1451,6 +1528,14 @@ require('tailwindcss-themer')({
 ```
 
 > There's no reason why the plugin can't automatically plug in the tailwind defaults if overwritten elsewhere in the config. I just haven't built in that feature yet. If you want to see it, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
+
+## Enabling your theme
+
+Right now, the only way to enable a theme, is to apply a class of the name of the theme you want to enable. I'm open to configuring a theme to activate on other conditions like media queries. If you want this, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
+
+### SSR
+
+In order to prevent a [flash of unstyled content](https://css-tricks.com/flash-of-inaccurate-color-theme-fart/), you need to make sure that the class is applied before the first paint. [Josh Comeau writes a great article about this](https://www.joshwcomeau.com/react/dark-mode/)
 
 ## Common problems
 
