@@ -34,6 +34,12 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
   - [Configure your themes](#configure-your-themes)
   - [Use the classes like normal](#use-the-classes-like-normal)
   - [Enable your other theme](#enable-your-other-theme)
+- [How it works](#how-it-works)
+  - [CSS variable generation](#css-variable-generation)
+    - [defaultTheme](#defaulttheme)
+    - [themes](#themes)
+    - [Variants](#variants)
+  - [Naming](#naming)
 - [Colors](#colors)
   - [Opacity](#opacity)
   - [Supported color representations](#supported-color-representations)
@@ -44,8 +50,12 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
       - [Shorthand](#shorthand)
       - [Gotcha's](#gotchas)
     - [Callbacks](#callbacks)
+    - [Config mismatches](#config-mismatches)
     - [Referencing tailwind's default theme](#referencing-tailwinds-default-theme)
     - [Overwriting tailwind defaults](#overwriting-tailwind-defaults)
+- [Common problems](#common-problems)
+- [The generated css is missing classes and variables](#the-generated-css-is-missing-classes-and-variables)
+- [Want to suggest additional features?](#want-to-suggest-additional-features)
 - [Didn't find what you were looking for?](#didnt-find-what-you-were-looking-for)
 
 ## Examples
@@ -162,9 +172,318 @@ You do this by adding a class of the theme's name to whatever you want themed
 </html>
 ```
 
+This plugin doesn't care _how_ you apply the class. That's up to you. All this plugin cares about is that the _class is applied_.
+
+## How it works
+
+This plugin works by generating css variables for all of the configuration you want themed. It also creates variants for each one of your themes.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: 'red'
+      },
+      fontFamily: {
+        title: 'Helvetica'
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        colors: {
+          primary: 'blue'
+        },
+        fontFamily: {
+          title: 'ui-monospace'
+        }
+      }
+    }
+  ]
+})
+```
+
+For example, the above configuration injects the following css into tailwind's [base layer](https://tailwindcss.com/docs/adding-custom-styles#using-css-and-layer).
+
+```css
+/* this is configured by "defaultTheme" */
+:root {
+  --colors-primary: 255, 0, 0;
+  --font-family-title: Helvetica;
+}
+
+/* this is configured by the "my-theme" configuration */
+.my-theme {
+  --colors-primary: 0, 0, 255;
+  --font-family-title: ui-monospace;
+}
+```
+
+> Notice how the css variable for the color we specified is broken up into rgb values. We need to do this to support opacity modifiers. See [Opacity](#opacity) for more details.
+
+Now, classes like `text-primary` and `font-title` are generated like the following:
+
+```css
+.font-title {
+  font-family: var(--font-family-title);
+}
+
+.text-primary {
+  --tw-text-opacity: 1;
+  color: rgba(var(--colors-primary), var(--tw-text-opacity));
+}
+```
+
+For comparison, this is what those classes looked like before without theming:
+
+```css
+.font-title {
+  font-family: Helvetica;
+}
+
+.text-primary {
+  --tw-text-opacity: 1;
+  color: rgb(255 0 0 1 / var(--tw-text-opacity));
+}
+```
+
+This plugin adds variants for each one of your themes, should you need them when applying classes.
+
+Taking, again, the above configuration as an example, the `my-theme` variant is generated for `my-theme`. So now you can use classes like `my-theme:font-title` which will enable the classes only when the theme is enabled. The generated css for this example is the following:
+
+```css
+.my-theme .my-theme\:font-title {
+  font-family: var(--font-family-title);
+}
+```
+
+### CSS variable generation
+
+All css variables are injected in tailwind's [base layer](https://tailwindcss.com/docs/adding-custom-styles#using-css-and-layer).
+
+#### defaultTheme
+
+All of the configuration in the `defaultTheme` config generates css variables scoped to `:root`.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: 'red'
+      },
+      fontFamily: {
+        title: 'Helvetica'
+      }
+    }
+  }
+  // ...
+})
+```
+
+For example the above `defaultTheme` config generates the following css variables in the `:root` scope.
+
+```css
+/* this is configured by "defaultTheme" */
+:root {
+  --colors-primary: 255, 0, 0;
+  --font-family-title: Helvetica;
+}
+```
+
+#### themes
+
+For each theme specified in the `themes` section of the config, its config generates css variables scoped to a class of the `name` field.
+
+```js
+require('tailwindcss-themer')({
+  // ...
+  themes: [
+    {
+      name: 'my-theme-1',
+      extend: {
+        colors: {
+          primary: 'red'
+        },
+        fontFamily: {
+          title: 'Helvetica'
+        }
+      }
+    },
+    {
+      name: 'my-theme-2',
+      extend: {
+        colors: {
+          primary: 'blue'
+        },
+        fontFamily: {
+          title: 'ui-monospace'
+        }
+      }
+    }
+  ]
+})
+```
+
+For example, the above config in the `themes` section of the config generates the following css:
+
+```css
+.my-theme-1 {
+  --colors-primary: 255, 0, 0;
+  --font-family-title: Helvetica;
+}
+
+.my-theme-2 {
+  --colors-primary: 0, 0, 255;
+  --font-family-title: ui-monospace;
+}
+```
+
+#### Variants
+
+As specified above, variants are generated for every named theme you make. This is so you can use them as class modifiers to enable certain styles only when that theme is enabled. It works like [hover and focus variants](https://tailwindcss.com/docs/font-family#hover-focus-and-other-states), but activated with the theme. This lets you write classes like `my-theme:rounded-sm` if you need fine grained control to apply some styles when a theme is activated and you can't cleanly express what you want with css variables alone.
+
+Do note that because tailwind automatically adds the `dark` variant, if you name one of your themes `dark`, the variant this plugin creates for it will conflict with what tailwind automatically creates for you. It is recommended that you name your dark theme something else like `darkTheme` to avoid the conflict.
+
+### Naming
+
+As you probably could tell from above, the names of the generated css variables are the [kebab-cased](https://www.theserverside.com/definition/Kebab-case) version of the variable's path on the config object.
+
+Naming works the same for all theme configs (default theme and named themes).
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        brand1: {
+          primary: {
+            500: 'red'
+          }
+        }
+      }
+    }
+  }
+  // ...
+})
+```
+
+The above config would generate a css variable of the name `--colors-brand1-primary-500`.
+
+[camelCased](https://en.wikipedia.org/wiki/Camel_case) fields are automatically converted to [kebab-case](https://www.theserverside.com/definition/Kebab-case) even though the classes that are generated remain [camelCased](https://en.wikipedia.org/wiki/Camel_case) and [camelCasing](https://en.wikipedia.org/wiki/Camel_case) is valid in css variable names. This is a limitation in tailwind. I'm not sure why it converts all css variables to [kebab-case](https://www.theserverside.com/definition/Kebab-case), but it does.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        myBrand: {
+          primary: {
+            500: 'red'
+          }
+        }
+      }
+    }
+  }
+  // ...
+})
+```
+
+The above config generates the following css variable:
+
+```css
+:root {
+  // myBrand was converted to my-brand
+  --colors-my-brand-primary-500: 255, 0, 0;
+}
+```
+
+The class that is generated remains unaffected though.
+
+```css
+.text-myBrand-primary-500 {
+  --tw-text-opacity: 1;
+  color: rgba(var(--colors-my-brand-primary-500), var(--tw-text-opacity));
+}
+```
+
+If you use `DEFAULT` anywhere on a path to a variable, it is dropped off of the generated css variable name.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        brand1: {
+          DEFAULT: {
+            primary: {
+              DEFAULT: 'red'
+            }
+          }
+        }
+      }
+    }
+  }
+  // ...
+})
+```
+
+The above config would generate a css variable of the name `--colors-brand1-primary`.
+
+Because of the way `DEFAULT` works, it is possible to have naming collisions. It is on the user of this plugin to ensure that none happen.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        brand1: {
+          DEFAULT: {
+            primary: {
+              DEFAULT: 'red'
+            }
+          },
+          primary: 'blue'
+        }
+      }
+    }
+  }
+  // ...
+})
+```
+
+`colors.brand1.DEFAULT.primary.DEFAULT` and `colors.brand1.primary` both would generate a css variable named `--colors-brand1-primary`. See [Default key](#default-key) for more details.
+
+If anywhere in the path, an array is encountered, the index is used in the generated css variable name.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      fontFamily: {
+        title: ['ui-sans-serif', 'system-ui']
+      }
+    }
+  }
+  // ...
+})
+```
+
+The example above creates the following css variables:
+
+```css
+:root {
+  --font-family-title-0: ui-sans-serif;
+  --font-family-title-1: system-ui;
+}
+```
+
 ## Colors
 
-The way color values are handled is particular since colors need to work with opacity modifiers like `bg-primary/75`. See [Opacity](#opacity) for details.
+The way color values are handled is particular since colors need to work with opacity modifiers like `bg-primary/75`. They are parsed into individual rgb channels with their alpha value dropped. See [Opacity](#opacity) for details.
 
 Any value that can be parsed as a color will be treated as a color. This holds for any value found anywhere on the theme object.
 
@@ -188,6 +507,17 @@ require('tailwindcss-themer')({
 })
 ```
 
+The above generates the following css variables:
+
+```css
+:root {
+  --colors-primary: 255, 255, 255;
+  --foo-bar-bazz: 35, 0, 75;
+}
+```
+
+> As you can see, the way we need to parse colors into individual channels like this makes it hard to tell what color is being represented. It doesn't work well with tooling like the vscode [Color Highlight](https://marketplace.visualstudio.com/items?itemName=naumovs.color-highlight) extension. This was a motivating factor in creating this plugin. `primary: '#fff' is easier to read and works better with tooling.
+
 ### Opacity
 
 When [theming color values in tailwindcss](https://tailwindcss.com/docs/customizing-colors#using-css-variables), you cannot naively theme them because they depend on opacity custom properties. [This video](https://www.youtube.com/watch?v=MAtaT8BZEAo) goes further into why.
@@ -210,6 +540,37 @@ require('tailwindcss-themer')({
 })
 ```
 
+The above config generates the following css variables:
+
+```css
+:root {
+  --colors-primary: 34, 51, 255;
+  --colors-secondary: 153, 153, 153;
+}
+```
+
+Now classes like `text-primary` can work with opacity modifiers like `text-primary/75` and classes like `text-opacity-50`
+
+```css
+.text-primary {
+  --tw-text-opacity: 1;
+  color: rgba(var(--colors-primary), var(--tw-text-opacity));
+}
+
+.text-secondary {
+  --tw-text-opacity: 1;
+  color: rgba(var(--colors-secondary), var(--tw-text-opacity));
+}
+
+.text-primary\/75 {
+  color: rgba(var(--colors-primary), 0.75);
+}
+
+.text-opacity-50 {
+  --tw-text-opacity: 0.5;
+}
+```
+
 ### Supported color representations
 
 You can use any color representation that can be parsed by [color](https://www.npmjs.com/package/color). Alpha channels are stripped though to support opacity. See [Opacity](#opacity) for details.
@@ -222,13 +583,26 @@ require('tailwindcss-themer')({
         primary: '#f3f', // fine
         secondary: 'rgb(0, 21, 742)', // also fine
         tertiary: 'hsl(250, 23%, 79%)', // yup
-        quarternary: 'hsla(132, 67%, 39%, 0.66)' // also ok, but the alpha value will be stripped (thus the value will functionally be hsl(132, 67%, 39%))
+        quarternary: 'hsla(132, 67%, 39%, 0.66)', // also ok, but the alpha value will be stripped (thus the value will functionally be hsl(132, 67%, 39%))
+        quinary: 'blue' // also ok
         // etc...
       }
     }
   }
   // ...
 })
+```
+
+All of the colors get parsed down to rgb channels.
+
+```css
+:root {
+  --colors-primary: 255, 51, 255;
+  --colors-secondary: 0, 21, 255;
+  --colors-tertiary: 193.239, 189.1335, 213.7665;
+  --colors-quarternary: 32.81850000000001, 166.0815, 59.4711; /* notice how the alpha value is dropped */
+  --colors-quinary: 0, 0, 255;
+}
 ```
 
 ## Config
@@ -318,7 +692,7 @@ module.exports = {
 }
 ```
 
-`primary: 'blue'` gets clobbered by anything overriting it in the plugin's config. In this case it is when the default theme specifies `primary: 'red'`.
+`primary: 'blue'` gets clobbered by anything overriting it in the plugin's config. In this case it is when the default theme specifies `primary: 'red'`. This is because the plugin needs to replace `colors.primary` with `var(--colors-primary)` in order to get theming to work.
 
 If you want to use the default tailwind config in your theme configuration, see [Overwriting tailwind defaults](#overwriting-tailwind-defaults) and [Referencing tailwind's default theme](#referencing-tailwinds-default-theme).
 
@@ -817,6 +1191,173 @@ require('tailwindcss-themer')({
 })
 ```
 
+#### Config mismatches
+
+The configs must be "mergable" in order for the underlying css variables to be matched up properly for theming to work.
+
+The following are examples of unmergable config:
+
+```js
+🚨🚨🚨
+// dont do
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      myConfig: {
+        field: 'value'
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        // I use an array for this value here, but an object for the default theme
+        // The plugin can't handle this
+        myConfig: [
+          {
+            somethingElse: 'value'
+          }
+        ]
+      }
+    }
+  ]
+})
+```
+
+```js
+// 🚨🚨🚨
+// dont do
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      myConfig: 'value'
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        // I use an array for this value here, but a string for the default theme
+        // The plugin can't handle this
+        myConfig: [
+          {
+            field: 'value'
+          }
+        ]
+      }
+    }
+  ]
+})
+```
+
+Return values from functions are also checked.
+
+The following is fine:
+
+```js
+// 👍👍👍
+// ok
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      myConfig: ({ theme }) => ({
+        field: 'value'
+      })
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme-1',
+      extend: {
+        myConfig: {
+          somethingElse: 'value'
+        }
+      }
+    },
+    {
+      name: 'my-theme-2',
+      extend: {
+        myConfig: ({ theme }) => ({
+          another: 'another'
+        })
+      }
+    }
+  ]
+})
+```
+
+The following is not fine:
+
+```js
+// 🚨🚨🚨
+// dont do
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      myConfig: ({ theme }) => [theme('hello')]
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme-1',
+      extend: {
+        // we have an object here
+        // but the default config and 'my-theme-2' functions return arrays
+        myConfig: {
+          thing: 'var'
+        }
+      }
+    },
+    {
+      name: 'my-theme-2',
+      extend: {
+        // we return an array from this function
+        // it can't be merged with what the my-theme-1 specifies
+        myConfig: ({ theme }) => [theme('something')]
+      }
+    }
+  ]
+})
+```
+
+Supported primitives like numbers and strings are mergable with objects because they're short hand for objects with a `DEFAULT` key (see [Shorthand](#shorthand) for more detail).
+
+The following is fine:
+
+```js
+// 👍👍👍
+// ok
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      myConfig: {
+        field: 'value'
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme-1',
+      extend: {
+        myConfig: 'some default value'
+        // the above is expanded to
+        // {
+        //    DEFAULT: 'some default value'
+        // }
+        // so its mergable with other objects
+      }
+    },
+    {
+      name: 'my-theme-2',
+      extend: {
+        myConfig: ({ theme }) => 'something'
+      }
+    }
+  ]
+})
+```
+
 #### Referencing tailwind's default theme
 
 If you need to reference the default theme, [import it](https://tailwindcss.com/docs/theme#referencing-the-default-theme), then use it in your theme configs.
@@ -910,6 +1451,18 @@ require('tailwindcss-themer')({
 ```
 
 > There's no reason why the plugin can't automatically plug in the tailwind defaults if overwritten elsewhere in the config. I just haven't built in that feature yet. If you want to see it, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
+
+## Common problems
+
+## The generated css is missing classes and variables
+
+Those styles are probably getting purged which happens by default in tailwindcss. Read the [tailwind docs on how to control what gets purged and what doesn't](https://tailwindcss.com/docs/content-configuration) for details on how this works.
+
+If you're expecting the `defaultTheme` to automatically contain tailwind defaults implicitly, read the section on [Overwriting tailwind defaults](#overwriting-tailwind-defaults) for how to do this properly.
+
+## Want to suggest additional features?
+
+I'm open to discussion. Feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
 
 ## Didn't find what you were looking for?
 
