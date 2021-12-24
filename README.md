@@ -15,7 +15,7 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
 
 **🌑 Trivial dark theme**: Because dark theme is _just another theme_ implementing dark theme is as easy as naming the theme you create as "dark", no special config
 
-**🤖 Automatically handles colors and opacity**: Using tailwind with css variables can get [tricky with colors](https://www.youtube.com/watch?v=MAtaT8BZEAo), but this plugin handles all of that for you!
+**🤖 Automatically handles colors and opacity**: Using [tailwind with css variables](https://tailwindcss.com/docs/customizing-colors#using-css-variables) can get [tricky with colors](https://www.youtube.com/watch?v=MAtaT8BZEAo), but this plugin handles all of that for you!
 
 **😅 Easy theme management**: A simple, declarative api that lets you easily create and modify themes
 
@@ -34,8 +34,19 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
   - [Configure your themes](#configure-your-themes)
   - [Use the classes like normal](#use-the-classes-like-normal)
   - [Enable your other theme](#enable-your-other-theme)
+- [Colors](#colors)
+  - [Opacity](#opacity)
+  - [Supported color representations](#supported-color-representations)
 - [Config](#config)
+  - [This plugin's config overwrites what is in the normal tailwind config](#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config)
   - [Extend](#extend)
+    - [DEFAULT key](#default-key)
+      - [Shorthand](#shorthand)
+      - [Gotcha's](#gotchas)
+    - [Callbacks](#callbacks)
+    - [Referencing tailwind's default theme](#referencing-tailwinds-default-theme)
+    - [Overwriting tailwind defaults](#overwriting-tailwind-defaults)
+- [Didn't find what you were looking for?](#didnt-find-what-you-were-looking-for)
 
 ## Examples
 
@@ -151,6 +162,75 @@ You do this by adding a class of the theme's name to whatever you want themed
 </html>
 ```
 
+## Colors
+
+The way color values are handled is particular since colors need to work with opacity modifiers like `bg-primary/75`. See [Opacity](#opacity) for details.
+
+Any value that can be parsed as a color will be treated as a color. This holds for any value found anywhere on the theme object.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: '#fff' // parsed as a color
+      },
+      foo: {
+        bar: {
+          DEFAULT: {
+            bazz: 'rgb(35, 0, 75)' // also parsed as a color
+          }
+        }
+      }
+    }
+  }
+  // ...
+})
+```
+
+### Opacity
+
+When [theming color values in tailwindcss](https://tailwindcss.com/docs/customizing-colors#using-css-variables), you cannot naively theme them because they depend on opacity custom properties. [This video](https://www.youtube.com/watch?v=MAtaT8BZEAo) goes further into why.
+
+This plugin takes care of all of that complexity for you under the hood! All you have to do is specify the colors themselves.
+
+```js
+// all colors automatically are configured to work with opacity
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: '#2233ff',
+        secondary: '#999999'
+        // etc...
+      }
+    }
+  }
+  // ...
+})
+```
+
+### Supported color representations
+
+You can use any color representation that can be parsed by [color](https://www.npmjs.com/package/color). Alpha channels are stripped though to support opacity. See [Opacity](#opacity) for details.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: '#f3f', // fine
+        secondary: 'rgb(0, 21, 742)', // also fine
+        tertiary: 'hsl(250, 23%, 79%)', // yup
+        quarternary: 'hsla(132, 67%, 39%, 0.66)' // also ok, but the alpha value will be stripped (thus the value will functionally be hsl(132, 67%, 39%))
+        // etc...
+      }
+    }
+  }
+  // ...
+})
+```
+
 ## Config
 
 ```js
@@ -207,6 +287,41 @@ require('tailwindcss-themer')({
       - Anything you can express in a tailwind extension, you can put here
       - See [extend](#extend) for more details
 
+### This plugin's config overwrites what is in the normal tailwind config
+
+Any config specified in this plugin's config, overwrites what is in the normal tailwind config.
+
+```js
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        // clobbered
+        primary: 'blue'
+      }
+    }
+  },
+  plugins: [
+    require('tailwindcss-themer')({
+      defaultTheme: {
+        extend: {
+          colors: {
+            primary: 'red'
+          }
+        }
+      }
+      // ...
+    })
+    // ...
+  ]
+}
+```
+
+`primary: 'blue'` gets clobbered by anything overriting it in the plugin's config. In this case it is when the default theme specifies `primary: 'red'`.
+
+If you want to use the default tailwind config in your theme configuration, see [Overwriting tailwind defaults](#overwriting-tailwind-defaults) and [Referencing tailwind's default theme](#referencing-tailwinds-default-theme).
+
 ### Extend
 
 - This takes an object representing a [tailwind extension](https://tailwindcss.com/docs/theme#extending-the-default-theme)
@@ -257,7 +372,6 @@ require('tailwindcss-themer')({
         }
       }
     }
-    // ...
   ]
 })
 ```
@@ -393,3 +507,416 @@ You would then use the tailwind classes as normal
 ```
 
 > Notice the only thing that has to change in order to enable a theme is to apply the theme name as a class to the section of the dom you want to apply it to
+
+#### DEFAULT key
+
+Tailwind lets you specify default values for certain configuration.
+
+For example, if you had a palette, but wanted to specify a default value for that palette, you could use the `DEFAULT` key.
+
+```js
+module.exports = {
+  // ...
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          100: /* ... */,
+          200: /* ... */,
+          // ...
+          800: /* ... */,
+          900: /* ... */,
+          DEFAULT: /* ... */
+        }
+      }
+    }
+  }
+}
+```
+
+This will let you use classes like `text-primary`, not just `text-primary-100` or `text-primary-700`. In this case `text-primary` would use whatever color value is specified by the `DEFAULT` key.
+
+Just like tailwind, this plugin's configuration supports that too.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: {
+          100: /* ... */,
+          200: /* ... */,
+          // ...
+          800: /* ... */,
+          900: /* ... */,
+          DEFAULT: /* ... */
+        }
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        colors: {
+          primary: {
+            100: /* ... */,
+            200: /* ... */,
+            // ...
+            800: /* ... */,
+            900: /* ... */,
+            DEFAULT: /* ... */
+          }
+        }
+      }
+    }
+  ]
+})
+```
+
+Styles like `text-primary` will now be themed.
+
+`DEFAULT` doesn't have to be set to a string. It could also be set to other values like objects.
+
+```js
+require('tailwindcss-themer')({
+  // ...
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        colors: {
+          primary: {
+            DEFAULT: {
+              100: '#000111'
+              //...
+            },
+            brand1: {
+              // ...
+            },
+            brand2: {
+              // ...
+            }
+          }
+        }
+      }
+    }
+  ]
+})
+```
+
+This generates classes like `text-primary-100`, `text-primary-brand1-200`, etc.
+
+You can even nest them.
+
+```js
+require('tailwindcss-themer')({
+  // ...
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        colors: {
+          brand1: {
+            DEFAULT: {
+              primary: {
+                DEFAULT: 'red'
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+})
+```
+
+This will generate classess like `text-brand1-primary`.
+
+##### Shorthand
+
+Because of how `DEFAULT` works, you can specify single default values as strings if that is the only value in the object.
+
+The following two extensions are semantically the same.
+
+```js
+require('tailwindcss-themer')({
+  // ...
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        colors: {
+          primary: {
+            DEFAULT: 'red'
+          }
+        }
+      }
+    }
+    // ...
+  ]
+})
+```
+
+```js
+require('tailwindcss-themer')({
+  // ...
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        colors: {
+          primary: 'red'
+        }
+      }
+    }
+    // ...
+  ]
+})
+```
+
+##### Gotcha's
+
+Because of how `DEFAULT` works, it is possible to have naming collisions.
+
+Take the following for an example.
+
+```js
+require('tailwindcss-themer')({
+  // ...
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        colors: {
+          primary: {
+            DEFAULT: {
+              fontColor: 'red'
+            },
+            fontColor: {
+              DEFAULT: 'red'
+            }
+          }
+        }
+      }
+    }
+    // ...
+  ]
+})
+```
+
+`colors.primary.DEFAULT.fontColor` and `colors.primary.fontColor.DEFAULT` both create classes like `text-primary-fontColor`. It is on the consumer of this plugin to make sure these naming collisions don't happen.
+
+#### Callbacks
+
+Tailwind [supports top level callbacks](https://tailwindcss.com/docs/theme#referencing-other-values) for referrencing other values in your config. This plugin supports that too.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      sizes: ({ theme }) => theme('spacing')
+    }
+  },
+  // ...
+  themes: [
+    {
+      name: 'chunky',
+      extend: {
+        // pretend doubleEveryValue is a function defined elsewhere
+        sizes: ({ theme }) => doubleEveryValue(theme('spacing'))
+      }
+    },
+    {
+      name: 'wonky',
+      extend: {
+        // you don't have to use the callback for every definition of your config if used elsewhere
+        // this will be themed just fine with whatever the callbacks return
+        sizes: {
+          1: '20px',
+          2: '2px',
+          3: '7px',
+          4: '50px',
+          5: '15px',
+          6: '34px'
+        }
+      }
+    }
+    // ...
+  ]
+})
+```
+
+Just like tailwind, this plugin doesn't and can't support functions for individual values
+
+```js
+// don't do
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      fill: {
+        // 🚨🚨🚨🚨🚨
+        // can't do this
+        gray: ({ theme }) => theme('colors.gray')
+      }
+    }
+  },
+  // ...
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        fill: {
+          // 🚨🚨🚨🚨🚨
+          // still no
+          gray: ({ theme }) => theme('colors.coolGray')
+        }
+      }
+    }
+  ]
+})
+```
+
+Just like tailwind, it is possible to create infinite loops.
+
+```js
+// don't do
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: ({ theme }) => ({
+        // the lookup of the colors object within the colors object causes an infinite loop
+        primary: theme('colors.red')
+      })
+    }
+  }
+})
+```
+
+In this example, in order for tailwind to resolve the `colors` config, it needs to call your function. Before returning a value, it asks tailwind to grab the `colors.red` config off of the theme. To resolve the `colors` config, it needs to call your function. And there you have it, an infinite loop.
+
+If you need to reference the default theme, [import it](https://tailwindcss.com/docs/theme#referencing-the-default-theme).
+
+If you need to reference other config of yours, break them out into variables.
+
+```js
+const DEFAULT_SIZES = {
+  1: '1px',
+  2: '2px'
+  // ...
+}
+
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      sizes: {
+        base: DEFAULT_SIZES
+      }
+    }
+  }
+})
+```
+
+#### Referencing tailwind's default theme
+
+If you need to reference the default theme, [import it](https://tailwindcss.com/docs/theme#referencing-the-default-theme), then use it in your theme configs.
+
+#### Overwriting tailwind defaults
+
+In order for tailwind defaults to be themed, they need to be specified explicitly in `defaultTheme.extend`. Not doing so breaks the default theme.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      // here we've omitted the colors.red config
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        colors: {
+          red: {
+            // this value works fine when 'my-theme' is enabled
+            // but classes like text-red-500 are broken when the default theme is active
+            500: '#ff0000'
+          }
+        }
+      }
+    }
+  ]
+})
+```
+
+Classes like `text-red-500` works as expected when `my-theme` is enabled, but broken on the default theme since the css variable generated doesn't point to anything (since it isn't specified in the default theme config).
+
+Instead, import the default theme, and reference it in the default theme config.
+
+```js
+const defaultTheme = require('tailwindcss/defaultTheme')
+
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        red: {
+          500: defaultTheme.colors.red[500]
+        }
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        colors: {
+          red: {
+            500: '#ff0000'
+          }
+        }
+      }
+    }
+  ]
+})
+```
+
+To be safe you could reference more of the tailwind default theme in the default theme config. This may come at the cost of performance (haven't checked).
+
+```js
+const defaultTheme = require('tailwindcss/defaultTheme')
+
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: defaultTheme.colors
+    }
+  },
+  themes: [
+    {
+      name: 'my-theme',
+      extend: {
+        colors: {
+          red: {
+            // this value works fine when 'my-theme' is enabled
+            // but classes like text-red-500 are broken when the default theme is active
+            500: '#ff0000'
+          }
+        }
+      }
+    }
+  ]
+})
+```
+
+> There's no reason why the plugin can't automatically plug in the tailwind defaults if overwritten elsewhere in the config. I just haven't built in that feature yet. If you want to see it, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
+
+## Didn't find what you were looking for?
+
+Was this documentation insufficient for you?
+
+Was it confusing?
+
+Was it ... dare I say ... inaccurate?
+
+If any of the above describes your feelings of this documentation. Feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
