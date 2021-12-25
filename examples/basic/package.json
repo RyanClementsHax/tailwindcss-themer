@@ -14,6 +14,6 @@
     "concurrently": "^6.5.1",
     "serve": "^13.0.2",
     "tailwindcss": "^3.0.7",
-    "tailwindcss-themer": "^0.0.5"
+    "tailwindcss-themer": "latest"
   }
 }

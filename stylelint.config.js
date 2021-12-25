@@ -5,6 +5,9 @@ module.exports = {
     'stylelint-prettier/recommended'
   ],
   rules: {
+    'selector-class-pattern': null,
+    'keyframes-name-pattern': null,
+    'font-family-name-quotes': null,
     'scss/at-rule-no-unknown': [
       true,
       {
