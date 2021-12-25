@@ -43,6 +43,7 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
 - [Documentation](#documentation)
 - [Enabling your theme](#enabling-your-theme)
   - [SSR](#ssr)
+  - [Simultaneous themes](#simultaneous-themes)
 - [Typescript](#typescript)
 - [Common problems](#common-problems)
 - [The generated css is missing classes and variables](#the-generated-css-is-missing-classes-and-variables)
@@ -486,6 +487,63 @@ Right now, the only way to enable a theme, is to apply a class of the name of th
 ### SSR
 
 In order to prevent a [flash of unstyled content](https://css-tricks.com/flash-of-inaccurate-color-theme-fart/), you need to make sure that the class is applied before the first paint. [Josh Comeau writes a great article about this](https://www.joshwcomeau.com/react/dark-mode/).
+
+### Simultaneous themes
+
+Because this plugin enables themes based on existance of classes, it is possible to have multiple themes enabled at the same time. They can be overlapping or not. Its all up to how you apply the classes!
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body>
+    <div class="theme1">
+      <!-- everything in this div will have theme1 styles -->
+    </div>
+    <div class="theme2">
+      <!-- everything in this div will have theme2 styles -->
+    </div>
+    <div class="theme1 theme2">
+      <!-- everything in this div will have both styles applied -->
+      <!-- which one has higher specificity is determined by the order of the themes in the "themes" section of the config -->
+    </div>
+  </body>
+</html>
+```
+
+If you apply two themes at the same time, the specificity is determined by the order of the themes in the `themes` array of the config. Later defined themes override earlier configs i.e. theme in index 1 takes precedence over theme in index 0.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: 'red'
+      },
+      fontFamily: {
+        title: 'Helvetica'
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'theme1',
+      extend: {
+        // ...
+      }
+    },
+    {
+      // this theme will win out over theme1 if an element has both theme1 and theme2 clases on it because it is defined later in the "themes" array
+      name: 'theme2',
+      extend: {
+        // ...
+      }
+    }
+  ]
+})
+```
 
 ## Typescript
 
