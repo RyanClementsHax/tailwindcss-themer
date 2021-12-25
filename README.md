@@ -56,6 +56,7 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
     - [Overwriting tailwind defaults](#overwriting-tailwind-defaults)
 - [Enabling your theme](#enabling-your-theme)
   - [SSR](#ssr)
+- [Typescript](#typescript)
 - [Common problems](#common-problems)
 - [The generated css is missing classes and variables](#the-generated-css-is-missing-classes-and-variables)
 - [Want to suggest additional features?](#want-to-suggest-additional-features)
@@ -64,6 +65,8 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
 ## Examples
 
 - Basic - [Source](./examples/basic/README.md)
+- Create React App - [Source](./examples/create-react-app/README.md)
+- Create React App with Typescript - [Source](./examples/create-react-app-typescript/README.md)
 
 ## Getting Started
 
@@ -1535,7 +1538,13 @@ Right now, the only way to enable a theme, is to apply a class of the name of th
 
 ### SSR
 
-In order to prevent a [flash of unstyled content](https://css-tricks.com/flash-of-inaccurate-color-theme-fart/), you need to make sure that the class is applied before the first paint. [Josh Comeau writes a great article about this](https://www.joshwcomeau.com/react/dark-mode/)
+In order to prevent a [flash of unstyled content](https://css-tricks.com/flash-of-inaccurate-color-theme-fart/), you need to make sure that the class is applied before the first paint. [Josh Comeau writes a great article about this](https://www.joshwcomeau.com/react/dark-mode/).
+
+## Typescript
+
+This plugin comes with types. In order to take advantage of them, make sure the files that use this plugin are type checked. For most use cases, this means making sure your `tailwind.config.js` file is type checked. The easiest way to do this is by adding `//@ts-check` at the top of the file. See the [typescript example](examples/create-react-app-typescript/README.md) for a reference implementation.
+
+You may need to bring in types for anything else you import though. e.g. if you import anything from tailwind, you should install `@types/tailwindcss` (e.g. `yarn add -D @types/tailwindcss`). Another option is to create a declaration file that contains module definitions for anything you import. The [typescript docs](https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html) go further into this.
 
 ## Common problems
 
