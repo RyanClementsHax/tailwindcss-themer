@@ -39,7 +39,7 @@ const resolveThemeExtensionAsCustomPropsRecursionHelper = (
     ? (() => {
         if (pathSteps.length === 1) {
           return resolveThemeExtensionAsCustomPropsRecursionHelper(
-            themeExtensionValue(helpers.theme),
+            themeExtensionValue({ theme: helpers.theme }),
             helpers,
             pathSteps
           )

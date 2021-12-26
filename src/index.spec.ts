@@ -115,7 +115,7 @@ describe('multiThemePlugin', () => {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-expect-error
               colors: {
-                primary: (theme: Theme) => theme('thing')
+                primary: ({ theme }: { theme: Theme }) => theme('thing')
               }
             }
           }

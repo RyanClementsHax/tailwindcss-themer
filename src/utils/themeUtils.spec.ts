@@ -6,11 +6,13 @@ import { TailwindExtension, ExtensionValue, Theme, ThemeCb } from '../config'
 import { Helpers } from '../plugin'
 
 describe('themeUtils', () => {
-  let theme: Theme
+  let callbackObj: { theme: Theme }
   let opacityConfig: { opacityVariable: string; opacityValue: string }
 
   beforeEach(() => {
-    theme = jest.fn(x => x)
+    callbackObj = {
+      theme: jest.fn(x => x)
+    }
     opacityConfig = {
       opacityValue: 'opacityValue',
       opacityVariable: '--opacity-variable'
@@ -50,7 +52,7 @@ describe('themeUtils', () => {
         ...acc,
         [key]:
           typeof value === 'function'
-            ? (value as ThemeCb<ExtensionValue>)(theme)
+            ? (value as ThemeCb<ExtensionValue>)(callbackObj)
             : value
       }),
       {}
@@ -492,7 +494,7 @@ describe('themeUtils', () => {
               {
                 name: 'first',
                 extend: {
-                  colors: theme => ({
+                  colors: ({ theme }) => ({
                     primary: theme('some.key')
                   })
                 }
@@ -500,7 +502,7 @@ describe('themeUtils', () => {
               {
                 name: 'second',
                 extend: {
-                  somethingElse: theme => ({
+                  somethingElse: ({ theme }) => ({
                     foo: theme('some.different.key')
                   })
                 }
@@ -524,7 +526,7 @@ describe('themeUtils', () => {
               {
                 name: 'first',
                 extend: {
-                  colors: theme => ({
+                  colors: ({ theme }) => ({
                     primary: theme('some.key')
                   })
                 }
@@ -532,7 +534,7 @@ describe('themeUtils', () => {
               {
                 name: 'second',
                 extend: {
-                  colors: theme => ({
+                  colors: ({ theme }) => ({
                     secondary: theme('some.different.key')
                   })
                 }
@@ -562,7 +564,7 @@ describe('themeUtils', () => {
               {
                 name: 'second',
                 extend: {
-                  colors: theme => ({
+                  colors: ({ theme }) => ({
                     secondary: theme('some.different.key')
                   })
                 }
@@ -592,7 +594,7 @@ describe('themeUtils', () => {
               {
                 name: 'second',
                 extend: {
-                  colors: theme => theme('some.other.key')
+                  colors: ({ theme }) => theme('some.other.key')
                 }
               }
             ])
@@ -607,7 +609,7 @@ describe('themeUtils', () => {
               {
                 name: 'first',
                 extend: {
-                  colors: theme => ({
+                  colors: ({ theme }) => ({
                     primary: theme('first')
                   })
                 }
@@ -615,7 +617,7 @@ describe('themeUtils', () => {
               {
                 name: 'second',
                 extend: {
-                  colors: theme => theme('some.other.key')
+                  colors: ({ theme }) => theme('some.other.key')
                 }
               }
             ])
@@ -642,7 +644,7 @@ describe('themeUtils', () => {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //@ts-expect-error
                 foo: {
-                  bar: (theme: Theme) => ({
+                  bar: ({ theme }: { theme: Theme }) => ({
                     primary: theme('some.key')
                   })
                 }
@@ -862,7 +864,7 @@ describe('themeUtils', () => {
         expect(
           resolveThemeExtensionAsCustomProps(
             {
-              colors: theme => ({
+              colors: ({ theme }) => ({
                 primary: theme('some.key')
               })
             },
@@ -880,7 +882,7 @@ describe('themeUtils', () => {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-expect-error
               foo: {
-                bar: (theme: Theme) => ({
+                bar: ({ theme }: { theme: Theme }) => ({
                   primary: theme('some.key')
                 })
               }

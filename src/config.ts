@@ -19,7 +19,7 @@ export type ExtensionValue =
   | ExtensionValue[]
 
 export type Theme = (key: string) => any
-export type ThemeCb<T> = (theme: Theme) => T
+export type ThemeCb<T> = ({ theme }: { theme: Theme }) => T
 export type WithThemeCb<T> = T | ThemeCb<T>
 
 export type TailwindExtension = WithExtensions<

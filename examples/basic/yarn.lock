@@ -1172,10 +1172,8 @@ supports-color@^8.1.0:
   dependencies:
     has-flag "^4.0.0"
 
-tailwindcss-themer@latest:
-  version "0.0.5"
-  resolved "https://registry.npmjs.org/tailwindcss-themer/-/tailwindcss-themer-0.0.5.tgz"
-  integrity sha512-VowSrLY92pR40etl1XCqNYdrKrqcv/5FOt2+lHInIv9UmDocSwCqZ/QDxaTt5p+bjSV4McCoNfoP4Mz0FD0lSg==
+"tailwindcss-themer@file:../..":
+  version "0.0.0-development"
   dependencies:
     color "^4.1.0"
     just-kebab-case "^4.0.1"

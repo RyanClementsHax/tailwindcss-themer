@@ -6,4 +6,4 @@ This is a basic example to demonstrate `tailwindcss-themer`
 
 `yarn install`
 
-`yarn dev`
+`yarn start`
