@@ -48,7 +48,9 @@ describe('multiThemePlugin', () => {
       ]) {
         expect(helpers.addVariant).toHaveBeenCalledWith(
           themeName === defaultThemeName ? 'defaultTheme' : themeName,
-          `.escaped-${themeName} &`
+          `.escaped-${
+            themeName === defaultThemeName ? 'defaultTheme' : themeName
+          } &`
         )
       }
     })

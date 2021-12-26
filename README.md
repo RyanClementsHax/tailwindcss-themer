@@ -13,6 +13,8 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
 
 **🍨 Unlimited themes**: You can have as many themes as you want! This plugin doesn't care!
 
+**💫 Automatic variants**: Automatically generate variants for all of your themes (i.e. use classes like `my-theme:font-black`) to enable classes only when certain themes active.
+
 **🌑 Trivial dark theme**: Because dark theme is _just another theme_ implementing dark theme is as easy as naming the theme you create as "dark", no special config
 
 **🤖 Automatically handles colors and opacity**: Using [tailwind with css variables](https://tailwindcss.com/docs/customizing-colors#using-css-variables) can get [tricky with colors](https://www.youtube.com/watch?v=MAtaT8BZEAo), but this plugin handles all of that for you!
@@ -34,6 +36,7 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
   - [Configure your themes](#configure-your-themes)
   - [Use the classes like normal](#use-the-classes-like-normal)
   - [Enable your other theme](#enable-your-other-theme)
+  - [Apply variants if you want](#apply-variants-if-you-want)
 - [How it works](#how-it-works)
   - [CSS variable generation](#css-variable-generation)
     - [defaultTheme](#defaulttheme)
@@ -167,6 +170,17 @@ You do this by adding a class of the theme's name to whatever you want themed. S
 ```
 
 This plugin doesn't care _how_ you apply the class. That's up to you. All this plugin cares about is that the _class is applied_.
+
+### Apply variants if you want
+
+If for some reason you need to apply classes only when certain themes are active and you can't express what you want via the normal theming process shown, you can use the automatically generated variants for each of your themes!
+
+```html
+<!-- this class will only activate when the "my-theme" class is active -->
+<h1 class="my-theme:font-bold">Hello world!</h1>
+```
+
+See [Variants](#variants) for more details.
 
 ## How it works
 
@@ -338,9 +352,51 @@ For example, the above config in the `themes` section of the config generates th
 
 #### Variants
 
-As specified above, variants are generated for every named theme you make. This is so you can use them as class modifiers to enable certain styles only when that theme is enabled. It works like [hover and focus variants](https://tailwindcss.com/docs/font-family#hover-focus-and-other-states), but activated with the theme. This lets you write classes like `my-theme:rounded-sm` if you need fine grained control to apply some styles when a theme is activated and you can't cleanly express what you want with css variables alone.
+As specified above, variants are generated for every named theme you make, even for the default theme. This is so you can use them as class modifiers to enable certain styles only when that theme is enabled. It works like [hover and focus variants](https://tailwindcss.com/docs/font-family#hover-focus-and-other-states), but activated with the theme. This lets you write classes like `my-theme:rounded-sm` if you need fine grained control to apply some styles when a theme is activated and you can't cleanly express what you want with css variables alone.
 
 Do note that because tailwind automatically adds the `dark` variant, if you name one of your themes `dark`, the variant this plugin creates for it will conflict with what tailwind automatically creates for you. It is recommended that you name your dark theme something else like `darkTheme` to avoid the conflict.
+
+The theme variant generated for the default theme is `defaultTheme` (e.g. `defaultTheme:rounded-sm`), but this now requires that instead of omitting any theme class to enable the default theme, you explicitly declare you are using the default theme by adding the class of `defaultTheme` to the place you want themed (no other feature is affected by this, using the default theme variant is the only feature that requires you to add the `defaultTheme` class to use). This is because I haven't been able to create a css selector that excludes all parents with any of the other theme classes. If you can make one, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body>
+    <!-- this won't work because it doesn't have a parent with the "defaultTheme" class -->
+    <!-- I would love to make this work, but I haven't come up with a css selector that would work -->
+    <h1 class="defaultTheme:font-bold">Hello world!</h1>
+  </body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body class="defaultTheme">
+    <!-- this now works -->
+    <h1 class="defaultTheme:font-bold">Hello world!</h1>
+  </body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body class="neon">
+    <!-- this is turned off because it doesnt have a parent with a class of "defaultTheme" -->
+    <h1 class="defaultTheme:font-bold">Hello world!</h1>
+  </body>
+</html>
+```
 
 ### Naming
 
@@ -482,7 +538,57 @@ The example above creates the following css variables:
 
 ## Enabling your theme
 
-Right now, the only way to enable a theme, is to apply a class of the name of the theme you want to enable. I'm open to configuring a theme to activate on other conditions like media queries. If you want this, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
+By default, the config in the `defaultTheme` section of the config will apply (i.e. if no class is applied).
+
+Right now, the only way to enable a named theme is to apply a class of the name of the theme you want to enable. I'm open to configuring a theme to activate on other conditions like media queries. If you want this, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: 'red'
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'darkTheme',
+      extend: {
+        colors: {
+          primary: 'blue'
+        }
+      }
+    }
+  ]
+})
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body>
+    <!-- The default theme config would apply here -->
+    <h1 class="text-primary">Hello world!</h1>
+  </body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body class="darkTheme">
+    <!-- The "darkTheme" config would apply here -->
+    <h1 class="text-primary">Hello world!</h1>
+  </body>
+</html>
+```
 
 ### SSR
 
