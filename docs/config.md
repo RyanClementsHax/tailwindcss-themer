@@ -60,7 +60,7 @@ require('tailwindcss-themer')({
       - This uniquely identifies a theme from all other themes
       - This must be a valid css selector
       - The value given here is the name of the class you add to enable the theme
-      - Avoid naming a theme `dark` since this conflicts with the dark variant generated automatically by tailwind
+      - If you name your theme `dark`, consider setting [darkMode: 'class'](https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually) in your `tailwind.config.js` as to avoid conflicting with the varaint that tailwind generates
     - `extend` (**Required**)
       - This takes an object representing a [tailwind extension](https://tailwindcss.com/docs/theme#extending-the-default-theme)
       - Anything you can express in a tailwind extension, you can put here
