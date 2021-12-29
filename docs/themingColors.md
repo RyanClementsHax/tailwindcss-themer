@@ -1,4 +1,4 @@
-# Colors <!-- omit in toc -->
+# Theming Colors <!-- omit in toc -->
 
 - [Opacity](#opacity)
 - [Supported color representations](#supported-color-representations)

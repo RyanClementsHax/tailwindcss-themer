@@ -9,13 +9,13 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
 
 ## Key Features <!-- omit in toc -->
 
-**🎨 Theme anything**: Anything that extends tailwind's config and can be expressed in css variables is something you can theme with this plugin
+**🎨 Theme anything**: Anything that extends tailwind's config and can be expressed in css variables is something you can theme with this plugin, even other plugins
 
 **🍨 Unlimited themes**: You can have as many themes as you want! This plugin doesn't care!
 
 **💫 Automatic variants**: Automatically generate variants for all of your themes (i.e. use classes like `my-theme:font-black`) to enable classes only when certain themes active.
 
-**🌑 Trivial dark theme**: Because dark theme is _just another theme_ implementing dark theme is as easy as naming the theme you create as "dark", no special config
+**🌑 Trivial dark theme**: Because dark theme is _just another theme_ implementing dark theme is as easy as naming the theme you create as "darkTheme" (or whatever you want), no special config
 
 **🤖 Automatically handles colors and opacity**: Using [tailwind with css variables](https://tailwindcss.com/docs/customizing-colors#using-css-variables) can get [tricky with colors](https://www.youtube.com/watch?v=MAtaT8BZEAo), but this plugin handles all of that for you!
 
@@ -49,7 +49,7 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
   - [Simultaneous themes](#simultaneous-themes)
 - [Typescript](#typescript)
 - [Common problems](#common-problems)
-- [The generated css is missing classes and variables](#the-generated-css-is-missing-classes-and-variables)
+  - [The generated css is missing classes and variables](#the-generated-css-is-missing-classes-and-variables)
 - [Want to suggest additional features?](#want-to-suggest-additional-features)
 - [Didn't find what you were looking for?](#didnt-find-what-you-were-looking-for)
 
@@ -94,7 +94,7 @@ module.exports = {
 
 ### Configure your themes
 
-Pass the plugin a config object representing your theme configuration (see [Config](#config) for details)
+Pass the plugin a config object representing your theme configuration (see [Config](docs/config.md#config) for details)
 
 ```js
 // tailwind.config.js
@@ -230,7 +230,7 @@ For example, the above configuration injects the following css into tailwind's [
 }
 ```
 
-> Notice how the css variable for the color we specified is broken up into rgb values. We need to do this to support opacity modifiers. See [Opacity](#opacity) for more details.
+> Notice how the css variable for the color we specified is broken up into rgb values. We need to do this to support opacity modifiers. See [Opacity](docs/themingColors.md#opacity) for more details.
 
 Now, classes like `text-primary` and `font-title` are generated like the following:
 
@@ -505,7 +505,7 @@ require('tailwindcss-themer')({
 })
 ```
 
-`colors.brand1.DEFAULT.primary.DEFAULT` and `colors.brand1.primary` both would generate a css variable named `--colors-brand1-primary`. See [Default key](#default-key) for more details.
+`colors.brand1.DEFAULT.primary.DEFAULT` and `colors.brand1.primary` both would generate a css variable named `--colors-brand1-primary`. See [Default key](docs/config.md#default-key) for more details.
 
 If anywhere in the path, an array is encountered, the index is used in the generated css variable name.
 
@@ -533,8 +533,8 @@ The example above creates the following css variables:
 
 ## Documentation
 
-- [Config](docs/config.md)
-- [Colors](docs/colors.md)
+- [Config](docs/config.md#config)
+- [Theming Colors](docs/themingColors.md#theming-colors)
 
 ## Enabling your theme
 
@@ -659,11 +659,11 @@ You may need to bring in types for anything else you import though. e.g. if you 
 
 ## Common problems
 
-## The generated css is missing classes and variables
+### The generated css is missing classes and variables
 
 Those styles are probably getting purged which happens by default in tailwindcss. Read the [tailwind docs on how to control what gets purged and what doesn't](https://tailwindcss.com/docs/content-configuration) for details on how this works.
 
-If you're expecting the `defaultTheme` to automatically contain tailwind defaults implicitly, read the section on [Overwriting tailwind defaults](#overwriting-tailwind-defaults) for how to do this properly.
+If you're expecting the `defaultTheme` to automatically contain tailwind defaults implicitly, read the section on [Overwriting tailwind defaults](docs/config.md#overwriting-tailwind-defaults) for how to do this properly.
 
 ## Want to suggest additional features?
 

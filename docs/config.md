@@ -1,6 +1,6 @@
 # Config <!-- omit in toc -->
 
-- [This plugin's config overwrites what is in the normal tailwind config](#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config)
+- [This plugin's config overwrites what is in the normal tailwind config n collision](#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config-n-collision)
 - [Extend](#extend)
   - [Valid primitives](#valid-primitives)
   - [DEFAULT key](#default-key)
@@ -66,9 +66,9 @@ require('tailwindcss-themer')({
       - Anything you can express in a tailwind extension, you can put here
       - See [extend](#extend) for more details
 
-## This plugin's config overwrites what is in the normal tailwind config
+## This plugin's config overwrites what is in the normal tailwind config n collision
 
-Any config specified in this plugin's config, overwrites what is in the normal tailwind config.
+Any config specified in this plugin's config, overwrites what is in the normal tailwind config if there is a collision.
 
 ```js
 // tailwind.config.js
@@ -77,7 +77,9 @@ module.exports = {
     extend: {
       colors: {
         // clobbered
-        primary: 'blue'
+        primary: 'blue',
+        // not clobbered
+        secondary: 'green'
       }
     }
   },
@@ -359,6 +361,8 @@ The `somePlugin` plugin will now receive `var(--some-plugin-config-key)` as a va
 ### Valid primitives
 
 The "leaves of config" (i.e. the actual values that get replaced with css variables) must be strings or numbers. Other primitives like regexes aren't supported. If you have a use case though, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
+
+Anything that can be parsed as a color is handled in a special way. See [Theming Colors](./themingColors.md#theming-colors) for more details.
 
 ### DEFAULT key
 
