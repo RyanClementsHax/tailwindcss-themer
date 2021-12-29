@@ -184,7 +184,9 @@ See [Variants](#variants) for more details.
 
 ## How it works
 
-This plugin works by generating css variables for all of the configuration you want themed. It also creates variants for each one of your themes.
+This plugin works by first creating a custom tailwind extension configured to replace any values you specify with css variables. Then it generates css variables with proper scoping for all of your themes. It also creates variants for each one of your themes as a bonus.
+
+In short it automates [everything you would need to do to do this yourself](https://www.youtube.com/watch?v=MAtaT8BZEAo) plus adds theme variants for you.
 
 ```js
 require('tailwindcss-themer')({
@@ -214,7 +216,37 @@ require('tailwindcss-themer')({
 })
 ```
 
-For example, the above configuration injects the following css into tailwind's [base layer](https://tailwindcss.com/docs/adding-custom-styles#using-css-and-layer).
+For example, the above configuration creates a theme extension equivalent to the following hand written version.
+
+```js
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: ({ opacityVariable, opacityValue }) => {
+          if (opacityValue !== undefined) {
+            return `rgba(var(--colors-primary), ${opacityValue})`
+          }
+          if (opacityVariable !== undefined) {
+            return `rgba(var(--colors-primary), var(${opacityVariable}, 1))`
+          }
+          return `rgb(var(--colors-primary))`
+        }
+      },
+      fontFamily: {
+        title: 'var(--font-family-title)'
+      }
+    }
+  }
+}
+```
+
+> Notice how we needed to set `color.primary` to a callback function. This is to properly handle opacity. See [Opacity](docs/themingColors.md#opacity) for more details.
+> \
+> Because it creates a theme extension for you, this is why it overwrites whatever is in the normal theme extension upon collision. See [This plugin's config overwrites what is in the normal tailwind config n collision](#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config-n-collision) for more details.
+
+It also injects css variables with proper scoping into tailwind's [base layer](https://tailwindcss.com/docs/adding-custom-styles#using-css-and-layer).
 
 ```css
 /* this is configured by "defaultTheme" */
