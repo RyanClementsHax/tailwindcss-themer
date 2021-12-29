@@ -15,7 +15,7 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
 
 **💫 Automatic variants**: Automatically generate variants for all of your themes (i.e. use classes like `my-theme:font-black`) to enable classes only when certain themes active.
 
-**🌑 Trivial dark theme**: Because dark theme is _just another theme_ implementing dark theme is as easy as naming the theme you create as "darkTheme" (or whatever you want), no special config
+**🌑 Trivial dark theme**: Because dark theme is _just another theme_ implementing dark theme is as easy as naming the theme you create as "dark" (or whatever you want), no special config
 
 **🤖 Automatically handles colors and opacity**: Using [tailwind with css variables](https://tailwindcss.com/docs/customizing-colors#using-css-variables) can get [tricky with colors](https://www.youtube.com/watch?v=MAtaT8BZEAo), but this plugin handles all of that for you!
 
@@ -386,7 +386,7 @@ For example, the above config in the `themes` section of the config generates th
 
 As specified above, variants are generated for every named theme you make, even for the default theme. This is so you can use them as class modifiers to enable certain styles only when that theme is enabled. It works like [hover and focus variants](https://tailwindcss.com/docs/font-family#hover-focus-and-other-states), but activated with the theme. This lets you write classes like `my-theme:rounded-sm` if you need fine grained control to apply some styles when a theme is activated and you can't cleanly express what you want with css variables alone.
 
-Do note that because tailwind automatically adds the `dark` variant, if you name one of your themes `dark`, the variant this plugin creates for it will conflict with what tailwind automatically creates for you. It is recommended that you name your dark theme something else like `darkTheme` to avoid the conflict.
+Do note that because tailwind automatically adds the `dark` variant, if you name one of your themes `dark`, the variant this plugin creates for it will conflict with what tailwind automatically creates for you. It is recommended that you name your dark theme something else like `darkTheme` to avoid the conflict or you could set [darkMode: 'class'](https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually) in your `tailwind.config.js`
 
 The theme variant generated for the default theme is `defaultTheme` (e.g. `defaultTheme:rounded-sm`), but this now requires that instead of omitting any theme class to enable the default theme, you explicitly declare you are using the default theme by adding the class of `defaultTheme` to the place you want themed (no other feature is affected by this, using the default theme variant is the only feature that requires you to add the `defaultTheme` class to use). This is because I haven't been able to create a css selector that excludes all parents with any of the other theme classes. If you can make one, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
 
@@ -585,7 +585,7 @@ require('tailwindcss-themer')({
   },
   themes: [
     {
-      name: 'darkTheme',
+      name: 'dark',
       extend: {
         colors: {
           primary: 'blue'
@@ -615,8 +615,8 @@ require('tailwindcss-themer')({
   <head>
     <!-- ... -->
   </head>
-  <body class="darkTheme">
-    <!-- The "darkTheme" config would apply here -->
+  <body class="dark">
+    <!-- The "dark" config would apply here -->
     <h1 class="text-primary">Hello world!</h1>
   </body>
 </html>
