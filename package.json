@@ -29,6 +29,7 @@
   ],
   "scripts": {
     "build": "yarn clean && tsc --project tsconfig.build.json",
+    "watch": "yarn build --watch",
     "clean": "tsc --build --clean",
     "type-check": "tsc --pretty --noEmit",
     "format": "prettier --write",

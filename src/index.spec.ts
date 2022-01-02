@@ -42,15 +42,19 @@ describe('multiThemePlugin', () => {
     it('adds variants for each theme', () => {
       multiThemePlugin(config).handler(helpers)
 
-      for (const themeName of [
+      const themeNames = [
         defaultThemeName,
         ...(config?.themes?.map(x => x.name) ?? [])
-      ]) {
+      ]
+      for (const themeName of themeNames) {
         expect(helpers.addVariant).toHaveBeenCalledWith(
           themeName === defaultThemeName ? 'defaultTheme' : themeName,
-          `.escaped-${
-            themeName === defaultThemeName ? 'defaultTheme' : themeName
-          } &`
+          themeName === defaultThemeName
+            ? `:not(${themeNames
+                .filter(x => x !== defaultThemeName)
+                .map(x => `.escaped-${x}`)
+                .join(', ')}) &`
+            : `.escaped-${themeName} &`
         )
       }
     })

@@ -8,7 +8,7 @@ function App() {
     <div className={'App ' + theme}>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <h1 className="text-3xl font-bold underline text-primary-500">
+        <h1 className="text-3xl font-bold defaultTheme:underline text-primary-500">
           Hello world!
         </h1>
         <p className="text-secondary-500">

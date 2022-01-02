@@ -30,7 +30,12 @@ const addThemeVariants = (
   void themes.map(({ name }) =>
     addVariant(
       name === defaultThemeName ? 'defaultTheme' : name,
-      `.${e(name === defaultThemeName ? 'defaultTheme' : name)} &`
+      name === defaultThemeName
+        ? `:not(${themes
+            .filter(x => x.name !== defaultThemeName)
+            .map(x => `.${e(x.name)}`)
+            .join(', ')}) &`
+        : `.${e(name)} &`
     )
   )
 
