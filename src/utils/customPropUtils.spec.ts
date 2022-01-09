@@ -22,14 +22,14 @@ describe('customPropUtils', () => {
   describe('toCustomPropName', () => {
     it('concats the values as a kebab cased custom prop', () => {
       expect(toCustomPropName(['this', 'that', '0', 'someOtherThing'])).toBe(
-        '--this-that-0-some-other-thing'
+        '--this-that-0-someOtherThing'
       )
     })
 
     it('removes default path steps case insensitvely', () => {
       expect(
         toCustomPropName(['default', 'that', 'DEFAULT', 'someOtherThing'])
-      ).toBe('--that-some-other-thing')
+      ).toBe('--that-someOtherThing')
     })
 
     it('throws when whitespace is encountered', () => {

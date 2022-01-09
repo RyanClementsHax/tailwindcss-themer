@@ -1,5 +1,4 @@
 import { isColor, toRgb, withOpacity } from './colorUtils'
-import kebabCase from 'just-kebab-case'
 
 /**
  * @param value - a custom prop value
@@ -30,7 +29,6 @@ export const toCustomPropName = (valuePath: string[]): string => {
   }
   return `--${valuePath
     .filter(step => step.toLowerCase() !== 'default')
-    .map(kebabCase)
     .join('-')}`
 }
 

@@ -164,9 +164,9 @@ describe('themeUtils', () => {
         },
         veryDifferent: {
           bar: {
-            different: 'var(--very-different-bar-different)'
+            different: 'var(--veryDifferent-bar-different)'
           },
-          thing: 'var(--very-different-thing)'
+          thing: 'var(--veryDifferent-thing)'
         }
       })
     })
@@ -204,18 +204,18 @@ describe('themeUtils', () => {
       ).toEqual({
         myArray1: [
           {
-            thing: 'var(--my-array1-0-thing)'
+            thing: 'var(--myArray1-0-thing)'
           },
           {
-            thing: 'var(--my-array1-1-thing)'
+            thing: 'var(--myArray1-1-thing)'
           }
         ],
         myArray2: [
           {
-            thing: 'var(--my-array2-0-thing)'
+            thing: 'var(--myArray2-0-thing)'
           },
           {
-            thing: 'var(--my-array2-1-thing)'
+            thing: 'var(--myArray2-1-thing)'
           }
         ]
       })
@@ -254,12 +254,12 @@ describe('themeUtils', () => {
       ).toEqual({
         myArray: [
           {
-            thing1: 'var(--my-array-0-thing1)',
-            thing2: 'var(--my-array-0-thing2)'
+            thing1: 'var(--myArray-0-thing1)',
+            thing2: 'var(--myArray-0-thing2)'
           },
           {
-            thing1: 'var(--my-array-1-thing1)',
-            thing2: 'var(--my-array-1-thing2)'
+            thing1: 'var(--myArray-1-thing1)',
+            thing2: 'var(--myArray-1-thing2)'
           }
         ]
       })
@@ -288,9 +288,9 @@ describe('themeUtils', () => {
       ).toEqual({
         fontFamily: {
           serif: [
-            'var(--font-family-serif-0)',
-            'var(--font-family-serif-1)',
-            'var(--font-family-serif-2)'
+            'var(--fontFamily-serif-0)',
+            'var(--fontFamily-serif-1)',
+            'var(--fontFamily-serif-2)'
           ]
         }
       })
@@ -334,7 +334,7 @@ describe('themeUtils', () => {
         },
         myArray: [
           {
-            DEFAULT: 'var(--my-array-0)'
+            DEFAULT: 'var(--myArray-0)'
           }
         ]
       })
@@ -514,7 +514,7 @@ describe('themeUtils', () => {
             primary: 'var(--colors-primary)'
           },
           somethingElse: {
-            foo: 'var(--something-else-foo)'
+            foo: 'var(--somethingElse-foo)'
           }
         })
       })
@@ -771,9 +771,9 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        '--font-family-serif-0': 'Times New Roman',
-        '--font-family-serif-1': 'Times',
-        '--font-family-serif-2': 'serif'
+        '--fontFamily-serif-0': 'Times New Roman',
+        '--fontFamily-serif-1': 'Times',
+        '--fontFamily-serif-2': 'serif'
       })
     })
 
@@ -815,7 +815,7 @@ describe('themeUtils', () => {
       ).toEqual({
         '--colors-red': 'thing',
         '--foo': 'thing',
-        '--my-array-0': '1'
+        '--myArray-0': '1'
       })
     })
 
