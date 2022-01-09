@@ -441,27 +441,6 @@ require('tailwindcss-themer')({
   defaultTheme: {
     extend: {
       colors: {
-        brand1: {
-          primary: {
-            500: 'red'
-          }
-        }
-      }
-    }
-  }
-  // ...
-})
-```
-
-The above config would generate a css variable of the name `--colors-brand1-primary-500`.
-
-[camelCased](https://en.wikipedia.org/wiki/Camel_case) fields are automatically converted to [kebab-case](https://www.theserverside.com/definition/Kebab-case) even though the classes that are generated remain [camelCased](https://en.wikipedia.org/wiki/Camel_case) and [camelCasing](https://en.wikipedia.org/wiki/Camel_case) is valid in css variable names. This is a limitation in tailwind. I'm not sure why it converts all css variables to [kebab-case](https://www.theserverside.com/definition/Kebab-case), but it does.
-
-```js
-require('tailwindcss-themer')({
-  defaultTheme: {
-    extend: {
-      colors: {
         myBrand: {
           primary: {
             500: 'red'
@@ -474,23 +453,7 @@ require('tailwindcss-themer')({
 })
 ```
 
-The above config generates the following css variable:
-
-```css
-:root {
-  /* myBrand was converted to my-brand */
-  --colors-my-brand-primary-500: 255, 0, 0;
-}
-```
-
-The class that is generated remains unaffected though.
-
-```css
-.text-myBrand-primary-500 {
-  --tw-text-opacity: 1;
-  color: rgba(var(--colors-my-brand-primary-500), var(--tw-text-opacity));
-}
-```
+The above config would generate a css variable of the name `--colors-myBrand-primary-500`. If for some reason, [camelCasing](https://en.wikipedia.org/wiki/Camel_case) is converted to [kebab-casing](https://www.theserverside.com/definition/Kebab-case), make sure you have tailwind `v3.0.12` or later installed as that version fixed that bug.
 
 If you use `DEFAULT` anywhere on a path to a variable, it is dropped off of the generated css variable name.
 
