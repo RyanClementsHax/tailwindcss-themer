@@ -1,0 +1,21 @@
+name: 'Close stale issues and PRs'
+on:
+  workflow_dispatch:
+  schedule:
+    # This runs every day at 1:30am https://crontab.guru/#30_1_*_*_*
+    - cron: '30 1 * * *'
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v4
+        with:
+          stale-issue-message: 'This issue has been automatically marked stale because it it received no activity for 60 days. If you wish to keep this open, please leave a comment. Thanks.'
+          stale-pr-message: 'This PR has been automatically marked stale because it it received no activity for 60 days. If you wish to keep this open, please leave a comment. Thanks.'
+          close-issue-message: 'This issue has been automatically closed because it received no activity for 60 days. If you think this was closed by accident, please leave a comment. Thanks.'
+          close-pr-message: 'This PR has been automatically closed because it received no activity for 60 days. If you think this was closed by accident, please leave a comment. Thanks.'
