@@ -39,7 +39,7 @@ describe('colorUtils', () => {
         withOpacity(customPropName)({
           opacityValue
         })
-      ).toEqual(`rgba(var(${customPropName}), ${opacityValue})`)
+      ).toBe(`rgba(var(${customPropName}), ${opacityValue})`)
     })
 
     it('configures with opacityValue when both defined', () => {
@@ -48,7 +48,7 @@ describe('colorUtils', () => {
           opacityVariable,
           opacityValue
         })
-      ).toEqual(`rgba(var(${customPropName}), ${opacityValue})`)
+      ).toBe(`rgba(var(${customPropName}), ${opacityValue})`)
     })
 
     it('configures with opacityVariable when only opacityVariable defined', () => {
@@ -56,11 +56,11 @@ describe('colorUtils', () => {
         withOpacity(customPropName)({
           opacityVariable
         })
-      ).toEqual(`rgba(var(${customPropName}), var(${opacityVariable}, 1))`)
+      ).toBe(`rgba(var(${customPropName}), var(${opacityVariable}, 1))`)
     })
 
     it('configures with no opacity when neither defined', () => {
-      expect(withOpacity(customPropName)({})).toEqual(
+      expect(withOpacity(customPropName)({})).toBe(
         `rgb(var(${customPropName}))`
       )
     })
