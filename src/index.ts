@@ -1,5 +1,5 @@
 import plugin from 'tailwindcss/plugin'
-import { Helpers, MultiThemePlugin } from './plugin'
+import { Config, PluginAPI } from 'tailwindcss/types/config'
 
 import {
   getThemesFromOptions,
@@ -25,7 +25,7 @@ const defaultOptions: MultiThemePluginOptions = {
  */
 const addThemeVariants = (
   themes: ThemeConfig[],
-  { addVariant, e }: Helpers
+  { addVariant, e }: PluginAPI
 ): void =>
   void themes.map(({ name }) =>
     addVariant(
@@ -36,33 +36,33 @@ const addThemeVariants = (
 
 /**
  * @param themes the themes to add as variants
- * @param helpers the tailwind plugin helpers
+ * @param api the tailwind plugin helpers
  */
-const addThemeStyles = (themes: ThemeConfig[], helpers: Helpers): void => {
-  const { addBase, e, prefix } = helpers
+const addThemeStyles = (themes: ThemeConfig[], api: PluginAPI): void => {
+  const { addBase, e } = api
   themes.forEach(({ name, extend }) => {
     addBase({
-      [name === defaultThemeName ? ':root' : prefix(`.${e(name)}`)]:
-        resolveThemeExtensionAsCustomProps(extend, helpers)
+      [name === defaultThemeName ? ':root' : `.${e(name)}`]:
+        resolveThemeExtensionAsCustomProps(extend, api)
     })
   })
 }
 
-const multiThemePlugin: MultiThemePlugin =
-  plugin.withOptions<MultiThemePluginOptions>(
-    (options = defaultOptions) =>
-      helpers => {
-        const themes = getThemesFromOptions(options)
-        addThemeVariants(themes, helpers)
-        addThemeStyles(themes, helpers)
-      },
-    (options = defaultOptions) => ({
+const multiThemePlugin = plugin.withOptions<MultiThemePluginOptions>(
+  (options = defaultOptions) =>
+    api => {
+      const themes = getThemesFromOptions(options)
+      addThemeVariants(themes, api)
+      addThemeStyles(themes, api)
+    },
+  (options = defaultOptions) =>
+    ({
       theme: {
         extend: resolveThemeExtensionsAsTailwindExtension(
           getThemesFromOptions(options)
         )
       }
-    })
-  )
+    } as Config)
+)
 
 export = multiThemePlugin

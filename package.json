@@ -30,6 +30,7 @@
   "scripts": {
     "build": "yarn clean && tsc --project tsconfig.build.json",
     "clean": "tsc --build --clean",
+    "watch": "yarn build --watch",
     "type-check": "tsc --pretty --noEmit",
     "format": "prettier --write",
     "format:all": "yarn format .",
@@ -65,6 +66,7 @@
     "eslint-plugin-jest": "^25.3.0",
     "husky": "^7.0.4",
     "jest": "^27.4.4",
+    "jest-mock-extended": "^2.0.6",
     "jest-watch-typeahead": "^1.0.0",
     "lint-staged": "^12.1.2",
     "prettier": "^2.5.1",
@@ -80,6 +82,6 @@
     "typescript": "^4.5.3"
   },
   "peerDependencies": {
-    "tailwindcss": "^3.0.12"
+    "tailwindcss": "^3.1.0"
   }
 }

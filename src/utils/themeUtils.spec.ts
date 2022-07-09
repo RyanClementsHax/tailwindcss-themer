@@ -3,7 +3,8 @@ import {
   resolveThemeExtensionsAsTailwindExtension
 } from './themeUtils'
 import { TailwindExtension, ExtensionValue, Theme, ThemeCb } from '../config'
-import { Helpers } from '../plugin'
+import { PluginAPI } from 'tailwindcss/types/config'
+import { mock } from 'jest-mock-extended'
 
 describe('themeUtils', () => {
   let callbackObj: { theme: Theme }
@@ -687,16 +688,13 @@ describe('themeUtils', () => {
   })
 
   describe('resolveThemeExtensionAsCustomProps', () => {
-    let helpers: Helpers
+    let helpers: PluginAPI
 
     beforeEach(() => {
-      helpers = {
-        addBase: jest.fn(),
-        addVariant: jest.fn(),
-        prefix: jest.fn(selector => `prefix-${selector}`),
+      helpers = mock<PluginAPI>({
         e: jest.fn(x => `escaped-${x}`),
-        theme: jest.fn(x => x)
-      }
+        theme: jest.fn(x => x) as PluginAPI['theme']
+      })
     })
 
     it('resolves an empty extension as no custom props', () => {

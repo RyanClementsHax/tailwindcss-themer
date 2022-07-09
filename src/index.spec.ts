@@ -1,12 +1,13 @@
 import { Theme } from './config'
-import { Helpers } from './plugin'
 import multiThemePlugin from '.'
 import { MultiThemePluginOptions } from './utils/optionsUtils'
 import { defaultThemeName } from './utils/optionsUtils'
+import { PluginAPI } from 'tailwindcss/types/config'
+import { mock } from 'jest-mock-extended'
 
 describe('multiThemePlugin', () => {
   describe('handler', () => {
-    let config: MultiThemePluginOptions, helpers: Helpers
+    let config: MultiThemePluginOptions, api: PluginAPI
 
     beforeEach(() => {
       config = {
@@ -30,23 +31,20 @@ describe('multiThemePlugin', () => {
         ]
       }
 
-      helpers = {
-        addBase: jest.fn(),
-        addVariant: jest.fn(),
-        prefix: jest.fn(selector => `prefix-${selector}`),
+      api = mock<PluginAPI>({
         e: jest.fn(x => `escaped-${x}`),
-        theme: jest.fn(x => x)
-      }
+        theme: jest.fn(x => x) as PluginAPI['theme']
+      })
     })
 
     it('adds variants for each theme', () => {
-      multiThemePlugin(config).handler(helpers)
+      multiThemePlugin(config).handler(api)
 
       for (const themeName of [
         defaultThemeName,
         ...(config?.themes?.map(x => x.name) ?? [])
       ]) {
-        expect(helpers.addVariant).toHaveBeenCalledWith(
+        expect(api.addVariant).toHaveBeenCalledWith(
           themeName === defaultThemeName ? 'defaultTheme' : themeName,
           `.escaped-${
             themeName === defaultThemeName ? 'defaultTheme' : themeName
@@ -56,16 +54,16 @@ describe('multiThemePlugin', () => {
     })
 
     it('adds the custom vars for each theme', () => {
-      multiThemePlugin(config).handler(helpers)
+      multiThemePlugin(config).handler(api)
 
-      expect(helpers.addBase).toHaveBeenCalledWith({
+      expect(api.addBase).toHaveBeenCalledWith({
         ':root': {
           '--colors-primary': 'thing'
         }
       })
       for (const theme of config.themes ?? []) {
-        expect(helpers.addBase).toHaveBeenCalledWith({
-          [`prefix-.escaped-${theme.name}`]: {
+        expect(api.addBase).toHaveBeenCalledWith({
+          [`.escaped-${theme.name}`]: {
             '--colors-primary': 'another',
             '--colors-secondary': 'something'
           }
