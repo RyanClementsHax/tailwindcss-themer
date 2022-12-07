@@ -244,7 +244,7 @@ module.exports = {
 
 > Notice how we needed to set `color.primary` to a callback function. This is to properly handle opacity. See [Opacity](docs/themingColors.md#opacity) for more details.
 > \
-> Because it creates a theme extension for you, this is why it overwrites whatever is in the normal theme extension upon collision. See [This plugin's config overwrites what is in the normal tailwind config n collision](#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config-n-collision) for more details.
+> Because it creates a theme extension for you, this is why it overwrites whatever is in the normal theme extension upon collision. See [This plugin's config overwrites what is in the normal tailwind config n collision](docs/config.md#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config-n-collision) for more details.
 
 It also injects css variables with proper scoping into tailwind's [base layer](https://tailwindcss.com/docs/adding-custom-styles#using-css-and-layer).
 

@@ -19,3 +19,4 @@ jobs:
           stale-pr-message: 'This PR has been automatically marked stale because it it received no activity for 60 days. If you wish to keep this open, please leave a comment. Thanks.'
           close-issue-message: 'This issue has been automatically closed because it received no activity for 60 days. If you think this was closed by accident, please leave a comment. Thanks.'
           close-pr-message: 'This PR has been automatically closed because it received no activity for 60 days. If you think this was closed by accident, please leave a comment. Thanks.'
+          exempt-issue-labels: keep
