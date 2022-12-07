@@ -3478,9 +3478,9 @@ decimal.js@^10.2.1:
   integrity sha512-V0pfhfr8suzyPGOx3nmq4aHqabehUZn6Ch9kyFpV79TGDTWFmHqUqXdabR7QHqxzrYolF4+tVmJhUG4OURg5dQ==
 
 decode-uri-component@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
-  integrity sha512-hjf+xovcEn31w/EUYdTXQh/8smFL/dzYjohQGEIgjyNavaJfBY2p5F527Bo1VPATxv0VYTUC2bOcXvqFwk78Og==
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.2.tgz#e69dbe25d37941171dd540e024c444cd5188e1e9"
+  integrity sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==
 
 dedent@^0.7.0:
   version "0.7.0"
@@ -5768,10 +5768,10 @@ jsonpointer@^5.0.0:
     array-includes "^3.1.5"
     object.assign "^4.1.2"
 
-just-unique@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/just-unique/-/just-unique-4.0.1.tgz#f5d245ed6234e182ad3e0d4a096156e66f821914"
-  integrity sha512-rUeSLN44eynoLqpWa/J73f4fGEGoUxBw+3KPCABN2CkCQuP/7WYS6BSQ8/YIIB5wAEdzfHeJhYPfoYIi95UywA==
+just-unique@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/just-unique/-/just-unique-4.1.1.tgz#de2d5f8ece66c5aeb98f9fdd33595ad31db4469b"
+  integrity sha512-iLt/RPnrazs4D4IVaO1Hac2W/WH9SiCT3CuhX9hip0xWVnUe+28Lyse4w/OxjSwdZ0CzduimWPMZH/KwxnCAEw==
 
 kind-of@^6.0.2:
   version "6.0.3"
@@ -8164,8 +8164,12 @@ symbol-tree@^3.2.4:
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
 "tailwindcss-themer@link:../..":
-  version "0.0.0"
-  uid ""
+  version "0.0.0-development"
+  dependencies:
+    color "^4.1.0"
+    just-unique "^4.1.1"
+    lodash.merge "^4.6.2"
+    lodash.mergewith "^4.6.2"
 
 tailwindcss@^3.0.12, tailwindcss@^3.0.2:
   version "3.1.5"
