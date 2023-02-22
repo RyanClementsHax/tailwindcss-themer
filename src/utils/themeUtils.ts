@@ -6,7 +6,7 @@ import {
   toCustomPropName,
   toCustomPropValue
 } from './customPropUtils'
-import { ThemeCb, TailwindExtension } from '../config'
+import { ResolutionCallback, TailwindExtension } from '../config'
 import { ThemeConfig } from './optionsUtils'
 import { PluginAPI } from 'tailwindcss/types/config'
 
@@ -91,7 +91,10 @@ export const resolveThemeExtensionAsCustomProps = (
  * @return a function that will resolve the theme extension provided by the callback when given the tailwind theme helper
  */
 const toThemeExtensionResolverCallback =
-  <T>(value: ThemeCb<T>, valuePath: string[]): ThemeCb<T> =>
+  <T>(
+    value: ResolutionCallback<T>,
+    valuePath: string[]
+  ): ResolutionCallback<T> =>
   theme => {
     const config = value(theme)
     return resolveThemeExtensionsAsTailwindExtensionRecursionHelper(
