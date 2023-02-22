@@ -112,9 +112,9 @@ describe('multiThemePlugin', () => {
         multiThemePlugin({
           defaultTheme: {
             extend: {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-expect-error
               colors: {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-expect-error
                 primary: ({ theme }: { theme: Theme }) => theme('thing')
               }
             }

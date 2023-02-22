@@ -2,18 +2,18 @@ import {
   resolveThemeExtensionAsCustomProps,
   resolveThemeExtensionsAsTailwindExtension
 } from './themeUtils'
-import { TailwindExtension, ExtensionValue, Theme, ThemeCb } from '../config'
+import { PluginUtils, TailwindExtension, Theme } from '../config'
 import { PluginAPI } from 'tailwindcss/types/config'
 import { mock } from 'jest-mock-extended'
 
 describe('themeUtils', () => {
-  let callbackObj: { theme: Theme }
+  let pluginUtils: PluginUtils
   let opacityConfig: { opacityVariable: string; opacityValue: string }
 
   beforeEach(() => {
-    callbackObj = {
+    pluginUtils = mock<PluginUtils>({
       theme: jest.fn(x => x)
-    }
+    })
     opacityConfig = {
       opacityValue: 'opacityValue',
       opacityVariable: '--opacity-variable'
@@ -51,10 +51,7 @@ describe('themeUtils', () => {
     const extensionWithResolvedThemeCbs = Object.entries(extension).reduce(
       (acc, [key, value]) => ({
         ...acc,
-        [key]:
-          typeof value === 'function'
-            ? (value as ThemeCb<ExtensionValue>)(callbackObj)
-            : value
+        [key]: typeof value === 'function' ? value(pluginUtils) : value
       }),
       {}
     ) as TailwindExtension
@@ -425,9 +422,9 @@ describe('themeUtils', () => {
           {
             name: 'first',
             extend: {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-expect-error
               colors: {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-expect-error
                 primary: null
               }
             }
@@ -435,8 +432,6 @@ describe('themeUtils', () => {
           {
             name: 'second',
             extend: {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-expect-error
               foo: {
                 secondary: null
               }
@@ -459,9 +454,9 @@ describe('themeUtils', () => {
           {
             name: 'first',
             extend: {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-expect-error
               colors: {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-expect-error
                 secondary: undefined
               }
             }
@@ -469,8 +464,6 @@ describe('themeUtils', () => {
           {
             name: 'second',
             extend: {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-expect-error
               foo: {
                 secondary: undefined
               }
@@ -503,7 +496,7 @@ describe('themeUtils', () => {
               {
                 name: 'second',
                 extend: {
-                  somethingElse: ({ theme }) => ({
+                  fontFamily: ({ theme }) => ({
                     foo: theme('some.different.key')
                   })
                 }
@@ -514,8 +507,8 @@ describe('themeUtils', () => {
           colors: {
             primary: 'var(--colors-primary)'
           },
-          somethingElse: {
-            foo: 'var(--somethingElse-foo)'
+          fontFamily: {
+            foo: 'var(--fontFamily-foo)'
           }
         })
       })
@@ -642,8 +635,6 @@ describe('themeUtils', () => {
             {
               name: 'second',
               extend: {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //@ts-expect-error
                 foo: {
                   bar: ({ theme }: { theme: Theme }) => ({
                     primary: theme('some.key')
@@ -821,13 +812,11 @@ describe('themeUtils', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-expect-error
             colors: {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              //@ts-expect-error
               primary: null
             },
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-expect-error
             foo: {
               secondary: null
             }
@@ -841,13 +830,11 @@ describe('themeUtils', () => {
       expect(
         resolveThemeExtensionAsCustomProps(
           {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-expect-error
             colors: {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              //@ts-expect-error
               primary: undefined
             },
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-expect-error
             foo: {
               secondary: undefined
             }
@@ -877,8 +864,6 @@ describe('themeUtils', () => {
         expect(() =>
           resolveThemeExtensionAsCustomProps(
             {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-expect-error
               foo: {
                 bar: ({ theme }: { theme: Theme }) => ({
                   primary: theme('some.key')
