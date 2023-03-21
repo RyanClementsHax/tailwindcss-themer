@@ -6,6 +6,7 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+[![Open in Codeflow](https://developer.stackblitz.com/img/open_in_codeflow_small.svg)](https:///pr.new/RyanClementsHax/tailwindcss-themer)
 
 ## Key Features <!-- omit in toc -->
 
@@ -37,6 +38,7 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
   - [Use the classes like normal](#use-the-classes-like-normal)
   - [Enable your other theme](#enable-your-other-theme)
   - [Apply variants if you want](#apply-variants-if-you-want)
+- [Contributing](#contributing)
 - [How it works](#how-it-works)
   - [CSS variable generation](#css-variable-generation)
     - [defaultTheme](#defaulttheme)
@@ -181,6 +183,10 @@ If for some reason you need to apply classes only when certain themes are active
 ```
 
 See [Variants](#variants) for more details.
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidance on contributing.
 
 ## How it works
 
@@ -662,7 +668,7 @@ If you're expecting the `defaultTheme` to automatically contain tailwind default
 
 ## Want to suggest additional features?
 
-I'm open to discussion. Feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
+Feel free to [start a discussion](https://github.com/RyanClementsHax/tailwindcss-themer/discussions).
 
 ## Didn't find what you were looking for?
 
