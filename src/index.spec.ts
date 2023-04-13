@@ -1,9 +1,9 @@
-import { Theme } from './config'
-import multiThemePlugin from '.'
-import { MultiThemePluginOptions } from './utils/optionsUtils'
-import { defaultThemeName } from './utils/optionsUtils'
-import { PluginAPI } from 'tailwindcss/types/config'
 import { mock } from 'jest-mock-extended'
+import { PluginAPI } from 'tailwindcss/types/config'
+import multiThemePlugin from '.'
+import { Theme } from './config'
+import { escape } from './utils/customPropUtils'
+import { MultiThemePluginOptions, defaultThemeName } from './utils/optionsUtils'
 
 describe('multiThemePlugin', () => {
   describe('handler', () => {
@@ -58,14 +58,14 @@ describe('multiThemePlugin', () => {
 
       expect(api.addBase).toHaveBeenCalledWith({
         ':root': {
-          '--colors-primary': 'thing'
+          [escape('--colors-primary')]: 'thing'
         }
       })
       for (const theme of config.themes ?? []) {
         expect(api.addBase).toHaveBeenCalledWith({
           [`.escaped-${theme.name}`]: {
-            '--colors-primary': 'another',
-            '--colors-secondary': 'something'
+            [escape('--colors-primary')]: 'another',
+            [escape('--colors-secondary')]: 'something'
           }
         })
       }

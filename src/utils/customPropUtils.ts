@@ -1,6 +1,18 @@
 import { isColor, toRgb, withOpacity } from './colorUtils'
 
 /**
+ * Code copied from the tailwind official codebase
+ * @link https://github.com/tailwindlabs/tailwindcss/blob/fbbba6f67f73c3a4f9571649c3fc27006446d8f4/src/lib/regex.js#L70
+ */
+const REGEX_SPECIAL = /[\\^$.*+?()[\]{}|]/g
+const REGEX_HAS_SPECIAL = RegExp(REGEX_SPECIAL.source)
+export const escape = (string?: string): string => {
+  return string && REGEX_HAS_SPECIAL.test(string)
+    ? string.replace(REGEX_SPECIAL, '\\$&')
+    : string || ''
+}
+
+/**
  * @param value - a custom prop value
  * @return the value converted to a string of its rgb components comma separated if it is a color else it returns the value unaltered
  */
@@ -27,9 +39,9 @@ export const toCustomPropName = (valuePath: string[]): string => {
       )}"`
     )
   }
-  return `--${valuePath
-    .filter(step => step.toLowerCase() !== 'default')
-    .join('-')}`
+  return escape(
+    `--${valuePath.filter(step => step.toLowerCase() !== 'default').join('-')}`
+  )
 }
 
 /**

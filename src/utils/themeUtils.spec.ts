@@ -1,10 +1,11 @@
+import { mock } from 'jest-mock-extended'
+import { PluginAPI } from 'tailwindcss/types/config'
+import { PluginUtils, TailwindExtension, Theme } from '../config'
+import { escape } from './customPropUtils'
 import {
   resolveThemeExtensionAsCustomProps,
   resolveThemeExtensionsAsTailwindExtension
 } from './themeUtils'
-import { PluginUtils, TailwindExtension, Theme } from '../config'
-import { PluginAPI } from 'tailwindcss/types/config'
-import { mock } from 'jest-mock-extended'
 
 describe('themeUtils', () => {
   let pluginUtils: PluginUtils
@@ -701,7 +702,7 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        '--foo': 'thing'
+        [escape('--foo')]: 'thing'
       })
     })
 
@@ -721,8 +722,8 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        '--colors-primary': 'thing',
-        '--foo-bar-bazz': 'value'
+        [escape('--colors-primary')]: 'thing',
+        [escape('--foo-bar-bazz')]: 'value'
       })
     })
 
@@ -744,8 +745,8 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        '--foo-bar-0-thing': '1',
-        '--foo-bar-1-thing': '2'
+        [escape('--foo-bar-0-thing')]: '1',
+        [escape('--foo-bar-1-thing')]: '2'
       })
     })
 
@@ -760,9 +761,9 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        '--fontFamily-serif-0': 'Times New Roman',
-        '--fontFamily-serif-1': 'Times',
-        '--fontFamily-serif-2': 'serif'
+        [escape('--fontFamily-serif-0')]: 'Times New Roman',
+        [escape('--fontFamily-serif-1')]: 'Times',
+        [escape('--fontFamily-serif-2')]: 'serif'
       })
     })
 
@@ -777,7 +778,7 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        '--colors-primary': '17, 70, 17'
+        [escape('--colors-primary')]: '17, 70, 17'
       })
     })
 
@@ -802,9 +803,9 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        '--colors-red': 'thing',
-        '--foo': 'thing',
-        '--myArray-0': '1'
+        [escape('--colors-red')]: 'thing',
+        [escape('--foo')]: 'thing',
+        [escape('--myArray-0')]: '1'
       })
     })
 
@@ -856,7 +857,7 @@ describe('themeUtils', () => {
             helpers
           )
         ).toEqual({
-          '--colors-primary': 'some.key'
+          [escape('--colors-primary')]: 'some.key'
         })
       })
 
