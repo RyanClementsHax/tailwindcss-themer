@@ -1,10 +1,10 @@
+import { mock } from 'jest-mock-extended'
+import { PluginAPI } from 'tailwindcss/types/config'
+import { PluginUtils, TailwindExtension, Theme } from '../config'
 import {
   resolveThemeExtensionAsCustomProps,
   resolveThemeExtensionsAsTailwindExtension
 } from './themeUtils'
-import { PluginUtils, TailwindExtension, Theme } from '../config'
-import { PluginAPI } from 'tailwindcss/types/config'
-import { mock } from 'jest-mock-extended'
 
 describe('themeUtils', () => {
   let pluginUtils: PluginUtils
