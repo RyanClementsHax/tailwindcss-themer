@@ -64,8 +64,8 @@ describe('multiThemePlugin', () => {
       for (const theme of config.themes ?? []) {
         expect(api.addBase).toHaveBeenCalledWith({
           [`.escaped-${theme.name}`]: {
-            [escape('--colors-primary')]: 'another',
-            [escape('--colors-secondary')]: 'something'
+            ['--colors-primary']: 'another',
+            ['--colors-secondary']: 'something'
           }
         })
       }

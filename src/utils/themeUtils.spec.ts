@@ -702,7 +702,7 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        [escape('--foo')]: 'thing'
+        ['--foo']: 'thing'
       })
     })
 
