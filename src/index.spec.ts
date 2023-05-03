@@ -60,15 +60,15 @@ describe('multiThemePlugin', () => {
 
       expect(api.addBase).toHaveBeenCalledWith({
         ':root': {
-          ['--colors-primary']: 'thing'
+          '--colors-primary': 'thing'
         }
       })
       for (const theme of config.themes ?? []) {
         expect(api.addBase).toHaveBeenCalledWith({
           [`.escaped-${theme.name}`]: {
-            ['--colors-primary']: 'another',
-            ['--colors-secondary']: 'something',
-            ['--spacing-0\\.5']: '10px'
+            '--colors-primary': 'another',
+            '--colors-secondary': 'something',
+            '--spacing-0\\.5': '10px'
           }
         })
       }

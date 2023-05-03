@@ -701,7 +701,7 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        ['--foo']: 'thing'
+        '--foo': 'thing'
       })
     })
 
@@ -721,8 +721,8 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        ['--colors-primary']: 'thing',
-        ['--foo-bar-bazz']: 'value'
+        '--colors-primary': 'thing',
+        '--foo-bar-bazz': 'value'
       })
     })
 
@@ -744,8 +744,8 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        ['--foo-bar-0-thing']: '1',
-        ['--foo-bar-1-thing']: '2'
+        '--foo-bar-0-thing': '1',
+        '--foo-bar-1-thing': '2'
       })
     })
 
@@ -760,9 +760,9 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        ['--fontFamily-serif-0']: 'Times New Roman',
-        ['--fontFamily-serif-1']: 'Times',
-        ['--fontFamily-serif-2']: 'serif'
+        '--fontFamily-serif-0': 'Times New Roman',
+        '--fontFamily-serif-1': 'Times',
+        '--fontFamily-serif-2': 'serif'
       })
     })
 
@@ -777,7 +777,7 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        ['--colors-primary']: '17, 70, 17'
+        '--colors-primary': '17, 70, 17'
       })
     })
 
@@ -802,9 +802,9 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        ['--colors-red']: 'thing',
-        ['--foo']: 'thing',
-        ['--myArray-0']: '1'
+        '--colors-red': 'thing',
+        '--foo': 'thing',
+        '--myArray-0': '1'
       })
     })
 
@@ -856,7 +856,7 @@ describe('themeUtils', () => {
             helpers
           )
         ).toEqual({
-          ['--colors-primary']: 'some.key'
+          '--colors-primary': 'some.key'
         })
       })
 
