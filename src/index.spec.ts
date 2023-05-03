@@ -2,7 +2,6 @@ import { mock } from 'jest-mock-extended'
 import { PluginAPI } from 'tailwindcss/types/config'
 import multiThemePlugin from '.'
 import { Theme } from './config'
-import { escape } from './utils/customPropUtils'
 import { MultiThemePluginOptions, defaultThemeName } from './utils/optionsUtils'
 
 describe('multiThemePlugin', () => {
@@ -25,6 +24,9 @@ describe('multiThemePlugin', () => {
               colors: {
                 primary: 'another',
                 secondary: 'something'
+              },
+              spacing: {
+                '0.5': '10px'
               }
             }
           }
@@ -58,14 +60,15 @@ describe('multiThemePlugin', () => {
 
       expect(api.addBase).toHaveBeenCalledWith({
         ':root': {
-          [escape('--colors-primary')]: 'thing'
+          ['--colors-primary']: 'thing'
         }
       })
       for (const theme of config.themes ?? []) {
         expect(api.addBase).toHaveBeenCalledWith({
           [`.escaped-${theme.name}`]: {
             ['--colors-primary']: 'another',
-            ['--colors-secondary']: 'something'
+            ['--colors-secondary']: 'something',
+            ['--spacing-0\\.5']: '10px'
           }
         })
       }

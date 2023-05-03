@@ -1,7 +1,6 @@
 import { mock } from 'jest-mock-extended'
 import { PluginAPI } from 'tailwindcss/types/config'
 import { PluginUtils, TailwindExtension, Theme } from '../config'
-import { escape } from './customPropUtils'
 import {
   resolveThemeExtensionAsCustomProps,
   resolveThemeExtensionsAsTailwindExtension
@@ -722,8 +721,8 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        [escape('--colors-primary')]: 'thing',
-        [escape('--foo-bar-bazz')]: 'value'
+        ['--colors-primary']: 'thing',
+        ['--foo-bar-bazz']: 'value'
       })
     })
 
@@ -745,8 +744,8 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        [escape('--foo-bar-0-thing')]: '1',
-        [escape('--foo-bar-1-thing')]: '2'
+        ['--foo-bar-0-thing']: '1',
+        ['--foo-bar-1-thing']: '2'
       })
     })
 
@@ -761,9 +760,9 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        [escape('--fontFamily-serif-0')]: 'Times New Roman',
-        [escape('--fontFamily-serif-1')]: 'Times',
-        [escape('--fontFamily-serif-2')]: 'serif'
+        ['--fontFamily-serif-0']: 'Times New Roman',
+        ['--fontFamily-serif-1']: 'Times',
+        ['--fontFamily-serif-2']: 'serif'
       })
     })
 
@@ -778,7 +777,7 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        [escape('--colors-primary')]: '17, 70, 17'
+        ['--colors-primary']: '17, 70, 17'
       })
     })
 
@@ -803,9 +802,9 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        [escape('--colors-red')]: 'thing',
-        [escape('--foo')]: 'thing',
-        [escape('--myArray-0')]: '1'
+        ['--colors-red']: 'thing',
+        ['--foo']: 'thing',
+        ['--myArray-0']: '1'
       })
     })
 
@@ -857,7 +856,7 @@ describe('themeUtils', () => {
             helpers
           )
         ).toEqual({
-          [escape('--colors-primary')]: 'some.key'
+          ['--colors-primary']: 'some.key'
         })
       })
 
