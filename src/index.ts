@@ -26,13 +26,25 @@ const defaultOptions: MultiThemePluginOptions = {
 const addThemeVariants = (
   themes: ThemeConfig[],
   { addVariant, e }: PluginAPI
-): void =>
-  void themes.map(({ name }) =>
-    addVariant(
-      name === defaultThemeName ? 'defaultTheme' : name,
-      `.${e(name === defaultThemeName ? 'defaultTheme' : name)} &`
-    )
-  )
+) => {
+  for (const { name, selectors: _selectors, mediaQuery } of themes) {
+    const variantName = name === defaultThemeName ? 'defaultTheme' : name
+    const shouldAddNameBasedVariant = !_selectors && !mediaQuery
+    const selectors =
+      _selectors ?? (shouldAddNameBasedVariant ? [`.${e(variantName)}`] : [])
+
+    if (selectors.length > 0) {
+      addVariant(
+        variantName,
+        selectors.map(x => `${x} &`)
+      )
+    }
+
+    if (mediaQuery) {
+      addVariant(variantName, mediaQuery)
+    }
+  }
+}
 
 /**
  * @param themes the themes to add as variants
@@ -40,12 +52,22 @@ const addThemeVariants = (
  */
 const addThemeStyles = (themes: ThemeConfig[], api: PluginAPI): void => {
   const { addBase, e } = api
-  themes.forEach(({ name, extend }) => {
-    addBase({
-      [name === defaultThemeName ? ':root' : `.${e(name)}`]:
-        resolveThemeExtensionAsCustomProps(extend, api)
-    })
-  })
+  for (const { name, selectors: _selectors, extend, mediaQuery } of themes) {
+    const selectors =
+      _selectors ?? (name === defaultThemeName ? [':root'] : [`.${e(name)}`])
+    if (selectors.length > 0) {
+      addBase({
+        [selectors.join(', ')]: resolveThemeExtensionAsCustomProps(extend, api)
+      })
+    }
+    if (mediaQuery) {
+      addBase({
+        [mediaQuery]: {
+          ':root': resolveThemeExtensionAsCustomProps(extend, api)
+        }
+      })
+    }
+  }
 }
 
 const multiThemePlugin = plugin.withOptions<MultiThemePluginOptions>(

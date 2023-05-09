@@ -16,7 +16,7 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
 
 **💫 Automatic variants**: Automatically generate variants for all of your themes (i.e. use classes like `my-theme:font-black`) to enable classes only when certain themes active.
 
-**🌑 Trivial dark theme**: Because dark theme is _just another theme_ implementing dark theme is as easy as naming the theme you create as "dark" (or whatever you want), no special config
+**🌑 Trivial dark theme**: Because dark theme is _just another theme_ implementing dark theme is as easy, no special config
 
 **🤖 Automatically handles colors and opacity**: Using [tailwind with css variables](https://tailwindcss.com/docs/customizing-colors#using-css-variables) can get [tricky with colors](https://www.youtube.com/watch?v=MAtaT8BZEAo), but this plugin handles all of that for you!
 
@@ -47,6 +47,9 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
   - [Naming](#naming)
 - [Documentation](#documentation)
 - [Enabling your theme](#enabling-your-theme)
+  - [Selectors](#selectors)
+  - [Media query](#media-query)
+  - [Fallback class of theme's name](#fallback-class-of-themes-name)
   - [SSR](#ssr)
   - [Simultaneous themes](#simultaneous-themes)
 - [Typescript](#typescript)
@@ -118,7 +121,7 @@ module.exports = {
       },
       themes: [
         {
-          // name your theme anything that could be a valid css selector
+          // name your theme anything that could be a valid css class name
           // remember what you named your theme because you will use it as a class to enable the theme
           name: 'my-theme',
           // put any overrides your theme has here
@@ -172,6 +175,8 @@ You do this by adding a class of the theme's name to whatever you want themed. S
 ```
 
 This plugin doesn't care _how_ you apply the class. That's up to you. All this plugin cares about is that the _class is applied_.
+
+> There are lots of other ways to enable the theme. To see all options see [Enabling Your Theme](#enabling-your-theme).
 
 ### Apply variants if you want
 
@@ -392,7 +397,10 @@ For example, the above config in the `themes` section of the config generates th
 
 As specified above, variants are generated for every named theme you make, even for the default theme. This is so you can use them as class modifiers to enable certain styles only when that theme is enabled. It works like [hover and focus variants](https://tailwindcss.com/docs/font-family#hover-focus-and-other-states), but activated with the theme. This lets you write classes like `my-theme:rounded-sm` if you need fine grained control to apply some styles when a theme is activated and you can't cleanly express what you want with css variables alone.
 
-Do note that because tailwind automatically adds the `dark` variant, if you name one of your themes `dark`, the variant this plugin creates for it will conflict with what tailwind automatically creates for you. It is recommended that you name your dark theme something else like `darkTheme` to avoid the conflict or you could set [darkMode: 'class'](https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually) in your `tailwind.config.js`
+> Do note that because tailwind automatically adds the `dark` variant, if you name one of your themes `dark`, the variant this plugin creates for it will conflict with what tailwind automatically creates for you. It is recommended that you name your dark theme something else like `darkTheme` to avoid the conflict. Not all config options work for themes named `dark`.
+> \
+> \
+> See [Themes named dark](docs/config.md#themes-named-dark) for additional details.
 
 The theme variant generated for the default theme is `defaultTheme` (e.g. `defaultTheme:rounded-sm`), but this now requires that instead of omitting any theme class to enable the default theme, you explicitly declare you are using the default theme by adding the class of `defaultTheme` to the place you want themed (no other feature is affected by this, using the default theme variant is the only feature that requires you to add the `defaultTheme` class to use). This is because I haven't been able to create a css selector that excludes all parents with any of the other theme classes. If you can make one, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
 
@@ -541,7 +549,15 @@ The example above creates the following css variables:
 
 By default, the config in the `defaultTheme` section of the config will apply (i.e. if no class is applied).
 
-Right now, the only way to enable a named theme is to apply a class of the name of the theme you want to enable. I'm open to configuring a theme to activate on other conditions like media queries. If you want this, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
+There are three ways to enable your theme.
+
+1. Configure your theme with selectors
+2. Configure your theme with a media query
+3. If neither selectors nor a media query is given, you can enable your theme by applying a class of the name of the theme you want to enable.
+
+### Selectors
+
+You can provide a `selectors` array on your theme. The theme will be enabled within any element that matches any of those selectors.
 
 ```js
 require('tailwindcss-themer')({
@@ -554,7 +570,8 @@ require('tailwindcss-themer')({
   },
   themes: [
     {
-      name: 'dark',
+      name: 'darkTheme',
+      selectors: ['.dark-mode', '[data-theme="dark"]']
       extend: {
         colors: {
           primary: 'blue'
@@ -584,11 +601,131 @@ require('tailwindcss-themer')({
   <head>
     <!-- ... -->
   </head>
-  <body class="dark">
-    <!-- The "dark" config would apply here -->
+  <body class="dark-mode">
+    <!-- The "darkTheme" config would apply here -->
     <h1 class="text-primary">Hello world!</h1>
   </body>
 </html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body data-theme="dark">
+    <!-- The "darkTheme" config would apply here -->
+    <h1 class="text-primary">Hello world!</h1>
+  </body>
+</html>
+```
+
+### Media query
+
+You can specify a media query within the `mediaQuery` field on the theme. The theme will be enabled when the given media query evaluates to true.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: 'red'
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'darkTheme',
+      mediaQuery: '@media (prefers-color-scheme: dark)',
+      extend: {
+        colors: {
+          primary: 'blue'
+        }
+      }
+    }
+  ]
+})
+```
+
+If both `selectors` and `mediaQuery` is specified at the same time, the `selectors` will take precedence.
+
+### Fallback class of theme's name
+
+If neither a `selectors` array nor a `mediaQuery` given, a default `selectors` array will be added with one value as a class selector of the theme's name.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: 'red'
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'darkTheme',
+      // selectors: ['.darkTheme'] // this is implicit given no selectors or mediaQuery given
+      extend: {
+        colors: {
+          primary: 'blue'
+        }
+      }
+    }
+  ]
+})
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body>
+    <!-- The default theme config would apply here -->
+    <h1 class="text-primary">Hello world!</h1>
+  </body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body class="darkTheme">
+    <!-- The "darkTheme" config would apply here -->
+    <h1 class="text-primary">Hello world!</h1>
+  </body>
+</html>
+```
+
+If you don't want this fallback to be generated, set `selectors` to an empty array `[]`.
+
+```js
+require('tailwindcss-themer')({
+  defaultTheme: {
+    extend: {
+      colors: {
+        primary: 'red'
+      }
+    }
+  },
+  themes: [
+    {
+      name: 'darkTheme',
+      selectors: [] // turns off fallback selector
+      extend: {
+        colors: {
+          primary: 'blue'
+        }
+      }
+    }
+  ]
+})
 ```
 
 ### SSR
@@ -654,9 +791,7 @@ require('tailwindcss-themer')({
 
 ## Typescript
 
-This plugin comes with types. In order to take advantage of them, make sure the files that use this plugin are type checked. For most use cases, this means making sure your `tailwind.config.js` file is type checked. The easiest way to do this is by adding `//@ts-check` at the top of the file. See the [typescript example](examples/create-react-app-typescript/README.md) for a reference implementation.
-
-You may need to bring in types for anything else you import though. e.g. if you import anything from tailwind, you should install `@types/tailwindcss` (e.g. `yarn add -D @types/tailwindcss`). Another option is to create a declaration file that contains module definitions for anything you import. The [typescript docs](https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html) go further into this.
+This plugin comes with types. In order to take advantage of them, make sure the files that use this plugin are type checked. For most use cases, this means making sure your `tailwind.config.js` file is type checked. The easiest way to do this is by adding `//@ts-check` at the top of the file. See the [typescript example](examples/create-react-app-typescript/README.md) for a reference implementation. You can also write your config as a `tailwind.config.ts` file to achieve type checking.
 
 ## Common problems
 

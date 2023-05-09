@@ -3,10 +3,15 @@ import { TailwindExtension } from '../config'
 
 export interface ThemeConfig {
   name: string
+  selectors?: string[]
+  mediaQuery?: string
   extend: TailwindExtension
 }
 
-export type DefaultThemeConfig = Omit<ThemeConfig, 'name'>
+export type DefaultThemeConfig = Omit<
+  ThemeConfig,
+  'name' | 'selectors' | 'mediaQuery'
+>
 
 export interface MultiThemePluginOptions {
   defaultTheme?: DefaultThemeConfig
@@ -20,6 +25,7 @@ export const defaultThemeName = '__default'
  * @throws an {@link Error} if the options are invalid
  */
 export const validateOptions = ({
+  defaultTheme,
   themes = []
 }: MultiThemePluginOptions): void => {
   if (themes.some(x => !x.name)) {
@@ -36,6 +42,23 @@ export const validateOptions = ({
   if (themes.some(x => x.name === defaultThemeName)) {
     throw new Error(
       `No theme in the themes array in the multiThemePlugin options cannot have a name of "${defaultThemeName}"`
+    )
+  }
+  if ((defaultTheme as ThemeConfig)?.selectors) {
+    throw new Error('The default theme cannot have any selectors')
+  }
+  if ((defaultTheme as ThemeConfig)?.mediaQuery) {
+    throw new Error('The default theme cannot have a media query')
+  }
+  const darkTheme = themes.find(x => x.name === 'dark')
+  if (darkTheme?.selectors) {
+    throw new Error(
+      'Tailwind configures "dark" theme automatically which prevents any attempt to use custom selectors. This is a limitation of tailwind, not tailwindcss-themer. Please rename your "dark" theme to something else or remove the "selectors" field from your "dark" theme.'
+    )
+  }
+  if (darkTheme?.mediaQuery || darkTheme?.mediaQuery?.length === 0) {
+    throw new Error(
+      'Tailwind configures "dark" theme automatically which prevents any attempt to use a custom media query. This is a limitation of tailwind, not tailwindcss-themer. Please rename your "dark" theme to something else or remove the "mediaQuery" field from your "dark" theme.'
     )
   }
 }

@@ -1,5 +1,6 @@
 # Config <!-- omit in toc -->
 
+- [Themes named `"dark"`](#themes-named-dark)
 - [This plugin's config overwrites what is in the normal tailwind config n collision](#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config-n-collision)
 - [Extend](#extend)
   - [Valid primitives](#valid-primitives)
@@ -26,7 +27,7 @@ require('tailwindcss-themer')({
 
   - This contains all of the defaults (i.e. what styles are applied when no theme is active)
   - This is fine to leave out if you don't have any defaults you want to apply
-  - This is essentially just another theme config, but without a `name` (since its the default)
+  - This is essentially just another theme config, but without a `name` , `selectors`, or a `mediaQuery` since it is applied by default
   - `extend` (**Required**)
     - This takes an object representing a [tailwind extension](https://tailwindcss.com/docs/theme#extending-the-default-theme)
     - Anything you can express in a tailwind extension, you can put here
@@ -60,11 +61,21 @@ require('tailwindcss-themer')({
       - This uniquely identifies a theme from all other themes
       - This must be a valid css selector
       - The value given here is the name of the class you add to enable the theme
-      - If you name your theme `dark`, consider setting [darkMode: 'class'](https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually) in your `tailwind.config.js` as to avoid conflicting with the varaint that tailwind generates
+      - See [Themes named dark](#themes-named-dark) for a caveat for themes named `dark`
+    - `selectors`
+      - The selectors the theme is enabled within
+    - `mediaQuery`
+      - A media query the theme is enabled during
     - `extend` (**Required**)
       - This takes an object representing a [tailwind extension](https://tailwindcss.com/docs/theme#extending-the-default-theme)
       - Anything you can express in a tailwind extension, you can put here
       - See [extend](#extend) for more details
+
+## Themes named `"dark"`
+
+Because tailwind automatically adds the `dark` variant for users, defining a theme for this plugin with the same name leads to problems. There is no way for a theme named `dark` to be enabled under different conditions than specified in tailwind's config as specified on [tailwind's docs](https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually).
+
+Therefore, attempting to use `selectors` or `mediaQuery` for a theme named `dark` won't work at all. To prevent users of this plugin from encountering these silent bugs, this plugin crashes when that happens.
 
 ## This plugin's config overwrites what is in the normal tailwind config n collision
 
@@ -127,7 +138,7 @@ require('tailwindcss-themer')({
   },
   themes: [
     {
-      name: 'dark',
+      name: 'darkTheme',
       extend: {
         colors: {
           // here I'm overriding a custom default
@@ -178,10 +189,10 @@ require('tailwindcss-themer')({
   <head>
     <!-- ... -->
   </head>
-  <body class="dark">
-    <!-- this has a color of "darkblue" since that is what the dark config specifies -->
+  <body class="darkTheme">
+    <!-- this has a color of "darkblue" since that is what the darkTheme config specifies -->
     <h1 class="text-primary-500">This is colored as my primary 500 color</h1>
-    <!-- this has a color of "darkred" since that is what the dark config specifies -->
+    <!-- this has a color of "darkred" since that is what the darkTheme config specifies -->
     <p class="text-secondary-500">This is colored as my secondary 500 color</p>
   </body>
 </html>

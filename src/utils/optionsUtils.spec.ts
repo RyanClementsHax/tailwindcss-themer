@@ -107,5 +107,45 @@ describe('themeUtils', () => {
         })
       ).toThrow()
     })
+
+    it('throws an error if the default theme has a selectors array', () => {
+      expect(() =>
+        validateOptions({
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          defaultTheme: { selectors: ['default'], extend: {} },
+          themes: []
+        })
+      ).toThrow()
+    })
+
+    it('throws an error if the default theme has a mediaQuery', () => {
+      expect(() =>
+        validateOptions({
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          defaultTheme: { mediaQuery: 'some query', extend: {} },
+          themes: []
+        })
+      ).toThrow()
+    })
+
+    it('throws an error if a theme with name "dark" is configured with selectors', () => {
+      expect(() =>
+        validateOptions({
+          defaultTheme: { extend: {} },
+          themes: [{ name: 'dark', selectors: [], extend: {} }]
+        })
+      ).toThrow()
+    })
+
+    it('throws an error if a theme with name "dark" is configured with a mediaQuery', () => {
+      expect(() =>
+        validateOptions({
+          defaultTheme: { extend: {} },
+          themes: [{ name: 'dark', mediaQuery: '', extend: {} }]
+        })
+      ).toThrow()
+    })
   })
 })
