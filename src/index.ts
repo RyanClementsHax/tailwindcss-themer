@@ -40,11 +40,20 @@ const addThemeVariants = (
  */
 const addThemeStyles = (themes: ThemeConfig[], api: PluginAPI): void => {
   const { addBase, e } = api
-  themes.forEach(({ name, extend }) => {
-    addBase({
-      [name === defaultThemeName ? ':root' : `.${e(name)}`]:
-        resolveThemeExtensionAsCustomProps(extend, api)
-    })
+  themes.forEach(({ name, selectors, extend, mediaQuery }) => {
+    selectors ??= name === defaultThemeName ? [':root'] : [`.${e(name)}`]
+    if (selectors.length > 0) {
+      addBase({
+        [selectors.join(', ')]: resolveThemeExtensionAsCustomProps(extend, api)
+      })
+    }
+    if (mediaQuery) {
+      addBase({
+        [mediaQuery]: {
+          ':root': resolveThemeExtensionAsCustomProps(extend, api)
+        }
+      })
+    }
   })
 }
 

@@ -54,8 +54,54 @@ describe('multiThemePlugin', () => {
         )
       }
     })
+  })
+
+  describe('styles', () => {
+    let api: PluginAPI
+
+    beforeEach(() => {
+      api = mock<PluginAPI>({
+        e: jest.fn(x => `escaped-${x}`),
+        theme: jest.fn(x => x) as PluginAPI['theme']
+      })
+    })
 
     it('adds the custom vars for each theme', () => {
+      const config: MultiThemePluginOptions = {
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'thing'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'dark',
+            extend: {
+              colors: {
+                primary: 'another',
+                secondary: 'something'
+              },
+              spacing: {
+                '0.5': '10px'
+              }
+            }
+          },
+          {
+            name: 'neon',
+            extend: {
+              colors: {
+                primary: 'another',
+                secondary: 'something'
+              },
+              spacing: {
+                '0.5': '10px'
+              }
+            }
+          }
+        ]
+      }
       multiThemePlugin(config).handler(api)
 
       expect(api.addBase).toHaveBeenCalledWith({
@@ -72,6 +118,146 @@ describe('multiThemePlugin', () => {
           }
         })
       }
+    })
+
+    it('adds the custom vars for each theme using selectors if provided', () => {
+      const config: MultiThemePluginOptions = {
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'thing'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'dark',
+            selectors: ['.dark-mode', '[data-theme="dark"]'],
+            extend: {
+              colors: {
+                primary: 'first'
+              }
+            }
+          },
+          {
+            name: 'neon',
+            selectors: ['.high-contrast', '[data-theme="high-contrast"]'],
+            extend: {
+              colors: {
+                primary: 'second'
+              }
+            }
+          }
+        ]
+      }
+
+      multiThemePlugin(config).handler(api)
+
+      expect(api.addBase).toHaveBeenCalledWith({
+        '.dark-mode, [data-theme="dark"]': {
+          '--colors-primary': 'first'
+        }
+      })
+      expect(api.addBase).toHaveBeenCalledWith({
+        '.high-contrast, [data-theme="high-contrast"]': {
+          '--colors-primary': 'second'
+        }
+      })
+    })
+
+    it('doesnt add a style when no selectors given', () => {
+      const config: MultiThemePluginOptions = {
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'thing'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'dark',
+            selectors: [],
+            extend: {
+              colors: {
+                primary: 'first'
+              }
+            }
+          }
+        ]
+      }
+
+      multiThemePlugin(config).handler(api)
+
+      expect(api.addBase).toHaveBeenCalledWith({
+        ':root': {
+          '--colors-primary': 'thing'
+        }
+      })
+      expect(api.addBase).toHaveBeenCalledTimes(1)
+    })
+
+    it('adds a media query if one given', () => {
+      const config: MultiThemePluginOptions = {
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'thing'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'dark',
+            selectors: ['[data-theme="dark"]'],
+            mediaQuery: '@media (prefers-color-scheme: dark)',
+            extend: {
+              colors: {
+                primary: 'first'
+              }
+            }
+          }
+        ]
+      }
+
+      multiThemePlugin(config).handler(api)
+
+      expect(api.addBase).toHaveBeenCalledWith({
+        '@media (prefers-color-scheme: dark)': {
+          ':root': {
+            '--colors-primary': 'first'
+          }
+        }
+      })
+    })
+
+    it('does not a media query if none given', () => {
+      const config: MultiThemePluginOptions = {
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'thing'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'dark',
+            selectors: ['[data-theme="dark"]'],
+            extend: {
+              colors: {
+                primary: 'first'
+              }
+            }
+          }
+        ]
+      }
+
+      multiThemePlugin(config).handler(api)
+
+      expect(api.addBase).not.toHaveBeenCalledWith({
+        '@media (prefers-color-scheme: dark)': expect.anything()
+      })
     })
   })
 

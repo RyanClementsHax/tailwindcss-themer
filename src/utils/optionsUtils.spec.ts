@@ -107,5 +107,16 @@ describe('themeUtils', () => {
         })
       ).toThrow()
     })
+
+    it('throws an error if the default theme has a selectors array', () => {
+      expect(() =>
+        validateOptions({
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          defaultTheme: { selectors: ['default'], extend: {} },
+          themes: [{ name: defaultThemeName, extend: {} }]
+        })
+      ).toThrow()
+    })
   })
 })

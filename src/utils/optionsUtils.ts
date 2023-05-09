@@ -3,10 +3,12 @@ import { TailwindExtension } from '../config'
 
 export interface ThemeConfig {
   name: string
+  selectors?: string[]
+  mediaQuery?: string
   extend: TailwindExtension
 }
 
-export type DefaultThemeConfig = Omit<ThemeConfig, 'name'>
+export type DefaultThemeConfig = Omit<ThemeConfig, 'name' | 'selectors'>
 
 export interface MultiThemePluginOptions {
   defaultTheme?: DefaultThemeConfig
@@ -20,6 +22,7 @@ export const defaultThemeName = '__default'
  * @throws an {@link Error} if the options are invalid
  */
 export const validateOptions = ({
+  defaultTheme,
   themes = []
 }: MultiThemePluginOptions): void => {
   if (themes.some(x => !x.name)) {
@@ -37,6 +40,9 @@ export const validateOptions = ({
     throw new Error(
       `No theme in the themes array in the multiThemePlugin options cannot have a name of "${defaultThemeName}"`
     )
+  }
+  if ((defaultTheme as ThemeConfig)?.selectors) {
+    throw new Error('The default theme cannot have any selectors')
   }
 }
 
