@@ -8,7 +8,10 @@ export interface ThemeConfig {
   extend: TailwindExtension
 }
 
-export type DefaultThemeConfig = Omit<ThemeConfig, 'name' | 'selectors'>
+export type DefaultThemeConfig = Omit<
+  ThemeConfig,
+  'name' | 'selectors' | 'mediaQuery'
+>
 
 export interface MultiThemePluginOptions {
   defaultTheme?: DefaultThemeConfig
@@ -43,6 +46,9 @@ export const validateOptions = ({
   }
   if ((defaultTheme as ThemeConfig)?.selectors) {
     throw new Error('The default theme cannot have any selectors')
+  }
+  if ((defaultTheme as ThemeConfig)?.mediaQuery) {
+    throw new Error('The default theme cannot have a media query')
   }
   const darkTheme = themes.find(x => x.name === 'dark')
   if (darkTheme?.selectors) {

@@ -114,7 +114,18 @@ describe('themeUtils', () => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-expect-error
           defaultTheme: { selectors: ['default'], extend: {} },
-          themes: [{ name: defaultThemeName, extend: {} }]
+          themes: []
+        })
+      ).toThrow()
+    })
+
+    it('throws an error if the default theme has a mediaQuery', () => {
+      expect(() =>
+        validateOptions({
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          defaultTheme: { mediaQuery: 'some query', extend: {} },
+          themes: []
         })
       ).toThrow()
     })
