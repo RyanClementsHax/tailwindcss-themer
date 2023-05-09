@@ -118,5 +118,23 @@ describe('themeUtils', () => {
         })
       ).toThrow()
     })
+
+    it('throws an error if a theme with name "dark" is configured with selectors', () => {
+      expect(() =>
+        validateOptions({
+          defaultTheme: { extend: {} },
+          themes: [{ name: 'dark', selectors: [], extend: {} }]
+        })
+      ).toThrow()
+    })
+
+    it('throws an error if a theme with name "dark" is configured with a mediaQuery', () => {
+      expect(() =>
+        validateOptions({
+          defaultTheme: { extend: {} },
+          themes: [{ name: 'dark', mediaQuery: '', extend: {} }]
+        })
+      ).toThrow()
+    })
   })
 })
