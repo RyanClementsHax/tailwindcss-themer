@@ -67,19 +67,24 @@ describe('multiThemePlugin', () => {
       multiThemePlugin(config).handler(api)
 
       expect(api.addVariant).toHaveBeenCalledWith('defaultTheme', [
-        '.escaped-defaultTheme &'
+        '.escaped-defaultTheme &',
+        '&.escaped-defaultTheme'
       ])
       expect(api.addVariant).toHaveBeenCalledWith('darkTheme', [
-        '.escaped-darkTheme &'
+        '.escaped-darkTheme &',
+        '&.escaped-darkTheme'
       ])
       expect(api.addVariant).not.toHaveBeenCalledWith('light', [
-        '.escaped-light &'
+        '.escaped-light &',
+        '&.escaped-light'
       ])
       expect(api.addVariant).not.toHaveBeenCalledWith('neon', [
-        '.escaped-neon &'
+        '.escaped-neon &',
+        '&.escaped-neon'
       ])
       expect(api.addVariant).not.toHaveBeenCalledWith('soft', [
-        '.escaped-soft &'
+        '.escaped-soft &',
+        '&.escaped-soft'
       ])
     })
 
@@ -126,13 +131,20 @@ describe('multiThemePlugin', () => {
 
       expect(api.addVariant).toHaveBeenCalledWith('darkTheme', [
         '.dark-mode &',
-        '[data-theme="dark"] &'
+        '&.dark-mode',
+        '[data-theme="dark"] &',
+        '&[data-theme="dark"]'
       ])
       expect(api.addVariant).toHaveBeenCalledWith('neon', [
         '.high-contrast &',
-        '[data-theme="high-contrast"] &'
+        '&.high-contrast',
+        '[data-theme="high-contrast"] &',
+        '&[data-theme="high-contrast"]'
       ])
-      expect(api.addVariant).toHaveBeenCalledWith('soft', ['.escaped-soft &'])
+      expect(api.addVariant).toHaveBeenCalledWith('soft', [
+        '.escaped-soft &',
+        '&.escaped-soft'
+      ])
     })
 
     it('doesnt add any selector based variants when none provided', () => {
