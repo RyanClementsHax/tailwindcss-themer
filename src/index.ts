@@ -36,7 +36,7 @@ const addThemeVariants = (
     if (selectors.length > 0) {
       addVariant(
         variantName,
-        selectors.map(x => `${x} &`)
+        selectors.flatMap(x => [`${x} &`, `&${x}`])
       )
     }
 
