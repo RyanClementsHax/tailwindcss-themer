@@ -49,6 +49,12 @@ All examples are located in the `examples` directory of this repo.
 4. Run `npm run start` in the selected example's directory
 5. After making a change to the plugin, restart the example's server (i.e. rerun `npm run start`) so that it picks up the changes
 
+### Running e2e tests
+
+For e2e testing we use [Playwright](https://playwright.dev/). Consult their documentation on how to set up the proper dependencies on your environment.
+
+> If you use WSL, you might find [this comment](https://github.com/microsoft/playwright/issues/13533#issuecomment-1098391029) to be helpful
+
 ## Commit message conventions
 
 `tailwindcss-themer` is using [Angular Commit Message Conventions](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#-commit-message-format). Please consult the guide for details on these conventions. Your PR might not be accepted if it does not abide by these conventions.

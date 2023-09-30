@@ -2,7 +2,9 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['<rootDir>[/\\\\](node_modules|examples)[/\\\\]'],
+  testPathIgnorePatterns: [
+    '<rootDir>[/\\\\](node_modules|examples|e2e)[/\\\\]'
+  ],
   watchPlugins: [
     'jest-watch-typeahead/filename',
     'jest-watch-typeahead/testname'

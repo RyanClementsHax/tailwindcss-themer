@@ -10,23 +10,52 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - name: restore dependencies
         uses: bahmutov/npm-install@v1
       - run: npm run lint:all
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: restore dependencies
-        uses: bahmutov/npm-install@v1
-      - run: npm run test
   type_check:
     name: type check
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - name: restore dependencies
         uses: bahmutov/npm-install@v1
       - run: npm run type-check
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: restore dependencies
+        uses: bahmutov/npm-install@v1
+      - run: npm run test
+  e2e:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: restore dependencies
+        uses: bahmutov/npm-install@v1
+      - name: install playwright browsers
+        run: npx playwright install --with-deps
+      - run: npx playwright test # TODO: rename
+      - name: upload playwright report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
