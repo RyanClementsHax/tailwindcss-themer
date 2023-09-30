@@ -41,6 +41,8 @@
     "lint:styles:all": "npm run lint:styles -- ./**/*.{scss,css}",
     "test": "jest",
     "test:all": "npm run lint:all && npm run type-check && npm run test",
+    "e2e:install": "playwright install --with-deps",
+    "e2e": "playwright test",
     "prepare": "husky install",
     "prepublishOnly": "npm run build",
     "release": "semantic-release"

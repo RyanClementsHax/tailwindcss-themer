@@ -51,7 +51,12 @@ All examples are located in the `examples` directory of this repo.
 
 ### Running e2e tests
 
-For e2e testing we use [Playwright](https://playwright.dev/). Consult their documentation on how to set up the proper dependencies on your environment.
+For e2e testing we use [Playwright](https://playwright.dev/).
+
+1. Run `npm run e2e:install` to install the playwright dependencies and browsers
+2. Run `npm run e2e` to run the playwright tests
+
+Consult their documentation for more help on setting up your environment.
 
 > If you use WSL, you might find [this comment](https://github.com/microsoft/playwright/issues/13533#issuecomment-1098391029) to be helpful
 

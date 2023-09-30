@@ -50,8 +50,8 @@ jobs:
       - name: restore dependencies
         uses: bahmutov/npm-install@v1
       - name: install playwright browsers
-        run: npx playwright install --with-deps
-      - run: npx playwright test # TODO: rename
+        run: npm run e2e:install
+      - run: npm run e2e
       - name: upload playwright report
         uses: actions/upload-artifact@v3
         if: always()
