@@ -84,7 +84,7 @@ const multiThemePlugin = plugin.withOptions<MultiThemePluginOptions>(
           getThemesFromOptions(options)
         )
       }
-    } as Config)
+    }) as Config
 )
 
 export = multiThemePlugin

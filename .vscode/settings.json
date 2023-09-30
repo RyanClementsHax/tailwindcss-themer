@@ -4,7 +4,6 @@
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "npm.packageManager": "yarn",
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,

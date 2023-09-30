@@ -4,6 +4,6 @@ This is a basic example to demonstrate `tailwindcss-themer`
 
 ## Getting Started
 
-`yarn install`
+`npm install`
 
-`yarn start`
+`npm run start`
