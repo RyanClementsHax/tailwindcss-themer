@@ -19,7 +19,7 @@ If you are here to suggest a feature, feel free to [start a discussion](https://
 The fastest way to work on the repository is by using [Stackblitz's Codeflow](https://stackblitz.com/codeflow)
 
 1. Click the `Open in Codeflow` button on this repo's README (or go directly to [this link](https:///pr.new/RyanClementsHax/tailwindcss-themer))
-2. Run the build using `yarn watch`
+2. Run the build using `npm run watch`
 3. Implement your changes and tests to files in the `src/` directory and corresponding test files
 4. Use the example repos to integration test changes
 5. Document your changes in the appropriate doc page
@@ -31,9 +31,8 @@ The fastest way to work on the repository is by using [Stackblitz's Codeflow](ht
 If you prefer to not use Stackblitz for faster development, you can still do this the old fashioned way.
 
 1. Fork this repository
-2. Install dependencies by running `yarn install`
-   - We use [yarn](https://yarnpkg.com/) v7 for package management
-3. Run the build using `yarn watch`
+2. Install dependencies by running `npm install`
+3. Run the build using `npm run watch`
 4. Implement your changes and tests to files in the `src/` directory and corresponding test files
 5. Use the example repos to integration test changes
 6. Document your changes in the appropriate doc page
@@ -44,10 +43,11 @@ If you prefer to not use Stackblitz for faster development, you can still do thi
 
 All examples are located in the `examples` directory of this repo.
 
-1. Make sure you run `yarn watch` in the root of `tailwindcss-themer` to build the plugin and watch for any changes
-2. Make sure you've installed the dependencies by running `yarn install` in the repo's root directory
-3. Run `yarn start` in the selected examples' directory
-4. After making a change to the plugin, restart the example's server (i.e. rerun `yarn start`) so that it picks up the changes
+1. Run `npm run watch` in the root of `tailwindcss-themer` to build the plugin and watch for any changes
+2. Replace the `"tailwindcss-themer": "latest"` line in the example project's `package.json` with `"tailwindcss-themer": "file:../../"`
+3. Run`npm install` in the repo's root directory
+4. Run `npm run start` in the selected example's directory
+5. After making a change to the plugin, restart the example's server (i.e. rerun `npm run start`) so that it picks up the changes
 
 ## Commit message conventions
 

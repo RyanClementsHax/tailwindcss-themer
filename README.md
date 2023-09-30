@@ -69,16 +69,16 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
 
 ### Installation
 
-Install `tailwindcss-themer` using [`yarn`](https://yarnpkg.com/en/package/tailwindcss-themer):
-
-```bash
-yarn add --dev tailwindcss-themer
-```
-
-Or [`npm`](https://www.npmjs.com/package/tailwindcss-themer):
+Install `tailwindcss-themer` using [`npm`](https://www.npmjs.com/package/tailwindcss-themer):
 
 ```bash
 npm install --save-dev tailwindcss-themer
+```
+
+or [`yarn`](https://yarnpkg.com/en/package/tailwindcss-themer):
+
+```bash
+yarn add --dev tailwindcss-themer
 ```
 
 ### Add the Plugin

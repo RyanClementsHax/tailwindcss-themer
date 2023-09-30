@@ -1,6 +1,6 @@
 {
-  "*.@(ts|tsx|js|jsx)": ["yarn lint:js", "yarn format"],
-  "*.json": ["yarn format"],
-  "*.*rc": ["yarn format --parser json"],
-  "*.@(css|scss)": ["yarn lint:styles", "yarn format"]
+  "*.@(ts|tsx|js|jsx)": ["npm run lint:js", "npm run format"],
+  "*.json": ["npm run format"],
+  "*.*rc": ["npm run format -- --parser json"],
+  "*.@(css|scss)": ["npm run lint:styles", "npm run format"]
 }
