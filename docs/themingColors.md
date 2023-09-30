@@ -124,3 +124,5 @@ All of the colors get parsed down to rgb channels.
   --colors-quinary: 0, 0, 255;
 }
 ```
+
+> If you want to see colors with alpha channels supported, hop on [this discussion](https://github.com/RyanClementsHax/tailwindcss-themer/discussions/95)!
