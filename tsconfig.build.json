@@ -1,11 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": [
-    "node_modules",
-    "lib",
-    "src/**/*.spec.ts",
-    "src/testSetup.ts",
-    "playwright.config.ts",
-    "e2e"
-  ]
+  "exclude": ["node_modules", "lib", "src/**/*.spec.ts", "src/testSetup.ts"]
 }

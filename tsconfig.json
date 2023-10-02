@@ -101,5 +101,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "exclude": ["node_modules", "lib", "examples"],
-  "include": ["src", "playwright.config.ts", "e2e"]
+  "include": ["src"]
 }
