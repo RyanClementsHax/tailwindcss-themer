@@ -3,6 +3,7 @@
   "description": "e2e tests for tailwindcss-themer",
   "type": "module",
   "scripts": {
+    "postinstall": "playwright install --with-deps",
     "e2e": "playwright test"
   },
   "devDependencies": {

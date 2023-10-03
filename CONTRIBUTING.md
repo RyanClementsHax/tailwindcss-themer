@@ -53,7 +53,9 @@ All examples are located in the `examples` directory of this repo.
 
 For e2e testing we use [Playwright](https://playwright.dev/).
 
-1. Run `npm run e2e:install` to install the playwright dependencies and browsers
+Run the following commands in the `e2e` directory to run the tests.
+
+1. Run `npm install` to install the playwright dependencies and browsers
 2. Run `npm run e2e` to run the playwright tests
 
 Consult their documentation for more help on setting up your environment.

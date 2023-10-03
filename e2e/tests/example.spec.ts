@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { openWithConfig } from './test_repos'
+import { openWithConfig } from '../test_repos'
 
 test('displays the default theme by default', async ({ page }) => {
   const { url, stop } = await openWithConfig({
