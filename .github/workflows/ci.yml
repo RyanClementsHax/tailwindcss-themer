@@ -49,6 +49,7 @@ jobs:
           node-version: 18
       - name: restore dependencies
         uses: bahmutov/npm-install@v1
+      - run: npm run build
       - name: restore e2e dependencies
         uses: bahmutov/npm-install@v1
         with:
