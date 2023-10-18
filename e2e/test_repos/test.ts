@@ -95,6 +95,7 @@ async function openWithConfig(
         if (started) return
         const newChunk = chunk.toString()
         stdout += newChunk
+        console.log(newChunk)
         const match: RegExpMatchArray | null = stdout.match(
           /Local:\s+http:\/\/localhost:(\d+)\s/
         )
