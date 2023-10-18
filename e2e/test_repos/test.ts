@@ -87,7 +87,7 @@ async function openWithConfig(
       let started = false
       let stdout = ''
       const rejectTimeout = setTimeout(() => {
-        reject(new Error('Timed out waiting for remix-serve to start'))
+        reject(new Error('Timed out waiting for npm run start to start'))
       }, 20000)
       serveProcess.stderr.pipe(process.stderr)
       // 5. wait for port log
