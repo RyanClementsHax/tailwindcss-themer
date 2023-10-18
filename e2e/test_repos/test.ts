@@ -4,8 +4,10 @@ import url from 'node:url'
 import serialize from 'serialize-javascript'
 import getPort from 'get-port'
 import { spawn } from 'cross-spawn'
+import { test as base } from '@playwright/test'
+import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 
-// based off of https://github.com/remix-run/remix/blob/main/integration/helpers/create-fixture.ts
+// based off of https://github.com/remix-run/remix/blob/6a9b8d6b836f05a47af9ca6e6f1f3898a2fba8ec/integration/helpers/create-fixture.ts
 
 // TODO: color output
 
@@ -13,8 +15,27 @@ const TMP_DIR = '.tmp'
 const TEMPLATES_DIR = 'templates'
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
-export async function openWithConfig(
-  config: unknown
+export interface TestRepo {
+  openWithConfig(config: MultiThemePluginOptions): Promise<void>
+}
+
+export const test = base.extend<{ testRepo: TestRepo }>({
+  testRepo: async ({ page }, use) => {
+    let stop: (() => void) | undefined
+    const testRepo: TestRepo = {
+      async openWithConfig(config) {
+        const { url, stop: _stop } = await openWithConfig(config)
+        await page.goto(url)
+        stop = _stop
+      }
+    }
+    await use(testRepo)
+    stop?.()
+  }
+})
+
+async function openWithConfig(
+  config: MultiThemePluginOptions
 ): Promise<{ url: string; stop: () => void }> {
   // 1. create tmp directory
   const template = 'create-react-app'
@@ -23,6 +44,7 @@ export async function openWithConfig(
     TEMPLATES_DIR,
     template
   )
+  // TODO: use test name
   const testDir = `tt-${template}-${Math.random().toString(32).slice(2)}`
   const testTmpDirPath = path.join(integrationTemplateDir, TMP_DIR, testDir)
   await fse.ensureDir(testTmpDirPath)
@@ -100,7 +122,7 @@ export async function openWithConfig(
     }
   )
 
-  // 6. return url
+  // 6. return url and stop function
   return {
     url: `http://localhost:${port}`,
     stop

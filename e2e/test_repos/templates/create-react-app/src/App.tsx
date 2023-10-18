@@ -1,19 +1,13 @@
 import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
 
 function App() {
   const [theme, setTheme] = useState('')
   return (
-    <div className={'App ' + theme}>
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+    <div className={theme}>
+      <header>
         <h1 className="text-primary-500 text-3xl font-bold underline">
-          Hello world!
+          Mainitainers ❤️ integration tests
         </h1>
-        <p className="text-secondary-500">
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
         <select
           className="border border-gray-800 text-gray-800"
           value={theme}
@@ -21,16 +15,7 @@ function App() {
         >
           <option value="">default</option>
           <option>dark</option>
-          <option>neon</option>
         </select>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
       </header>
     </div>
   )

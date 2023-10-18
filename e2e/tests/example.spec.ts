@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test'
-import { openWithConfig } from '../test_repos'
+import { expect } from '@playwright/test'
+import { test } from '../test_repos/test'
 
-test('displays the default theme by default', async ({ page }) => {
-  const { url, stop } = await openWithConfig({
+test('displays the default theme by default', async ({ page, testRepo }) => {
+  await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -46,7 +46,6 @@ test('displays the default theme by default', async ({ page }) => {
       }
     ]
   })
-  await page.goto(url)
+
   await expect(page).toHaveScreenshot()
-  stop()
 })

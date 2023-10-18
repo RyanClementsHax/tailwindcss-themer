@@ -25,8 +25,20 @@
   "overrides": [
     {
       "files": ["**/*.ts?(x)"],
+      "excludedFiles": ["e2e/**"],
       "parserOptions": {
         "project": "./tsconfig.json"
+      },
+      "rules": {
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/explicit-module-boundary-types": "error",
+        "@typescript-eslint/no-unused-vars": "warn"
+      }
+    },
+    {
+      "files": ["e2e/**/*.ts?(x)"],
+      "parserOptions": {
+        "project": "./e2e/tsconfig.json"
       },
       "rules": {
         "@typescript-eslint/no-floating-promises": "error",
