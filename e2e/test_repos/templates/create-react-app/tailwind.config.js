@@ -1,6 +1,5 @@
 // @ts-nocheck
-console.log(require(process.env['TAILWIND_CONFIG_PATH']))
-console.log(require(process.env['THEMER_CONFIG_PATH']))
+// TODO make whole config an env var
 module.exports = {
   ...require(process.env['TAILWIND_CONFIG_PATH']),
   plugins: [

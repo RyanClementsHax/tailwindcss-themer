@@ -87,22 +87,25 @@ async function openWithConfig(
       let started = false
       let stdout = ''
       const rejectTimeout = setTimeout(() => {
-        reject(new Error('Timed out waiting for npm run start to start'))
-      }, 20000)
+        reject(
+          new Error(
+            `Timed out waiting for "npm run start" to start\n\n${stdout}`
+          )
+        )
+      }, 20_000)
       serveProcess.stderr.pipe(process.stderr)
       // 5. wait for port log
       serveProcess.stdout.on('data', chunk => {
         if (started) return
         const newChunk = chunk.toString()
         stdout += newChunk
-        console.log(newChunk)
-        const match: RegExpMatchArray | null = stdout.match(
+        const startupLogMatch: RegExpMatchArray | null = stdout.match(
           /Local:\s+http:\/\/localhost:(\d+)\s/
         )
-        if (match) {
+        if (startupLogMatch) {
           clearTimeout(rejectTimeout)
           started = true
-          const parsedPort = parseInt(match[1], 10)
+          const parsedPort = parseInt(startupLogMatch[1], 10)
 
           if (port !== parsedPort) {
             reject(
@@ -118,6 +121,20 @@ async function openWithConfig(
               serveProcess.kill()
             }
           })
+        }
+        // Cancel waiting early if we see an error
+        const errorLogMatch: RegExpMatchArray | null = stdout.match(
+          /webpack compiled with \d+ error/
+        )
+        if (errorLogMatch) {
+          clearTimeout(rejectTimeout)
+          started = true
+          reject(
+            new Error(
+              `Could not start template with "npm run start".\n\n${stdout}`
+            )
+          )
+          return
         }
       })
     }
