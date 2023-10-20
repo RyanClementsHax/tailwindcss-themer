@@ -7,11 +7,17 @@ export interface TestRepo {
 }
 
 export const test = base.extend<{ testRepo: TestRepo }>({
-  testRepo: async ({ page }, use) => {
+  testRepo: async ({ page }, use, testInfo) => {
     let stop: (() => void) | undefined
     const testRepo: TestRepo = {
       async openWithConfig(config) {
-        const { url, stop: _stop } = await openWithConfig(config)
+        const tmpDirName = [
+          ...testInfo.titlePath.map(x =>
+            x.replace(/ /g, '-').replace(/\./, '-')
+          ),
+          testInfo.project.name
+        ].join('_')
+        const { url, stop: _stop } = await openWithConfig(tmpDirName, config)
         await page.goto(url)
         stop = _stop
       }

@@ -4,9 +4,13 @@ import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 import { createRepo } from '.'
 
 export async function openWithConfig(
+  tmpDirName: string,
   config: MultiThemePluginOptions
 ): Promise<{ url: string; stop: () => void }> {
-  const repo = await createRepo('create-react-app')
+  const repo = await createRepo({
+    template: 'create-react-app',
+    tmpDirName
+  })
 
   const { filePath: tailwindConfigFilePath } = await repo.writeFile(
     'tailwind.test.config.js',

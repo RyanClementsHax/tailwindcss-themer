@@ -28,18 +28,35 @@ export interface StartServerOptions {
   }) => boolean
 }
 
-export async function createRepo(template: Template): Promise<Repo> {
+export interface CreateRepoOptions {
+  tmpDirName: string
+  template: Template
+}
+
+export async function createRepo(options: CreateRepoOptions): Promise<Repo> {
+  if (!options.tmpDirName.match(/^[a-zA-Z_\-.]+$/)) {
+    throw new Error(
+      `Could not run open test repo with tmp dir name ${options.tmpDirName} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters`
+    )
+  }
   const integrationTemplateDirPath = path.resolve(
     testReposDirPath,
     TEMPLATES_DIR,
-    template
+    options.template
   )
-  // TODO: use test name
-  const testDir = `tt-${template}-${Math.random().toString(32).slice(2)}`
-  const testTmpDirPath = path.join(integrationTemplateDirPath, TMP_DIR, testDir)
+  const testTmpDirPath = path.join(
+    integrationTemplateDirPath,
+    TMP_DIR,
+    options.tmpDirName
+  )
+  if (await fse.exists(testTmpDirPath)) {
+    throw new Error(
+      `Was given duplicate tmp dir directory name "${testTmpDirPath}". This would have led to test state bleeding between tests. Please make sure your test title is unique (includes test group names).`
+    )
+  }
   await fse.ensureDir(testTmpDirPath)
   return new RepoImpl({
-    template,
+    template: options.template,
     testTmpDirPath,
     integrationTemplateDirPath
   })
@@ -69,12 +86,15 @@ class RepoImpl implements Repo {
         },
         cwd: this.config.integrationTemplateDirPath
       })
+      const fullCommand = `${options.command[0]} ${options.command[1].join(
+        ' '
+      )}`
       let started = false
       let stdout = ''
       const rejectTimeout = setTimeout(() => {
         reject(
           new Error(
-            `Timed out waiting for server to start with ${options.command}\n\n${stdout}`
+            `Timed out waiting for server to start with ${fullCommand}\n\n${stdout}`
           )
         )
       }, 20_000)
@@ -89,7 +109,7 @@ class RepoImpl implements Repo {
             template: this.config.template,
             options: {
               ...options,
-              fullCommand: options.command[0] + options.command[1].join(' ')
+              fullCommand
             }
           })
           if (started) {
