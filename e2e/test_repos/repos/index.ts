@@ -2,14 +2,11 @@ import url from 'node:url'
 import path from 'node:path'
 import fse from 'fs-extra'
 import { spawn } from 'cross-spawn'
+import { $ } from 'execa'
 
 // based off of https://github.com/remix-run/remix/blob/6a9b8d6b836f05a47af9ca6e6f1f3898a2fba8ec/integration/helpers/create-fixture.ts
 
 // TODO: color output
-
-const TMP_DIR = '.tmp'
-const TEMPLATES_DIR = 'templates'
-const testReposDirPath = url.fileURLToPath(new URL('..', import.meta.url))
 
 export type Template = 'create-react-app'
 
@@ -41,16 +38,8 @@ export async function createIsolatedIntTest(
       `Could not run open test repo with tmp dir name ${options.tmpDirName} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters`
     )
   }
-  const integrationTemplateDirPath = path.resolve(
-    testReposDirPath,
-    TEMPLATES_DIR,
-    options.template
-  )
-  const testTmpDirPath = path.join(
-    integrationTemplateDirPath,
-    TMP_DIR,
-    options.tmpDirName
-  )
+  const templateDirPath = getTemplateDirPath(options.template)
+  const testTmpDirPath = getTestTmpDirPath(options.template, options.tmpDirName)
   if (await fse.exists(testTmpDirPath)) {
     throw new Error(
       `Was given duplicate tmp dir directory name "${testTmpDirPath}". This would have led to test state bleeding between tests. Please make sure your test title is unique (includes test group names).`
@@ -60,8 +49,24 @@ export async function createIsolatedIntTest(
   return new IsolatedIntTestImpl({
     template: options.template,
     testTmpDirPath,
-    integrationTemplateDirPath
+    integrationTemplateDirPath: templateDirPath
   })
+}
+
+export async function setupTemplates(): Promise<void> {
+  const templateDirPaths = getTemplateDirPaths()
+  for (const templateDirPath of templateDirPaths) {
+    const nodeModulesPath = path.join(templateDirPath, 'node_modules')
+    if (!(await fse.exists(nodeModulesPath))) {
+      await $({ cwd: templateDirPath })`npm install`
+    }
+  }
+}
+
+export async function cleanupTmpDirs(): Promise<void> {
+  for (const tmpDir of getTemplateTmpDirPaths()) {
+    await fse.rm(tmpDir, { recursive: true, force: true })
+  }
 }
 
 interface IsolatedIntTestConfig {
@@ -131,4 +136,37 @@ class IsolatedIntTestImpl implements IsolatedIntTest {
       })
     })
   }
+}
+
+const TMP_DIR = '.tmp'
+const TEMPLATES_DIR = 'templates'
+const testReposDirPath = url.fileURLToPath(new URL('..', import.meta.url))
+
+function getTemplates(): Template[] {
+  // Using typescript to force exhaustiveness
+  return Object.keys({
+    'create-react-app': true
+  } satisfies Record<Template, boolean>) as Template[]
+}
+
+function getTemplateDirPath(template: Template) {
+  return path.resolve(testReposDirPath, TEMPLATES_DIR, template)
+}
+
+function getTemplateTmpDirPath(template: Template) {
+  const templateDirPath = getTemplateDirPath(template)
+  return path.join(templateDirPath, TMP_DIR)
+}
+
+function getTestTmpDirPath(template: Template, tmpDirName: string) {
+  const templateDirPath = getTemplateTmpDirPath(template)
+  return path.join(templateDirPath, tmpDirName)
+}
+
+function getTemplateDirPaths(): string[] {
+  return getTemplates().map(template => getTemplateDirPath(template))
+}
+
+function getTemplateTmpDirPaths(): string[] {
+  return getTemplates().map(template => getTemplateTmpDirPath(template))
 }
