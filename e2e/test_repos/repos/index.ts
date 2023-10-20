@@ -13,7 +13,7 @@ const testReposDirPath = url.fileURLToPath(new URL('..', import.meta.url))
 
 export type Template = 'create-react-app'
 
-export interface Repo {
+export interface IsolatedIntTest {
   writeFile(fileName: string, data: string): Promise<{ filePath: string }>
   startServer(options: StartServerOptions): Promise<{ stop: () => void }>
 }
@@ -28,12 +28,14 @@ export interface StartServerOptions {
   }) => boolean
 }
 
-export interface CreateRepoOptions {
+export interface IsolatedIntTestOptions {
   tmpDirName: string
   template: Template
 }
 
-export async function createRepo(options: CreateRepoOptions): Promise<Repo> {
+export async function createIsolatedIntTest(
+  options: IsolatedIntTestOptions
+): Promise<IsolatedIntTest> {
   if (!options.tmpDirName.match(/^[a-zA-Z_\-.]+$/)) {
     throw new Error(
       `Could not run open test repo with tmp dir name ${options.tmpDirName} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters`
@@ -55,21 +57,21 @@ export async function createRepo(options: CreateRepoOptions): Promise<Repo> {
     )
   }
   await fse.ensureDir(testTmpDirPath)
-  return new RepoImpl({
+  return new IsolatedIntTestImpl({
     template: options.template,
     testTmpDirPath,
     integrationTemplateDirPath
   })
 }
 
-interface RepoConfig {
+interface IsolatedIntTestConfig {
   template: Template
   testTmpDirPath: string
   integrationTemplateDirPath: string
 }
 
-class RepoImpl implements Repo {
-  constructor(private config: RepoConfig) {}
+class IsolatedIntTestImpl implements IsolatedIntTest {
+  constructor(private config: IsolatedIntTestConfig) {}
 
   async writeFile(fileName: string, data: string) {
     const filePath = path.join(this.config.testTmpDirPath, fileName)
@@ -86,6 +88,7 @@ class RepoImpl implements Repo {
         },
         cwd: this.config.integrationTemplateDirPath
       })
+      const stop = () => serveProcess.kill()
       const fullCommand = `${options.command[0]} ${options.command[1].join(
         ' '
       )}`
@@ -116,12 +119,13 @@ class RepoImpl implements Repo {
             clearTimeout(rejectTimeout)
             started = true
             resolve({
-              stop: () => serveProcess.kill()
+              stop
             })
           }
         } catch (e: unknown) {
           clearTimeout(rejectTimeout)
           started = true
+          stop()
           reject(e)
         }
       })

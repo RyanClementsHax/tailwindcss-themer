@@ -1,18 +1,18 @@
 import serialize from 'serialize-javascript'
 import getPort from 'get-port'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
-import { createRepo } from '.'
+import { createIsolatedIntTest } from '.'
 
 export async function openWithConfig(
   tmpDirName: string,
   config: MultiThemePluginOptions
 ): Promise<{ url: string; stop: () => void }> {
-  const repo = await createRepo({
+  const test = await createIsolatedIntTest({
     template: 'create-react-app',
     tmpDirName
   })
 
-  const { filePath: tailwindConfigFilePath } = await repo.writeFile(
+  const { filePath: tailwindConfigFilePath } = await test.writeFile(
     'tailwind.test.config.js',
     `module.exports = {
         ...${JSON.stringify({
@@ -26,7 +26,7 @@ export async function openWithConfig(
   )
 
   const port = await getPort()
-  const { stop } = await repo.startServer({
+  const { stop } = await test.startServer({
     command: ['npm', ['run', 'start']],
     env: {
       PORT: port.toFixed(0),

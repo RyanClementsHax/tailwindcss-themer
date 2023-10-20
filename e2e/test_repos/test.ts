@@ -11,6 +11,9 @@ export const test = base.extend<{ testRepo: TestRepo }>({
     let stop: (() => void) | undefined
     const testRepo: TestRepo = {
       async openWithConfig(config) {
+        if (stop) {
+          throw new Error('Only one repo should be opened per test fixture')
+        }
         const tmpDirName = [
           ...testInfo.titlePath.map(x =>
             x.replace(/ /g, '-').replace(/\./, '-')
