@@ -40,7 +40,7 @@
     "lint:styles": "stylelint --allow-empty-input --fix",
     "lint:styles:all": "npm run lint:styles -- ./**/*.{scss,css}",
     "test": "jest",
-    "test:all": "npm run lint:all && npm run type-check && npm run test",
+    "test:all": "npm run lint:all && npm run type-check && npm run test && cd e2e && npm run e2e",
     "prepare": "husky install",
     "prepublishOnly": "npm run build",
     "release": "semantic-release"
