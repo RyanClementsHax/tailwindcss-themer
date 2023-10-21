@@ -14,13 +14,10 @@ export const test = base.extend<{ testRepo: TestRepo }>({
         if (stop) {
           throw new Error('Only one repo should be opened per test fixture')
         }
-        const tmpDirName = [
-          ...testInfo.titlePath.map(x =>
-            x.replace(/ /g, '-').replace(/\./, '-')
-          ),
-          testInfo.project.name
-        ].join('_')
-        const { url, stop: _stop } = await openWithConfig(tmpDirName, config)
+        const { url, stop: _stop } = await openWithConfig(config, {
+          projectName: testInfo.project.name,
+          titlePath: testInfo.titlePath
+        })
         await page.goto(url)
         stop = _stop
       }

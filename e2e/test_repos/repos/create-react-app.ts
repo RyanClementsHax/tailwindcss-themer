@@ -3,10 +3,19 @@ import getPort from 'get-port'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 import { createIsolatedIntTest } from '.'
 
+export interface OpenOptions {
+  projectName: string
+  titlePath: string[]
+}
+
 export async function openWithConfig(
-  tmpDirName: string,
-  config: MultiThemePluginOptions
+  config: MultiThemePluginOptions,
+  options: OpenOptions
 ): Promise<{ url: string; stop: () => void }> {
+  const tmpDirName = [
+    ...options.titlePath.map(x => x.replace(/ /g, '-').replace(/\./, '-')),
+    options.projectName
+  ].join('_')
   const test = await createIsolatedIntTest({
     template: 'create-react-app',
     tmpDirName

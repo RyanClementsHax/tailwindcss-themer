@@ -6,8 +6,6 @@ import { $ } from 'execa'
 
 // based off of https://github.com/remix-run/remix/blob/6a9b8d6b836f05a47af9ca6e6f1f3898a2fba8ec/integration/helpers/create-fixture.ts
 
-// TODO: color output
-
 export type Template = 'create-react-app'
 
 export interface IsolatedIntTest {
@@ -30,12 +28,14 @@ export interface IsolatedIntTestOptions {
   template: Template
 }
 
+const tmpDirNameRegex = /^[a-zA-Z_\-.]+$/
+
 export async function createIsolatedIntTest(
   options: IsolatedIntTestOptions
 ): Promise<IsolatedIntTest> {
-  if (!options.tmpDirName.match(/^[a-zA-Z_\-.]+$/)) {
+  if (!options.tmpDirName.match(tmpDirNameRegex)) {
     throw new Error(
-      `Could not run open test repo with tmp dir name ${options.tmpDirName} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters`
+      `Could not run open test repo with tmp dir name ${options.tmpDirName} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters (regex: ${tmpDirNameRegex})`
     )
   }
   const templateDirPath = getTemplateDirPath(options.template)
@@ -49,7 +49,7 @@ export async function createIsolatedIntTest(
   return new IsolatedIntTestImpl({
     template: options.template,
     testTmpDirPath,
-    integrationTemplateDirPath: templateDirPath
+    templateDirPath
   })
 }
 
@@ -72,7 +72,7 @@ export async function cleanupTmpDirs(): Promise<void> {
 interface IsolatedIntTestConfig {
   template: Template
   testTmpDirPath: string
-  integrationTemplateDirPath: string
+  templateDirPath: string
 }
 
 class IsolatedIntTestImpl implements IsolatedIntTest {
@@ -91,7 +91,7 @@ class IsolatedIntTestImpl implements IsolatedIntTest {
           PATH: process.env['PATH'],
           ...options.env
         },
-        cwd: this.config.integrationTemplateDirPath
+        cwd: this.config.templateDirPath
       })
       const stop = () => serveProcess.kill()
       const fullCommand = `${options.command[0]} ${options.command[1].join(
