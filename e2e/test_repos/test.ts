@@ -4,6 +4,7 @@ import { openWithConfig } from './repos/create-react-app'
 
 export interface TestRepo {
   openWithConfig(config: MultiThemePluginOptions): Promise<void>
+  setThemeAsClass(theme: string): Promise<void>
 }
 
 export const test = base.extend<{ testRepo: TestRepo }>({
@@ -20,6 +21,9 @@ export const test = base.extend<{ testRepo: TestRepo }>({
         })
         await page.goto(url)
         stop = _stop
+      },
+      async setThemeAsClass(theme) {
+        await page.getByRole('textbox', { name: /theme/i }).fill(theme)
       }
     }
     await use(testRepo)

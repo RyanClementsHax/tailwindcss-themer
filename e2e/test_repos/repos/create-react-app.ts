@@ -24,14 +24,14 @@ export async function openWithConfig(
   const { filePath: tailwindConfigFilePath } = await test.writeFile(
     'tailwind.test.config.js',
     `module.exports = {
-        ...${JSON.stringify({
-          content: ['./src/**/*.{js,jsx,ts,tsx}'],
-          theme: {
-            extend: {}
-          }
-        })},
-        plugins: [require('tailwindcss-themer')(${serialize(config)})]
-      }`
+      ...${JSON.stringify({
+        content: ['./src/**/*.{js,jsx,ts,tsx}'],
+        theme: {
+          extend: {}
+        }
+      })},
+      plugins: [require('tailwindcss-themer')(${serialize(config)})]
+    }`
   )
 
   const port = await getPort()
