@@ -4,7 +4,8 @@ import { openWithConfig } from './repos/create-react-app'
 
 export interface TestRepo {
   openWithConfig(config: MultiThemePluginOptions): Promise<void>
-  setThemeAsClass(theme: string): Promise<void>
+  setClassOnRoot(theme: string): Promise<void>
+  setAttributeOnRoot(key: string, value: string): Promise<void>
 }
 
 export const test = base.extend<{ testRepo: TestRepo }>({
@@ -19,11 +20,23 @@ export const test = base.extend<{ testRepo: TestRepo }>({
           projectName: testInfo.project.name,
           titlePath: testInfo.titlePath
         })
-        await page.goto(url)
         stop = _stop
+        await page.goto(url)
       },
-      async setThemeAsClass(theme) {
-        await page.getByRole('textbox', { name: /theme/i }).fill(theme)
+      async setClassOnRoot(theme) {
+        await this.setAttributeOnRoot('className', theme)
+      },
+      async setAttributeOnRoot(key, value) {
+        const attributesInputLocator = page.getByRole('textbox', {
+          name: /attributes/i
+        })
+        const attributes = JSON.parse(await attributesInputLocator.inputValue())
+        await attributesInputLocator.fill(
+          JSON.stringify({
+            ...attributes,
+            [key]: value
+          })
+        )
       }
     }
     await use(testRepo)

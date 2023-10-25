@@ -1,35 +1,48 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const preventPurgingOfThemesThatAreSetInTests = ['darkTheme']
+const preventPurgingOfThemesThatAreSetInTests = [
+  'darkTheme',
+  'dark-mode',
+  '[data-theme="dark"]'
+]
 
 function App() {
-  const [theme, setTheme] = useState('')
+  const [attributes, setAttributes] = useState('{}')
+  const parsedAttributes = useMemo(
+    () => JSON.parse(attributes) as Record<string, string>,
+    [attributes]
+  )
   return (
-    <div className={theme}>
-      <div className="mx-auto w-[50ch] pt-16">
-        <header>
-          <h1 className="text-primary-500 text-3xl font-bold">
-            Mainitainers ❤️ integration tests
-          </h1>
-          <div className="mt-8">
-            <label
-              htmlFor="theme"
-              className="text-sm font-medium leading-6 text-gray-900"
-            >
-              Theme
+    <div {...parsedAttributes}>
+      <header className="flex w-[75ch] flex-col px-5 pt-16">
+        <h1 className="text-primary text-3xl font-bold">
+          Mainitainers ❤️ integration tests
+        </h1>
+        <div className="mt-8 flex gap-2">
+          <div className="flex w-full flex-col gap-1.5">
+            <label htmlFor="theme" className="font-mediumtext-gray-900 text-sm">
+              Attributes
             </label>
-            <input
-              type="text"
+            <textarea
               id="theme"
-              className="mt-2 block w-48 rounded-md rounded-md border-0 px-7 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+              spellCheck="false"
+              className="h-64 w-full rounded-md rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
               placeholder="theme"
-              value={theme}
-              onChange={e => setTheme(e.target.value)}
+              value={attributes}
+              onChange={e => setAttributes(e.target.value)}
             />
           </div>
-        </header>
-      </div>
+          <div className="flex w-full flex-col gap-1.5">
+            <p className="text-sm font-medium text-gray-900">
+              Formatted attributes
+            </p>
+            <pre>
+              <code>{JSON.stringify(parsedAttributes, null, 2)}</code>
+            </pre>
+          </div>
+        </div>
+      </header>
     </div>
   )
 }
