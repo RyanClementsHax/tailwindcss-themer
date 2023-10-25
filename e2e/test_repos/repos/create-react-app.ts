@@ -37,6 +37,7 @@ export async function openWithConfig(
   const buildDir = test.getBuildDir()
 
   await test.build({
+    command: ['npm', ['run', 'build']],
     env: {
       TAILWIND_CONFIG_PATH: tailwindConfigFilePath,
       BUILD_PATH: buildDir

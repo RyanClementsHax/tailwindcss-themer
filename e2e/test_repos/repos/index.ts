@@ -2,7 +2,7 @@ import url from 'node:url'
 import path from 'node:path'
 import fse from 'fs-extra'
 import { spawn } from 'cross-spawn'
-import { $ } from 'execa'
+import { $, execa } from 'execa'
 
 // based off of https://github.com/remix-run/remix/blob/6a9b8d6b836f05a47af9ca6e6f1f3898a2fba8ec/integration/helpers/create-fixture.ts
 
@@ -16,6 +16,7 @@ export interface IsolatedIntTest {
 }
 
 export interface BuildOptions {
+  command: [string, ReadonlyArray<string>]
   env: Record<string, string>
 }
 
@@ -90,17 +91,18 @@ class IsolatedIntTestImpl implements IsolatedIntTest {
     return path.join(this.config.testTmpDirPath, 'build')
   }
 
-  async build({ env }: BuildOptions) {
-    await $({
+  async build({ command, env }: BuildOptions) {
+    await execa(command[0], command[1], {
       cwd: this.config.templateDirPath,
       env
-    })`npm run build`
+    })
   }
 
   async startServer(options: StartServerOptions) {
     return await new Promise<{ stop: () => void }>((resolve, reject) => {
       const serveProcess = spawn(options.command[0], options.command[1], {
         env: {
+          // make sure npm executable can be found on path
           PATH: process.env['PATH'],
           ...options.env
         },
