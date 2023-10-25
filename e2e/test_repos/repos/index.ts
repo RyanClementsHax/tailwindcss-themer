@@ -10,17 +10,19 @@ export type Template = 'create-react-app'
 
 export interface IsolatedIntTest {
   writeFile(fileName: string, data: string): Promise<{ filePath: string }>
+  getBuildDir(): string
+  build(options: BuildOptions): Promise<void>
   startServer(options: StartServerOptions): Promise<{ stop: () => void }>
+}
+
+export interface BuildOptions {
+  env: Record<string, string>
 }
 
 export interface StartServerOptions {
   command: [string, ReadonlyArray<string>]
   env: Record<string, string>
-  isServerStarted: (context: {
-    stdout: string
-    template: Template
-    options: StartServerOptions & { fullCommand: string }
-  }) => boolean
+  isServerStarted: (context: { stdout: string; template: Template }) => boolean
 }
 
 export interface IsolatedIntTestOptions {
@@ -84,6 +86,17 @@ class IsolatedIntTestImpl implements IsolatedIntTest {
     return { filePath }
   }
 
+  getBuildDir(): string {
+    return path.join(this.config.testTmpDirPath, 'build')
+  }
+
+  async build({ env }: BuildOptions) {
+    await $({
+      cwd: this.config.templateDirPath,
+      env
+    })`npm run build`
+  }
+
   async startServer(options: StartServerOptions) {
     return await new Promise<{ stop: () => void }>((resolve, reject) => {
       const serveProcess = spawn(options.command[0], options.command[1], {
@@ -114,11 +127,7 @@ class IsolatedIntTestImpl implements IsolatedIntTest {
         try {
           started = options.isServerStarted({
             stdout,
-            template: this.config.template,
-            options: {
-              ...options,
-              fullCommand
-            }
+            template: this.config.template
           })
           if (started) {
             clearTimeout(rejectTimeout)

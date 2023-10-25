@@ -34,17 +34,24 @@ export async function openWithConfig(
     }`
   )
 
+  const buildDir = test.getBuildDir()
+
+  await test.build({
+    env: {
+      TAILWIND_CONFIG_PATH: tailwindConfigFilePath,
+      BUILD_PATH: buildDir
+    }
+  })
+
   const port = await getPort()
   const { stop } = await test.startServer({
-    command: ['npm', ['run', 'start']],
+    command: ['npm', ['run', 'serve', '--', buildDir]],
     env: {
-      PORT: port.toFixed(0),
-      TAILWIND_CONFIG_PATH: tailwindConfigFilePath,
-      BROWSER: 'none'
+      PORT: port.toFixed(0)
     },
-    isServerStarted: ({ stdout, template, options }) => {
+    isServerStarted: ({ stdout, template }) => {
       const startupLogMatch: RegExpMatchArray | null = stdout.match(
-        /Local:\s+http:\/\/localhost:(\d+)\s/
+        /Accepting connections at\s+http:\/\/localhost:(\d+)\s/
       )
       if (startupLogMatch) {
         const parsedPort = parseInt(startupLogMatch[1], 10)
@@ -56,16 +63,6 @@ export async function openWithConfig(
         }
 
         return true
-      }
-
-      // Cancel waiting early if we see an error
-      const errorLogMatch: RegExpMatchArray | null = stdout.match(
-        /webpack compiled with \d+ error/
-      )
-      if (errorLogMatch) {
-        throw new Error(
-          `Could not start template with "${options.fullCommand}".\n\n${stdout}`
-        )
       }
 
       return false
