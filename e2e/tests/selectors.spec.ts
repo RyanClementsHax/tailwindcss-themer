@@ -89,6 +89,10 @@ test('can enable the theme with multiple selectors', async ({
 
   await expect(page).toHaveScreenshot()
 
+  await testRepo.removeClassOnRoot('dark-mode')
+
+  await expect(page).toHaveScreenshot()
+
   await testRepo.setAttributeOnRoot('data-theme', 'dark')
 
   await expect(page).toHaveScreenshot()

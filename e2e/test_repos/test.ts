@@ -4,13 +4,32 @@ import { openWithConfig } from './repos/create-react-app'
 
 export interface TestRepo {
   openWithConfig(config: MultiThemePluginOptions): Promise<void>
-  setClassOnRoot(theme: string): Promise<void>
+  setClassOnRoot(className: string): Promise<void>
+  removeClassOnRoot(className: string): Promise<void>
   setAttributeOnRoot(key: string, value: string): Promise<void>
 }
 
 export const test = base.extend<{ testRepo: TestRepo }>({
   testRepo: async ({ page }, use, testInfo) => {
     let stop: (() => void) | undefined
+    const attributesInputLocator = page.getByRole('textbox', {
+      name: /attributes/i
+    })
+    const attributes = {
+      async get(): Promise<Record<string, string>> {
+        return JSON.parse(await attributesInputLocator.inputValue())
+      },
+      async patch(updates: Record<string, string>): Promise<void> {
+        const attributes = await this.get()
+        await attributesInputLocator.fill(
+          JSON.stringify({
+            ...attributes,
+            ...updates
+          })
+        )
+      }
+    }
+
     const testRepo: TestRepo = {
       async openWithConfig(config) {
         if (stop) {
@@ -23,20 +42,33 @@ export const test = base.extend<{ testRepo: TestRepo }>({
         stop = _stop
         await page.goto(url)
       },
-      async setClassOnRoot(theme) {
-        await this.setAttributeOnRoot('className', theme)
+      async setClassOnRoot(newClass) {
+        const { className } = await attributes.get()
+        const classes = (className ?? '').split(' ')
+        if (!classes.includes(newClass)) {
+          await this.setAttributeOnRoot(
+            'className',
+            [...classes, newClass].join(' ').trim()
+          )
+        }
+      },
+      async removeClassOnRoot(classToRemove) {
+        const { className } = await attributes.get()
+        const classes = (className ?? '').split(' ')
+        if (classes.includes(classToRemove)) {
+          await this.setAttributeOnRoot(
+            'className',
+            classes
+              .filter(x => x !== classToRemove)
+              .join(' ')
+              .trim()
+          )
+        }
       },
       async setAttributeOnRoot(key, value) {
-        const attributesInputLocator = page.getByRole('textbox', {
-          name: /attributes/i
+        await attributes.patch({
+          [key]: value
         })
-        const attributes = JSON.parse(await attributesInputLocator.inputValue())
-        await attributesInputLocator.fill(
-          JSON.stringify({
-            ...attributes,
-            [key]: value
-          })
-        )
       }
     }
     await use(testRepo)
