@@ -27,7 +27,37 @@ test('can enable a theme using the theme name as a class if no selectors explici
 
   await testRepo.setClassOnRoot('darkTheme')
 
-  await expect(page).toHaveScreenshot({})
+  await expect(page).toHaveScreenshot()
+})
+
+test('cant enable a theme using the theme name as a class if any selectors provided', async ({
+  page,
+  testRepo
+}) => {
+  await testRepo.openWithConfig({
+    defaultTheme: {
+      extend: {
+        colors: {
+          primary: 'blue'
+        }
+      }
+    },
+    themes: [
+      {
+        name: 'darkTheme',
+        selectors: ['.dark-mode'],
+        extend: {
+          colors: {
+            primary: 'red'
+          }
+        }
+      }
+    ]
+  })
+
+  await testRepo.setClassOnRoot('darkTheme')
+
+  await expect(page).toHaveScreenshot()
 })
 
 test('can enable the theme with a custom selector', async ({
@@ -86,6 +116,10 @@ test('can enable the theme with multiple selectors', async ({
   })
 
   await testRepo.setClassOnRoot('dark-mode')
+
+  await expect(page).toHaveScreenshot()
+
+  await testRepo.removeClassOnRoot('dark-mode')
 
   await expect(page).toHaveScreenshot()
 

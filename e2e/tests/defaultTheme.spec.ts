@@ -1,7 +1,10 @@
 import { expect } from '@playwright/test'
 import { test } from '../test_repos/test'
 
-test('displays the default theme by default', async ({ page, testRepo }) => {
+test('displays the default theme when no theme enabled', async ({
+  page,
+  testRepo
+}) => {
   await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
