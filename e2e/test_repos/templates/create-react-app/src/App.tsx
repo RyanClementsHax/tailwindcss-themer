@@ -41,6 +41,7 @@ function ThemeNode() {
   }, [attributesInput])
   return (
     <section className="flex flex-col gap-5 rounded-md border border-gray-200 px-8 py-5 text-gray-900 shadow-md">
+      {/* TODO: refactor this input into its own component*/}
       <div className="flex flex-col gap-2">
         <label htmlFor="theme" className="font-medium">
           Attributes
