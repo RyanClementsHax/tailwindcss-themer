@@ -4,6 +4,7 @@ import { openWithConfig } from './drivers/create-react-app'
 
 export interface TestRepo {
   openWithConfig(config: MultiThemePluginOptions): Promise<ThemeNode>
+  createNode(): Promise<ThemeNode>
 }
 
 export interface ThemeNode {
@@ -27,7 +28,12 @@ export const test = base.extend<{ testRepo: TestRepo }>({
         })
         stop = _stop
         await page.goto(url)
-        return new ThemeNodeImpl(page)
+        return this.createNode()
+      },
+      async createNode() {
+        await page.getByRole('button', { name: /add theme node/i }).click()
+        const nodes = await page.getByTestId(/theme-node-\d/).all()
+        return new ThemeNodeImpl(nodes.length, page)
       }
     }
     await use(testRepo)
@@ -36,7 +42,10 @@ export const test = base.extend<{ testRepo: TestRepo }>({
 })
 
 class ThemeNodeImpl implements ThemeNode {
-  constructor(private readonly page: Page) {}
+  constructor(
+    private readonly nodeId: number,
+    private readonly page: Page
+  ) {}
 
   async setClass(newClass: string) {
     const { className } = await this.#attributes.get()
@@ -70,9 +79,11 @@ class ThemeNodeImpl implements ThemeNode {
   }
 
   get #attributesInputLocator() {
-    return this.page.getByRole('textbox', {
-      name: /attributes/i
-    })
+    return this.page
+      .getByTestId(new RegExp(`^theme-node-${this.nodeId}$`))
+      .getByRole('textbox', {
+        name: /attributes/i
+      })
   }
 
   get #attributes() {

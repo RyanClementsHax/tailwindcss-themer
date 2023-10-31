@@ -35,9 +35,9 @@ test('can enable multiple themes at the same time in separate trees', async ({
 
   await node1.setClass('themeOne')
 
-  // const node2 = await testRepo.createNode()
+  const node2 = await testRepo.createNode()
 
-  // await node2.setClass('themeTwo')
+  await node2.setClass('themeTwo')
 
-  await expect(page).toHaveScreenshot()
+  await expect(page).toHaveScreenshot({ fullPage: true })
 })
