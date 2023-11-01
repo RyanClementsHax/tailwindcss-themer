@@ -36,7 +36,7 @@ const tmpDirNameRegex = /^[a-zA-Z_\-.]+$/
 
 export async function createIsolatedIntTest(
   options: IsolatedIntTestOptions
-): Promise<IsolatedIntTest> {
+): Promise<{ isAlreadyInitialized: boolean; test: IsolatedIntTest }> {
   if (!options.tmpDirName.match(tmpDirNameRegex)) {
     throw new Error(
       `Could not run open test repo with tmp dir name ${options.tmpDirName} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters (regex: ${tmpDirNameRegex})`
@@ -44,17 +44,20 @@ export async function createIsolatedIntTest(
   }
   const templateDirPath = getTemplateDirPath(options.template)
   const testTmpDirPath = getTestTmpDirPath(options.template, options.tmpDirName)
+  let isAlreadyInitialized = false
   if (await fse.exists(testTmpDirPath)) {
-    throw new Error(
-      `Was given duplicate tmp dir directory name "${testTmpDirPath}". This would have led to test state bleeding between tests. Please make sure your test title is unique (includes test group names).`
-    )
+    isAlreadyInitialized = true
+  } else {
+    await fse.ensureDir(testTmpDirPath)
   }
-  await fse.ensureDir(testTmpDirPath)
-  return new IsolatedIntTestImpl({
-    template: options.template,
-    testTmpDirPath,
-    templateDirPath
-  })
+  return {
+    isAlreadyInitialized,
+    test: new IsolatedIntTestImpl({
+      template: options.template,
+      testTmpDirPath,
+      templateDirPath
+    })
+  }
 }
 
 export async function setupTemplates(): Promise<void> {

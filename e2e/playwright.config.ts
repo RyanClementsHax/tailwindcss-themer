@@ -34,6 +34,7 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    // Runs before all other projects to initialize all int tests builds without concurrency problems
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] }
@@ -41,12 +42,16 @@ export default defineConfig({
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] }
+      use: { ...devices['Desktop Firefox'] },
+      // Counts on the first project to initialize all int test builds to reuse for a performance boost
+      dependencies: ['chromium']
     },
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] }
+      use: { ...devices['Desktop Safari'] },
+      // Counts on the first project to initialize all int test builds to reuse for a performance boost
+      dependencies: ['chromium']
     }
 
     /* Test against mobile viewports. */

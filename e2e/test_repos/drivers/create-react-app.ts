@@ -5,7 +5,6 @@ import { createIsolatedIntTest, parseClasses } from '.'
 import { type Config as TailwindConfig } from 'tailwindcss'
 
 export interface OpenOptions {
-  projectName: string
   titlePath: string[]
 }
 
@@ -13,42 +12,44 @@ export async function openWithConfig(
   config: MultiThemePluginOptions,
   options: OpenOptions
 ): Promise<{ url: string; stop: () => void }> {
-  const tmpDirName = [
-    ...options.titlePath.map(x => x.replace(/ /g, '-').replace(/\./, '-')),
-    options.projectName
-  ].join('_')
-  const test = await createIsolatedIntTest({
+  const tmpDirName = options.titlePath
+    .map(x => x.replace(/ /g, '-').replace(/\./, '-'))
+    .join('_')
+
+  const { test, isAlreadyInitialized } = await createIsolatedIntTest({
     template: 'create-react-app',
     tmpDirName
   })
 
-  const classesToPreventPurging = parseClasses(config)
-
-  const tailwindConfig: TailwindConfig = {
-    content: ['./src/**/*.{js,jsx,ts,tsx}'],
-    safelist: classesToPreventPurging,
-    theme: {
-      extend: {}
-    }
-  }
-
-  const { filePath: tailwindConfigFilePath } = await test.writeFile(
-    'tailwind.test.config.js',
-    `module.exports = {
-      ...${JSON.stringify(tailwindConfig)},
-      plugins: [require('tailwindcss-themer')(${serialize(config)})]
-    }`
-  )
-
   const buildDir = test.getBuildDir()
 
-  await test.build({
-    command: ['npm', ['run', 'build']],
-    env: {
-      TAILWIND_CONFIG_PATH: tailwindConfigFilePath,
-      BUILD_PATH: buildDir
+  if (!isAlreadyInitialized) {
+    const classesToPreventPurging = parseClasses(config)
+
+    const tailwindConfig: TailwindConfig = {
+      content: ['./src/**/*.{js,jsx,ts,tsx}'],
+      safelist: classesToPreventPurging,
+      theme: {
+        extend: {}
+      }
     }
-  })
+
+    const { filePath: tailwindConfigFilePath } = await test.writeFile(
+      'tailwind.test.config.js',
+      `module.exports = {
+        ...${JSON.stringify(tailwindConfig)},
+        plugins: [require('tailwindcss-themer')(${serialize(config)})]
+      }`
+    )
+
+    await test.build({
+      command: ['npm', ['run', 'build']],
+      env: {
+        TAILWIND_CONFIG_PATH: tailwindConfigFilePath,
+        BUILD_PATH: buildDir
+      }
+    })
+  }
 
   const port = await getPort()
   const { stop } = await test.startServer({

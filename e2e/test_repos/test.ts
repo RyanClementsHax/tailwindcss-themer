@@ -23,7 +23,6 @@ export const test = base.extend<{ testRepo: TestRepo }>({
           throw new Error('Only one repo should be opened per test fixture')
         }
         const { url, stop: _stop } = await openWithConfig(config, {
-          projectName: testInfo.project.name,
           titlePath: testInfo.titlePath
         })
         stop = _stop
