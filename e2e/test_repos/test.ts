@@ -8,6 +8,7 @@ export interface TestRepo {
 }
 
 export interface ThemeNode {
+  setClasses(classNames: string[]): Promise<void>
   setClass(className: string): Promise<void>
   removeClass(className: string): Promise<void>
   setAttribute(key: string, value: string): Promise<void>
@@ -15,17 +16,15 @@ export interface ThemeNode {
 
 export const test = base.extend<{ testRepo: TestRepo }>({
   testRepo: async ({ page }, use, testInfo) => {
-    let stop: (() => void) | undefined
+    const stopCallbacks: (() => void)[] = []
 
     const testRepo: TestRepo = {
       async openWithConfig(config) {
-        if (stop) {
-          throw new Error('Only one repo should be opened per test fixture')
-        }
         const { url, stop: _stop } = await openWithConfig(config, {
+          instanceId: stopCallbacks.length + 1,
           titlePath: testInfo.titlePath
         })
-        stop = _stop
+        stopCallbacks.push(_stop)
         await page.goto(url)
         return this.createNode()
       },
@@ -36,7 +35,9 @@ export const test = base.extend<{ testRepo: TestRepo }>({
       }
     }
     await use(testRepo)
-    stop?.()
+    for (const stopCallback of stopCallbacks) {
+      stopCallback()
+    }
   }
 })
 
@@ -46,15 +47,20 @@ class ThemeNodeImpl implements ThemeNode {
     private readonly page: Page
   ) {}
 
-  async setClass(newClass: string) {
+  async setClasses(newClasses: string[]) {
     const { className } = await this.#attributes.get()
     const classes = (className ?? '').split(' ')
-    if (!classes.includes(newClass)) {
+    const classesToAdd = newClasses.filter(x => !classes.includes(x))
+    if (classesToAdd.length) {
       await this.setAttribute(
         'className',
-        [...classes, newClass].join(' ').trim()
+        [...classes, ...classesToAdd].join(' ').trim()
       )
     }
+  }
+
+  async setClass(newClass: string) {
+    await this.setClasses([newClass])
   }
 
   async removeClass(classToRemove: string) {

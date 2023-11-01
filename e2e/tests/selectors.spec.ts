@@ -60,6 +60,36 @@ test('cant enable a theme using the theme name as a class if any selectors provi
   await expect(page).toHaveScreenshot()
 })
 
+test('cant enable theme with theme name if selectors configured with empty array', async ({
+  page,
+  testRepo
+}) => {
+  const node = await testRepo.openWithConfig({
+    defaultTheme: {
+      extend: {
+        colors: {
+          primary: 'blue'
+        }
+      }
+    },
+    themes: [
+      {
+        name: 'darkTheme',
+        selectors: [],
+        extend: {
+          colors: {
+            primary: 'red'
+          }
+        }
+      }
+    ]
+  })
+
+  await node.setClass('darkTheme')
+
+  await expect(page).toHaveScreenshot()
+})
+
 test('can enable the theme with a custom selector', async ({
   page,
   testRepo

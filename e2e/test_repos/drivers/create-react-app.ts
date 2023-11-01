@@ -5,6 +5,7 @@ import { createIsolatedIntTest, parseClasses } from '.'
 import { type Config as TailwindConfig } from 'tailwindcss'
 
 export interface OpenOptions {
+  instanceId: number
   titlePath: string[]
 }
 
@@ -12,9 +13,10 @@ export async function openWithConfig(
   config: MultiThemePluginOptions,
   options: OpenOptions
 ): Promise<{ url: string; stop: () => void }> {
-  const tmpDirName = options.titlePath
-    .map(x => x.replace(/ /g, '-').replace(/\./, '-'))
-    .join('_')
+  const tmpDirName = [
+    ...options.titlePath.map(x => x.replace(/ /g, '_')),
+    options.instanceId
+  ].join('-')
 
   const { test, isAlreadyInitialized } = await createIsolatedIntTest({
     template: 'create-react-app',

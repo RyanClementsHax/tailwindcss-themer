@@ -32,7 +32,7 @@ export interface IsolatedIntTestOptions {
   template: Template
 }
 
-const tmpDirNameRegex = /^[a-zA-Z_\-.]+$/
+const tmpDirNameRegex = /^[a-zA-Z0-9_,\-.]+$/
 
 export async function createIsolatedIntTest(
   options: IsolatedIntTestOptions
