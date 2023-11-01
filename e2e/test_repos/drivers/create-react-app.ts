@@ -1,7 +1,8 @@
 import serialize from 'serialize-javascript'
 import getPort from 'get-port'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
-import { createIsolatedIntTest } from '.'
+import { createIsolatedIntTest, parseClasses } from '.'
+import { type Config as TailwindConfig } from 'tailwindcss'
 
 export interface OpenOptions {
   projectName: string
@@ -21,15 +22,20 @@ export async function openWithConfig(
     tmpDirName
   })
 
+  const classesToPreventPurging = parseClasses(config)
+
+  const tailwindConfig: TailwindConfig = {
+    content: ['./src/**/*.{js,jsx,ts,tsx}'],
+    safelist: classesToPreventPurging,
+    theme: {
+      extend: {}
+    }
+  }
+
   const { filePath: tailwindConfigFilePath } = await test.writeFile(
     'tailwind.test.config.js',
     `module.exports = {
-      ...${JSON.stringify({
-        content: ['./src/**/*.{js,jsx,ts,tsx}'],
-        theme: {
-          extend: {}
-        }
-      })},
+      ...${JSON.stringify(tailwindConfig)},
       plugins: [require('tailwindcss-themer')(${serialize(config)})]
     }`
   )

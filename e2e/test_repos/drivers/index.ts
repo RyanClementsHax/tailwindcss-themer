@@ -3,6 +3,7 @@ import path from 'node:path'
 import fse from 'fs-extra'
 import { spawn } from 'cross-spawn'
 import { $, execa } from 'execa'
+import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 
 // based off of https://github.com/remix-run/remix/blob/6a9b8d6b836f05a47af9ca6e6f1f3898a2fba8ec/integration/helpers/create-fixture.ts
 
@@ -180,4 +181,12 @@ function getTemplateDirPaths(): string[] {
 
 function getTemplateTmpDirPaths(): string[] {
   return getTemplates().map(template => getTemplateTmpDirPath(template))
+}
+
+export function parseClasses(config: MultiThemePluginOptions): string[] {
+  const themeNameClasses = config.themes?.map(x => x.name) ?? []
+  const mediaQueries =
+    config.themes?.map(x => x.mediaQuery ?? '')?.filter(x => !!x) ?? []
+  const selectors = config.themes?.flatMap(x => x.selectors ?? []) ?? []
+  return [...themeNameClasses, ...mediaQueries, ...selectors]
 }
