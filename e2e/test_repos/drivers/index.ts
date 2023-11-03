@@ -13,7 +13,20 @@ export interface IsolatedRepoInstance {
   writeFile(fileName: string, data: string): Promise<{ filePath: string }>
   getBuildDir(): string
   build(options: BuildOptions): Promise<void>
-  startServer(options: StartServerOptions): Promise<{ stop: () => void }>
+  startServer(options: StartServerOptions): Promise<StartServerResult>
+}
+
+export type StartServerResult = ServerStarted | ServerNotStarted
+
+export interface ServerStarted {
+  started: true
+  url: string
+  stop: () => void
+}
+
+export interface ServerNotStarted {
+  started: false
+  reason: string
 }
 
 export interface BuildOptions {
@@ -24,8 +37,16 @@ export interface BuildOptions {
 export interface StartServerOptions {
   command: [string, ReadonlyArray<string>]
   env: Record<string, string>
-  isServerStarted: (context: { stdout: string; template: Template }) => boolean
+  isServerStarted: (context: {
+    stdout: string
+    template: Template
+  }) => IsServerStartedResult
 }
+
+export type IsServerStartedResult =
+  | { started: true; url: string }
+  | { started: false; continueWaiting: true }
+  | { started: false; continueWaiting: false; reason: string }
 
 export interface IsolatedRepoInstanceOptions {
   tmpDirName: string
@@ -103,7 +124,7 @@ class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
   }
 
   async startServer(options: StartServerOptions) {
-    return await new Promise<{ stop: () => void }>((resolve, reject) => {
+    return await new Promise<StartServerResult>((resolve, reject) => {
       const serveProcess = spawn(options.command[0], options.command[1], {
         env: {
           // make sure npm executable can be found on path
@@ -112,39 +133,50 @@ class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
         },
         cwd: this.config.templateDirPath
       })
-      const stop = () => serveProcess.kill()
+      const stop = () => {
+        serveProcess.kill()
+      }
       const fullCommand = `${options.command[0]} ${options.command[1].join(
         ' '
       )}`
-      let started = false
+      let finishedMonitoring = false
       let stdout = ''
-      const rejectTimeout = setTimeout(() => {
-        reject(
-          new Error(
-            `Timed out waiting for server to start with ${fullCommand}\n\n${stdout}`
-          )
-        )
+      const failTimeout = setTimeout(() => {
+        resolve({
+          started: false,
+          reason: `Timed out waiting for server to start with ${fullCommand}\n\n${stdout}`
+        })
       }, 20_000)
       serveProcess.stderr.pipe(process.stderr)
       serveProcess.stdout.on('data', chunk => {
-        if (started) return
+        if (finishedMonitoring) return
         const newChunk = chunk.toString()
         stdout += newChunk
         try {
-          started = options.isServerStarted({
+          const result = options.isServerStarted({
             stdout,
             template: this.config.template
           })
-          if (started) {
-            clearTimeout(rejectTimeout)
-            started = true
+          finishedMonitoring = result.started
+          if (result.started) {
+            clearTimeout(failTimeout)
             resolve({
+              started: result.started,
+              url: result.url,
               stop
+            })
+          } else if (!result.continueWaiting) {
+            clearTimeout(failTimeout)
+            finishedMonitoring = true
+            stop()
+            resolve({
+              started: result.started,
+              reason: result.reason
             })
           }
         } catch (e: unknown) {
-          clearTimeout(rejectTimeout)
-          started = true
+          clearTimeout(failTimeout)
+          finishedMonitoring = true
           stop()
           reject(e)
         }
