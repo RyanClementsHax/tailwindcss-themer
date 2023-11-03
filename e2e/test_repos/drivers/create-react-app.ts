@@ -1,7 +1,7 @@
 import serialize from 'serialize-javascript'
 import getPort from 'get-port'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
-import { createIsolatedIntTest, parseClasses } from '.'
+import { createIsolatedRepoInstance, parseClasses } from '.'
 import { type Config as TailwindConfig } from 'tailwindcss'
 
 export interface OpenOptions {
@@ -18,12 +18,12 @@ export async function openWithConfig(
     options.instanceId
   ].join('-')
 
-  const { test, isAlreadyInitialized } = await createIsolatedIntTest({
+  const { instance, isAlreadyInitialized } = await createIsolatedRepoInstance({
     template: 'create-react-app',
     tmpDirName
   })
 
-  const buildDir = test.getBuildDir()
+  const buildDir = instance.getBuildDir()
 
   if (!isAlreadyInitialized) {
     const classesToPreventPurging = parseClasses(config)
@@ -36,15 +36,15 @@ export async function openWithConfig(
       }
     }
 
-    const { filePath: tailwindConfigFilePath } = await test.writeFile(
-      'tailwind.test.config.js',
+    const { filePath: tailwindConfigFilePath } = await instance.writeFile(
+      'tailwind.config.js',
       `module.exports = {
         ...${JSON.stringify(tailwindConfig)},
         plugins: [require('tailwindcss-themer')(${serialize(config)})]
       }`
     )
 
-    await test.build({
+    await instance.build({
       command: ['npm', ['run', 'build']],
       env: {
         TAILWIND_CONFIG_PATH: tailwindConfigFilePath,
@@ -54,7 +54,7 @@ export async function openWithConfig(
   }
 
   const port = await getPort()
-  const { stop } = await test.startServer({
+  const { stop } = await instance.startServer({
     command: ['npm', ['run', 'serve', '--', buildDir]],
     env: {
       PORT: port.toFixed(0)

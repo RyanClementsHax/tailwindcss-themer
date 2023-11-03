@@ -9,7 +9,7 @@ import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 
 export type Template = 'create-react-app'
 
-export interface IsolatedIntTest {
+export interface IsolatedRepoInstance {
   writeFile(fileName: string, data: string): Promise<{ filePath: string }>
   getBuildDir(): string
   build(options: BuildOptions): Promise<void>
@@ -27,34 +27,34 @@ export interface StartServerOptions {
   isServerStarted: (context: { stdout: string; template: Template }) => boolean
 }
 
-export interface IsolatedIntTestOptions {
+export interface IsolatedRepoInstanceOptions {
   tmpDirName: string
   template: Template
 }
 
 const tmpDirNameRegex = /^[a-zA-Z0-9_,\-.]+$/
 
-export async function createIsolatedIntTest(
-  options: IsolatedIntTestOptions
-): Promise<{ isAlreadyInitialized: boolean; test: IsolatedIntTest }> {
+export async function createIsolatedRepoInstance(
+  options: IsolatedRepoInstanceOptions
+): Promise<{ isAlreadyInitialized: boolean; instance: IsolatedRepoInstance }> {
   if (!options.tmpDirName.match(tmpDirNameRegex)) {
     throw new Error(
-      `Could not run open test repo with tmp dir name ${options.tmpDirName} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters (regex: ${tmpDirNameRegex})`
+      `Could not run open instance of repo with tmp dir name ${options.tmpDirName} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters (regex: ${tmpDirNameRegex})`
     )
   }
   const templateDirPath = getTemplateDirPath(options.template)
-  const testTmpDirPath = getTestTmpDirPath(options.template, options.tmpDirName)
+  const tmpDirPath = getTmpDirPath(options.template, options.tmpDirName)
   let isAlreadyInitialized = false
-  if (await fse.exists(testTmpDirPath)) {
+  if (await fse.exists(tmpDirPath)) {
     isAlreadyInitialized = true
   } else {
-    await fse.ensureDir(testTmpDirPath)
+    await fse.ensureDir(tmpDirPath)
   }
   return {
     isAlreadyInitialized,
-    test: new IsolatedIntTestImpl({
+    instance: new IsolatedRepoInstanceImpl({
       template: options.template,
-      testTmpDirPath,
+      tmpDirPath,
       templateDirPath
     })
   }
@@ -76,23 +76,23 @@ export async function cleanupTmpDirs(): Promise<void> {
   }
 }
 
-interface IsolatedIntTestConfig {
+interface IsolatedRepoInstanceConfig {
   template: Template
-  testTmpDirPath: string
+  tmpDirPath: string
   templateDirPath: string
 }
 
-class IsolatedIntTestImpl implements IsolatedIntTest {
-  constructor(private config: IsolatedIntTestConfig) {}
+class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
+  constructor(private config: IsolatedRepoInstanceConfig) {}
 
   async writeFile(fileName: string, data: string) {
-    const filePath = path.join(this.config.testTmpDirPath, fileName)
+    const filePath = path.join(this.config.tmpDirPath, fileName)
     await fse.writeFile(filePath, data)
     return { filePath }
   }
 
   getBuildDir(): string {
-    return path.join(this.config.testTmpDirPath, 'build')
+    return path.join(this.config.tmpDirPath, 'build')
   }
 
   async build({ command, env }: BuildOptions) {
@@ -155,7 +155,7 @@ class IsolatedIntTestImpl implements IsolatedIntTest {
 
 const TMP_DIR = '.tmp'
 const TEMPLATES_DIR = 'templates'
-const testReposDirPath = url.fileURLToPath(new URL('..', import.meta.url))
+const reposDirPath = url.fileURLToPath(new URL('..', import.meta.url))
 
 function getTemplates(): Template[] {
   // Using typescript to force exhaustiveness
@@ -165,7 +165,7 @@ function getTemplates(): Template[] {
 }
 
 function getTemplateDirPath(template: Template) {
-  return path.resolve(testReposDirPath, TEMPLATES_DIR, template)
+  return path.resolve(reposDirPath, TEMPLATES_DIR, template)
 }
 
 function getTemplateTmpDirPath(template: Template) {
@@ -173,7 +173,7 @@ function getTemplateTmpDirPath(template: Template) {
   return path.join(templateDirPath, TMP_DIR)
 }
 
-function getTestTmpDirPath(template: Template, tmpDirName: string) {
+function getTmpDirPath(template: Template, tmpDirName: string) {
   const templateDirPath = getTemplateTmpDirPath(template)
   return path.join(templateDirPath, tmpDirName)
 }
