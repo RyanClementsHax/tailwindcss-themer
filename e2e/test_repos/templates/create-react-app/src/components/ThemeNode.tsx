@@ -10,7 +10,7 @@ export function ThemeNode({ nodeId }: ThemeNodeProps) {
   return (
     <section
       data-testid={`theme-node-${nodeId}`}
-      className="flex w-full flex-col gap-5 rounded-md border border-slate-200 bg-white px-8 py-5 shadow-md"
+      className="flex w-full flex-col gap-5 rounded-md bg-white px-8 py-5 shadow-md"
     >
       <h2 className="text-2xl font-bold">Theme node {nodeId}</h2>
       <AttributesInput

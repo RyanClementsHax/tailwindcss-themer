@@ -16,7 +16,7 @@ function App() {
           return <ThemeNode key={nodeId} nodeId={nodeId} />
         })}
         <button
-          className="rounded-md border-0 bg-white px-4 py-3 shadow-md ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none"
+          className="rounded-md border-0 bg-white px-4 py-3 shadow-md ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none"
           onClick={() => setNumThemeNodes(num => num + 1)}
         >
           Add theme node
