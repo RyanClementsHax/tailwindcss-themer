@@ -1,6 +1,7 @@
 import { Page, test as base } from '@playwright/test'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 import { openWithConfig } from './drivers/create-react-app'
+import { StopServerCallback } from './drivers'
 
 export interface TestRepo {
   openWithConfig(config: MultiThemePluginOptions): Promise<ThemeNode>
@@ -16,7 +17,7 @@ export interface ThemeNode {
 
 export const test = base.extend<{ testRepo: TestRepo }>({
   testRepo: async ({ page }, use, testInfo) => {
-    const stopCallbacks: (() => void)[] = []
+    const stopCallbacks: StopServerCallback[] = []
 
     const testRepo: TestRepo = {
       async openWithConfig(config) {
@@ -34,10 +35,10 @@ export const test = base.extend<{ testRepo: TestRepo }>({
         return new ThemeNodeImpl(nodes.length, page)
       }
     }
+
     await use(testRepo)
-    for (const stopCallback of stopCallbacks) {
-      stopCallback()
-    }
+
+    await Promise.all(stopCallbacks.map(x => x()))
   }
 })
 

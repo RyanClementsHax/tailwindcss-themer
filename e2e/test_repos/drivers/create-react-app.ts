@@ -4,6 +4,7 @@ import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 import {
   ServerStarted,
   StartServerResult,
+  StopServerCallback,
   createIsolatedRepoInstance,
   parseClasses
 } from '.'
@@ -17,7 +18,7 @@ export interface OpenOptions {
 export async function openWithConfig(
   config: MultiThemePluginOptions,
   options: OpenOptions
-): Promise<{ url: string; stop: () => void }> {
+): Promise<{ url: string; stop: StopServerCallback }> {
   const tmpDirName = [
     ...options.titlePath.map(x => x.replace(/ /g, '_')),
     options.instanceId

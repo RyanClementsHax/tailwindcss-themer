@@ -4,6 +4,7 @@ import fse from 'fs-extra'
 import { spawn } from 'cross-spawn'
 import { $, execa } from 'execa'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
+import pidTree from 'pidtree'
 
 // based off of https://github.com/remix-run/remix/blob/6a9b8d6b836f05a47af9ca6e6f1f3898a2fba8ec/integration/helpers/create-fixture.ts
 
@@ -21,8 +22,10 @@ export type StartServerResult = ServerStarted | ServerNotStarted
 export interface ServerStarted {
   started: true
   url: string
-  stop: () => void
+  stop: StopServerCallback
 }
+
+export type StopServerCallback = () => Promise<void>
 
 export interface ServerNotStarted {
   started: false
@@ -133,7 +136,13 @@ class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
         },
         cwd: this.config.templateDirPath
       })
-      const stop = () => {
+      const stop = async () => {
+        if (!serveProcess.pid) return
+        // just killing .kill() on the root process will only kill the shell process that spawned the command
+        // you can check for stragging node processes after running e2e tests by running "ps -aef | grep node"
+        for (const pid of await pidTree(serveProcess.pid)) {
+          process.kill(pid)
+        }
         serveProcess.kill()
       }
       const fullCommand = `${options.command[0]} ${options.command[1].join(
@@ -168,17 +177,17 @@ class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
           } else if (!result.continueWaiting) {
             clearTimeout(failTimeout)
             finishedMonitoring = true
-            stop()
-            resolve({
-              started: result.started,
-              reason: result.reason
-            })
+            void stop().then(() =>
+              resolve({
+                started: result.started,
+                reason: result.reason
+              })
+            )
           }
         } catch (e: unknown) {
           clearTimeout(failTimeout)
           finishedMonitoring = true
-          stop()
-          reject(e)
+          void stop().then(() => reject(e))
         }
       })
     })
