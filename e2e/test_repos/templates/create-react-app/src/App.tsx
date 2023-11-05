@@ -12,11 +12,11 @@ function App() {
       </header>
       <main className="mx-auto mt-8 flex w-[75ch] flex-col items-center gap-8">
         {Array.from({ length: numThemeNodes }, (_, i) => {
-          const nodeId = i + 1
+          const nodeId = (i + 1).toString()
           return <ThemeNode key={nodeId} nodeId={nodeId} />
         })}
         <button
-          className="rounded-md border-0 bg-white px-4 py-3 shadow-md ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none"
+          className="rounded-md border-0 bg-white px-4 py-3 shadow-md ring-inset hover:ring-2 hover:ring-inset hover:ring-indigo-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none active:bg-indigo-300"
           onClick={() => setNumThemeNodes(num => num + 1)}
         >
           Add theme node

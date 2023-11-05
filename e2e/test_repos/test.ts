@@ -13,6 +13,7 @@ export interface ThemeNode {
   setClass(className: string): Promise<void>
   removeClass(className: string): Promise<void>
   setAttribute(key: string, value: string): Promise<void>
+  createNode(): Promise<ThemeNode>
 }
 
 export const test = base.extend<{ testRepo: TestRepo }>({
@@ -30,9 +31,9 @@ export const test = base.extend<{ testRepo: TestRepo }>({
         return this.createNode()
       },
       async createNode() {
-        await page.getByRole('button', { name: /add theme node/i }).click()
+        await page.getByRole('button', { name: /^add theme node$/i }).click()
         const nodes = await page.getByTestId(/theme-node-\d/).all()
-        return new ThemeNodeImpl(nodes.length, page)
+        return new ThemeNodeImpl(nodes.length.toString(), page)
       }
     }
 
@@ -44,7 +45,7 @@ export const test = base.extend<{ testRepo: TestRepo }>({
 
 class ThemeNodeImpl implements ThemeNode {
   constructor(
-    private readonly nodeId: number,
+    private readonly nodeId: string,
     private readonly page: Page
   ) {}
 
@@ -84,12 +85,29 @@ class ThemeNodeImpl implements ThemeNode {
     })
   }
 
-  get #attributesInputLocator() {
-    return this.page
-      .getByTestId(new RegExp(`^theme-node-${this.nodeId}$`))
-      .getByRole('textbox', {
-        name: /attributes/i
+  async createNode() {
+    await this.#rootLocator
+      .getByRole('button', {
+        name: new RegExp(
+          `add theme node to ${this.nodeId.replaceAll('.', '\\')}`,
+          'i'
+        )
       })
+      .click()
+    const nodes = await this.#rootLocator
+      .getByTestId(/theme-node-\d(.\d+)*/)
+      .all()
+    return new ThemeNodeImpl(`${this.nodeId}.${nodes.length}`, this.page)
+  }
+
+  get #rootLocator() {
+    return this.page.getByTestId(new RegExp(`^theme-node-${this.nodeId}$`))
+  }
+
+  get #attributesInputLocator() {
+    return this.#rootLocator.getByRole('textbox', {
+      name: /attributes/i
+    })
   }
 
   get #attributes() {
