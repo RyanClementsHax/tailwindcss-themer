@@ -1,21 +1,118 @@
-import { test as base } from '@playwright/test'
+import { Page, test as base } from '@playwright/test'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
-import { openWithConfig } from './repos/create-react-app'
+import { openWithConfig } from './drivers/create-react-app'
+import { StopServerCallback } from './drivers'
 
 export interface TestRepo {
-  openWithConfig(config: MultiThemePluginOptions): Promise<void>
-  setClassOnRoot(className: string): Promise<void>
-  removeClassOnRoot(className: string): Promise<void>
-  setAttributeOnRoot(key: string, value: string): Promise<void>
+  openWithConfig(config: MultiThemePluginOptions): Promise<ThemeNode>
+  createNode(): Promise<ThemeNode>
+}
+
+export interface ThemeNode {
+  setClasses(classNames: string[]): Promise<void>
+  setClass(className: string): Promise<void>
+  removeClass(className: string): Promise<void>
+  setAttribute(key: string, value: string): Promise<void>
+  createNode(): Promise<ThemeNode>
 }
 
 export const test = base.extend<{ testRepo: TestRepo }>({
   testRepo: async ({ page }, use, testInfo) => {
-    let stop: (() => void) | undefined
-    const attributesInputLocator = page.getByRole('textbox', {
+    const stopCallbacks: StopServerCallback[] = []
+
+    const testRepo: TestRepo = {
+      async openWithConfig(config) {
+        const { url, stop: _stop } = await openWithConfig(config, {
+          instanceId: stopCallbacks.length + 1,
+          titlePath: testInfo.titlePath
+        })
+        stopCallbacks.push(_stop)
+        await page.goto(url)
+        return this.createNode()
+      },
+      async createNode() {
+        await page.getByRole('button', { name: /^add theme node$/i }).click()
+        const nodes = await page.getByTestId(/theme-node-\d/).all()
+        return new ThemeNodeImpl(nodes.length.toString(), page)
+      }
+    }
+
+    await use(testRepo)
+
+    await Promise.all(stopCallbacks.map(x => x()))
+  }
+})
+
+class ThemeNodeImpl implements ThemeNode {
+  constructor(
+    private readonly nodeId: string,
+    private readonly page: Page
+  ) {}
+
+  async setClasses(newClasses: string[]) {
+    const { className } = await this.#attributes.get()
+    const classes = (className ?? '').split(' ')
+    const classesToAdd = newClasses.filter(x => !classes.includes(x))
+    if (classesToAdd.length) {
+      await this.setAttribute(
+        'className',
+        [...classes, ...classesToAdd].join(' ').trim()
+      )
+    }
+  }
+
+  async setClass(newClass: string) {
+    await this.setClasses([newClass])
+  }
+
+  async removeClass(classToRemove: string) {
+    const { className } = await this.#attributes.get()
+    const classes = (className ?? '').split(' ')
+    if (classes.includes(classToRemove)) {
+      await this.setAttribute(
+        'className',
+        classes
+          .filter(x => x !== classToRemove)
+          .join(' ')
+          .trim()
+      )
+    }
+  }
+
+  async setAttribute(key: string, value: string) {
+    await this.#attributes.patch({
+      [key]: value
+    })
+  }
+
+  async createNode() {
+    await this.#rootLocator
+      .getByRole('button', {
+        name: new RegExp(
+          `add theme node to ${this.nodeId.replaceAll('.', '\\')}`,
+          'i'
+        )
+      })
+      .click()
+    const nodes = await this.#rootLocator
+      .getByTestId(/theme-node-\d(.\d+)*/)
+      .all()
+    return new ThemeNodeImpl(`${this.nodeId}.${nodes.length}`, this.page)
+  }
+
+  get #rootLocator() {
+    return this.page.getByTestId(new RegExp(`^theme-node-${this.nodeId}$`))
+  }
+
+  get #attributesInputLocator() {
+    return this.#rootLocator.getByRole('textbox', {
       name: /attributes/i
     })
-    const attributes = {
+  }
+
+  get #attributes() {
+    const attributesInputLocator = this.#attributesInputLocator
+    return {
       async get(): Promise<Record<string, string>> {
         return JSON.parse(await attributesInputLocator.inputValue())
       },
@@ -29,49 +126,5 @@ export const test = base.extend<{ testRepo: TestRepo }>({
         )
       }
     }
-
-    const testRepo: TestRepo = {
-      async openWithConfig(config) {
-        if (stop) {
-          throw new Error('Only one repo should be opened per test fixture')
-        }
-        const { url, stop: _stop } = await openWithConfig(config, {
-          projectName: testInfo.project.name,
-          titlePath: testInfo.titlePath
-        })
-        stop = _stop
-        await page.goto(url)
-      },
-      async setClassOnRoot(newClass) {
-        const { className } = await attributes.get()
-        const classes = (className ?? '').split(' ')
-        if (!classes.includes(newClass)) {
-          await this.setAttributeOnRoot(
-            'className',
-            [...classes, newClass].join(' ').trim()
-          )
-        }
-      },
-      async removeClassOnRoot(classToRemove) {
-        const { className } = await attributes.get()
-        const classes = (className ?? '').split(' ')
-        if (classes.includes(classToRemove)) {
-          await this.setAttributeOnRoot(
-            'className',
-            classes
-              .filter(x => x !== classToRemove)
-              .join(' ')
-              .trim()
-          )
-        }
-      },
-      async setAttributeOnRoot(key, value) {
-        await attributes.patch({
-          [key]: value
-        })
-      }
-    }
-    await use(testRepo)
-    stop?.()
   }
-})
+}

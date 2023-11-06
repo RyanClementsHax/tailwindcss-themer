@@ -1,4 +1,4 @@
-import { cleanupTmpDirs, setupTemplates } from './repos'
+import { cleanupTmpDirs, setupTemplates } from './drivers'
 
 async function setup(): Promise<void> {
   await cleanupTmpDirs()

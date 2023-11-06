@@ -144,7 +144,7 @@ module.exports = {
 
 ```html
 <!-- this example uses pure html for demonstration purposes -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -162,7 +162,7 @@ You do this by adding a class of the theme's name to whatever you want themed. S
 
 ```html
 <!-- this example uses pure html for demonstration purposes -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -237,7 +237,7 @@ require('tailwindcss-themer')({
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -250,7 +250,7 @@ require('tailwindcss-themer')({
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -263,7 +263,7 @@ require('tailwindcss-themer')({
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -332,7 +332,7 @@ require('tailwindcss-themer')({
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -345,7 +345,7 @@ require('tailwindcss-themer')({
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -388,10 +388,10 @@ In order to prevent a [flash of unstyled content](https://css-tricks.com/flash-o
 
 ### Simultaneous themes
 
-Because this plugin enables themes based on existance of classes, it is possible to have multiple themes enabled at the same time. They can be overlapping or not. Its all up to how you apply the classes!
+Because this plugin enables themes in part based on existance of classes, it is possible to have multiple themes enabled at the same time. They can be overlapping or not. Its all up to how you apply the classes!
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -656,7 +656,7 @@ As specified above, variants are generated for every named theme you make, even 
 The theme variant generated for the default theme is `defaultTheme` (e.g. `defaultTheme:rounded-sm`), but this now requires that instead of omitting any theme class to enable the default theme, you explicitly declare you are using the default theme by adding the class of `defaultTheme` to the place you want themed (no other feature is affected by this, using the default theme variant is the only feature that requires you to add the `defaultTheme` class to use). This is because I haven't been able to create a css selector that excludes all parents with any of the other theme classes. If you can make one, feel free to [open up an issue](https://github.com/RyanClementsHax/tailwindcss-themer/issues).
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -670,7 +670,7 @@ The theme variant generated for the default theme is `defaultTheme` (e.g. `defau
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -683,7 +683,7 @@ The theme variant generated for the default theme is `defaultTheme` (e.g. `defau
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->

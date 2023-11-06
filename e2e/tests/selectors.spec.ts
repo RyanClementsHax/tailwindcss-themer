@@ -5,7 +5,7 @@ test('can enable a theme using the theme name as a class if no selectors explici
   page,
   testRepo
 }) => {
-  await testRepo.openWithConfig({
+  const node = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -25,7 +25,7 @@ test('can enable a theme using the theme name as a class if no selectors explici
     ]
   })
 
-  await testRepo.setClassOnRoot('darkTheme')
+  await node.setClass('darkTheme')
 
   await expect(page).toHaveScreenshot()
 })
@@ -34,7 +34,7 @@ test('cant enable a theme using the theme name as a class if any selectors provi
   page,
   testRepo
 }) => {
-  await testRepo.openWithConfig({
+  const node = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -55,7 +55,37 @@ test('cant enable a theme using the theme name as a class if any selectors provi
     ]
   })
 
-  await testRepo.setClassOnRoot('darkTheme')
+  await node.setClass('darkTheme')
+
+  await expect(page).toHaveScreenshot()
+})
+
+test('cant enable theme with theme name if selectors configured with empty array', async ({
+  page,
+  testRepo
+}) => {
+  const node = await testRepo.openWithConfig({
+    defaultTheme: {
+      extend: {
+        colors: {
+          primary: 'blue'
+        }
+      }
+    },
+    themes: [
+      {
+        name: 'darkTheme',
+        selectors: [],
+        extend: {
+          colors: {
+            primary: 'red'
+          }
+        }
+      }
+    ]
+  })
+
+  await node.setClass('darkTheme')
 
   await expect(page).toHaveScreenshot()
 })
@@ -64,7 +94,7 @@ test('can enable the theme with a custom selector', async ({
   page,
   testRepo
 }) => {
-  await testRepo.openWithConfig({
+  const node = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -85,7 +115,7 @@ test('can enable the theme with a custom selector', async ({
     ]
   })
 
-  await testRepo.setClassOnRoot('dark-mode')
+  await node.setClass('dark-mode')
 
   await expect(page).toHaveScreenshot()
 })
@@ -94,7 +124,7 @@ test('can enable the theme with multiple selectors', async ({
   page,
   testRepo
 }) => {
-  await testRepo.openWithConfig({
+  const node = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -115,15 +145,15 @@ test('can enable the theme with multiple selectors', async ({
     ]
   })
 
-  await testRepo.setClassOnRoot('dark-mode')
+  await node.setClass('dark-mode')
 
   await expect(page).toHaveScreenshot()
 
-  await testRepo.removeClassOnRoot('dark-mode')
+  await node.removeClass('dark-mode')
 
   await expect(page).toHaveScreenshot()
 
-  await testRepo.setAttributeOnRoot('data-theme', 'dark')
+  await node.setAttribute('data-theme', 'dark')
 
   await expect(page).toHaveScreenshot()
 })

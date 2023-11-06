@@ -1,41 +1,27 @@
-import { useMemo, useState } from 'react'
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const preventPurgingOfThemesThatAreSetInTests = [
-  'darkTheme',
-  'dark-mode',
-  '[data-theme="dark"]'
-]
+import { useState } from 'react'
+import { ThemeNode } from './components/ThemeNode'
 
 function App() {
-  const [attributes, setAttributes] = useState('{}')
-  const parsedAttributes = useMemo(
-    () => JSON.parse(attributes) as Record<string, string>,
-    [attributes]
-  )
+  const [numThemeNodes, setNumThemeNodes] = useState(0)
   return (
-    <div {...parsedAttributes}>
-      <header className="mx-auto flex w-[75ch] flex-col px-5 pt-16">
-        <h1 className="text-primary text-3xl font-bold">
-          Mainitainers ❤️ integration tests
+    <div className="mx-auto flex flex-col px-5 py-16 font-mono text-slate-900">
+      <header>
+        <h1 className="mb-5 text-center text-4xl font-black">
+          Mainitainers &lt;3 integration tests
         </h1>
-        <div className="mt-8 flex flex-col gap-2">
-          <label htmlFor="theme" className="text-sm font-medium text-gray-900">
-            Attributes
-          </label>
-          <input
-            id="theme"
-            spellCheck="false"
-            className="w-32 rounded-md rounded-md border-0 px-3 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
-            placeholder="theme"
-            value={attributes}
-            onChange={e => setAttributes(e.target.value)}
-          />
-          <pre>
-            <code>{JSON.stringify(parsedAttributes, null, 2)}</code>
-          </pre>
-        </div>
       </header>
+      <main className="mx-auto mt-8 flex w-[75ch] flex-col items-center gap-8">
+        {Array.from({ length: numThemeNodes }, (_, i) => {
+          const nodeId = (i + 1).toString()
+          return <ThemeNode key={nodeId} nodeId={nodeId} />
+        })}
+        <button
+          className="rounded-md border-0 bg-white px-4 py-3 shadow-md ring-inset hover:ring-2 hover:ring-inset hover:ring-indigo-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none active:bg-indigo-300"
+          onClick={() => setNumThemeNodes(num => num + 1)}
+        >
+          Add theme node
+        </button>
+      </main>
     </div>
   )
 }
