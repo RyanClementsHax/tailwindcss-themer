@@ -27,7 +27,7 @@ export function ThemedItem({ rootId }: ThemedItemProps) {
       </div>
       {/* Allow text to be seen on backgrounds set by tests*/}
       <div className="text-white">
-        <div className={className}>This should be themed</div>
+        <div className={className}>Lorem ipsum</div>
       </div>
     </div>
   )
