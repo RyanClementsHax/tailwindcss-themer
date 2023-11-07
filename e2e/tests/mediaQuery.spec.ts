@@ -33,7 +33,7 @@ test('cant enable a theme using the theme name as a class if a media query provi
   page,
   testRepo
 }) => {
-  const node = await testRepo.openWithConfig({
+  const root = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -54,7 +54,7 @@ test('cant enable a theme using the theme name as a class if a media query provi
     ]
   })
 
-  await node.setClass('darkTheme')
+  await root.setClass('darkTheme')
 
   await expect(page).toHaveScreenshot()
 })

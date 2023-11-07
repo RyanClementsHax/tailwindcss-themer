@@ -4,16 +4,21 @@ import { openWithConfig } from './drivers/create-react-app'
 import { StopServerCallback } from './drivers'
 
 export interface TestRepo {
-  openWithConfig(config: MultiThemePluginOptions): Promise<ThemeNode>
-  createNode(): Promise<ThemeNode>
+  openWithConfig(config: MultiThemePluginOptions): Promise<ThemeRoot>
+  createRoot(): Promise<ThemeRoot>
 }
 
-export interface ThemeNode {
+export interface ThemeRoot {
+  item: ThemedItem
   setClasses(classNames: string[]): Promise<void>
   setClass(className: string): Promise<void>
   removeClass(className: string): Promise<void>
   setAttribute(key: string, value: string): Promise<void>
-  createNode(): Promise<ThemeNode>
+  createRoot(): Promise<ThemeRoot>
+}
+
+export interface ThemedItem {
+  overwriteClassTo(className: string): Promise<void>
 }
 
 export const test = base.extend<{ testRepo: TestRepo }>({
@@ -28,12 +33,12 @@ export const test = base.extend<{ testRepo: TestRepo }>({
         })
         stopCallbacks.push(_stop)
         await page.goto(url)
-        return this.createNode()
+        return this.createRoot()
       },
-      async createNode() {
-        await page.getByRole('button', { name: /^add theme node$/i }).click()
-        const nodes = await page.getByTestId(/theme-node-\d/).all()
-        return new ThemeNodeImpl(nodes.length.toString(), page)
+      async createRoot() {
+        await page.getByRole('button', { name: /^add theme root$/i }).click()
+        const roots = await page.getByTestId(/theme-root-\d/).all()
+        return new ThemeRootImpl(roots.length.toString(), page)
       }
     }
 
@@ -43,11 +48,15 @@ export const test = base.extend<{ testRepo: TestRepo }>({
   }
 })
 
-class ThemeNodeImpl implements ThemeNode {
+class ThemeRootImpl implements ThemeRoot {
+  public item: ThemedItem
+
   constructor(
-    private readonly nodeId: string,
+    private readonly rootId: string,
     private readonly page: Page
-  ) {}
+  ) {
+    this.item = new ThemedItemImpl(this.rootId, this.page)
+  }
 
   async setClasses(newClasses: string[]) {
     const { className } = await this.#attributes.get()
@@ -85,23 +94,23 @@ class ThemeNodeImpl implements ThemeNode {
     })
   }
 
-  async createNode() {
+  async createRoot() {
     await this.#rootLocator
       .getByRole('button', {
         name: new RegExp(
-          `add theme node to ${this.nodeId.replaceAll('.', '\\')}`,
+          `add theme root to ${this.rootId.replaceAll('.', '\\')}`,
           'i'
         )
       })
       .click()
-    const nodes = await this.#rootLocator
-      .getByTestId(/theme-node-\d(.\d+)*/)
+    const roots = await this.#rootLocator
+      .getByTestId(/theme-root-\d(.\d+)*/)
       .all()
-    return new ThemeNodeImpl(`${this.nodeId}.${nodes.length}`, this.page)
+    return new ThemeRootImpl(`${this.rootId}.${roots.length}`, this.page)
   }
 
   get #rootLocator() {
-    return this.page.getByTestId(new RegExp(`^theme-node-${this.nodeId}$`))
+    return this.page.getByTestId(new RegExp(`^theme-root-${this.rootId}$`))
   }
 
   get #attributesInputLocator() {
@@ -126,5 +135,26 @@ class ThemeNodeImpl implements ThemeNode {
         )
       }
     }
+  }
+}
+
+class ThemedItemImpl implements ThemedItem {
+  constructor(
+    private readonly rootId: string,
+    private readonly page: Page
+  ) {}
+
+  async overwriteClassTo(className: string): Promise<void> {
+    await this.#classesInputLocator.fill(className)
+  }
+
+  get #itemLocator() {
+    return this.page.getByTestId(new RegExp(`^themed-item-in-${this.rootId}$`))
+  }
+
+  get #classesInputLocator() {
+    return this.#itemLocator.getByRole('textbox', {
+      name: /classes/i
+    })
   }
 }

@@ -228,9 +228,25 @@ function getTemplateTmpDirPaths(): string[] {
 }
 
 export function parseClasses(config: MultiThemePluginOptions): string[] {
-  const themeNameClasses = config.themes?.map(x => x.name) ?? []
+  const themeNameClasses = [
+    'defaultTheme',
+    ...(config.themes?.map(x => x.name) ?? [])
+  ]
+  const preloadedVariantStyles = themeNameClasses.flatMap(themeName =>
+    styleVariantsToKeep.map(style => `${themeName}:${style}`)
+  )
   const mediaQueries =
     config.themes?.map(x => x.mediaQuery ?? '')?.filter(x => !!x) ?? []
   const selectors = config.themes?.flatMap(x => x.selectors ?? []) ?? []
-  return [...themeNameClasses, ...mediaQueries, ...selectors]
+  return [
+    ...themeNameClasses,
+    ...preloadedVariantStyles,
+    ...mediaQueries,
+    ...selectors
+  ]
 }
+
+// Preventing purging of these styles makes writing variant tests easier
+// since otherwise they'd have to define the styles they use when opening
+// the repo instance
+const styleVariantsToKeep = ['bg-primary']
