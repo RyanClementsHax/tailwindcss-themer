@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
-import { ThemedItemForm } from './ThemedItemForm'
 import { AttributesInput } from './AttributesInput'
+import { ThemedItem } from './ThemedItem'
 
 export interface ThemeNodeProps {
   nodeId: string
@@ -28,12 +28,13 @@ export function ThemeNode({ nodeId }: ThemeNodeProps) {
         nodeId={nodeId}
         numThemeNodes={numThemeNodes}
       />
-      <ThemedItemForm
-        nodeId={nodeId}
-        onAddThemedItem={() => {
-          setNumThemeNodes(num => num + 1)
-        }}
-      />
+      <button
+        type="submit"
+        className="button self-start whitespace-nowrap ring-1 ring-slate-300"
+        onClick={() => setNumThemeNodes(num => num + 1)}
+      >
+        Add theme node to {nodeId}
+      </button>
     </section>
   )
 }
@@ -78,8 +79,8 @@ function ThemedContent({
       Themed content
       <div className="rounded-md bg-indigo-50 p-5">
         <div {...attributes}>
-          <div className="flex flex-col gap-5">
-            <div className="bg-primary h-10 w-10 rounded-md"></div>
+          <div className="flex flex-col items-start gap-5">
+            <ThemedItem nodeId={nodeId} />
             {Array.from({ length: numThemeNodes }, (_, i) => {
               const childNodeId = `${nodeId}.${i + 1}`
               return <ThemeNode key={childNodeId} nodeId={childNodeId} />

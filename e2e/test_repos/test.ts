@@ -89,7 +89,7 @@ class ThemeNodeImpl implements ThemeNode {
     await this.#rootLocator
       .getByRole('button', {
         name: new RegExp(
-          `add to node ${this.nodeId.replaceAll('.', '\\')}`,
+          `add theme node to ${this.nodeId.replaceAll('.', '\\')}`,
           'i'
         )
       })

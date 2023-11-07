@@ -16,7 +16,7 @@ function App() {
           return <ThemeNode key={nodeId} nodeId={nodeId} />
         })}
         <button
-          className="rounded-md border-0 bg-white px-4 py-3 shadow-md ring-inset hover:ring-2 hover:ring-inset hover:ring-indigo-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none active:bg-indigo-300"
+          className="button bg-white"
           onClick={() => setNumThemeNodes(num => num + 1)}
         >
           Add theme node
