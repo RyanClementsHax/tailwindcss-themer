@@ -1,7 +1,10 @@
 import { expect } from '@playwright/test'
 import { test } from '../test_repos/test'
 
-test('can use the theme name as a variant', async ({ page, testRepo }) => {
+test('can use the theme name as a variant to enable a style when that theme is enabled', async ({
+  page,
+  testRepo
+}) => {
   const root = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
@@ -24,7 +27,7 @@ test('can use the theme name as a variant', async ({ page, testRepo }) => {
 
   await root.setClass('darkTheme')
 
-  await root.setClass('darkTheme:bg-primary')
+  await root.item.overwriteClassTo('darkTheme:bg-primary')
 
   await expect(page).toHaveScreenshot()
 })

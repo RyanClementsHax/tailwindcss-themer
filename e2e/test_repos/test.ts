@@ -9,11 +9,16 @@ export interface TestRepo {
 }
 
 export interface ThemeRoot {
+  item: ThemedItem
   setClasses(classNames: string[]): Promise<void>
   setClass(className: string): Promise<void>
   removeClass(className: string): Promise<void>
   setAttribute(key: string, value: string): Promise<void>
   createRoot(): Promise<ThemeRoot>
+}
+
+export interface ThemedItem {
+  overwriteClassTo(className: string): Promise<void>
 }
 
 export const test = base.extend<{ testRepo: TestRepo }>({
@@ -44,10 +49,14 @@ export const test = base.extend<{ testRepo: TestRepo }>({
 })
 
 class ThemeRootImpl implements ThemeRoot {
+  public item: ThemedItem
+
   constructor(
     private readonly rootId: string,
     private readonly page: Page
-  ) {}
+  ) {
+    this.item = new ThemedItemImpl(this.rootId, this.page)
+  }
 
   async setClasses(newClasses: string[]) {
     const { className } = await this.#attributes.get()
@@ -126,5 +135,26 @@ class ThemeRootImpl implements ThemeRoot {
         )
       }
     }
+  }
+}
+
+class ThemedItemImpl implements ThemedItem {
+  constructor(
+    private readonly rootId: string,
+    private readonly page: Page
+  ) {}
+
+  async overwriteClassTo(className: string): Promise<void> {
+    await this.#classesInputLocator.fill(className)
+  }
+
+  get #itemLocator() {
+    return this.page.getByTestId(new RegExp(`^themed-item-in-${this.rootId}$`))
+  }
+
+  get #classesInputLocator() {
+    return this.#itemLocator.getByRole('textbox', {
+      name: /classes/i
+    })
   }
 }
