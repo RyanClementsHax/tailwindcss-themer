@@ -1,17 +1,17 @@
 export interface AttributesInputProps {
-  nodeId: string
+  rootId: string
   attributesInput: string
   setAttributesInput: (input: string) => void
   parsedAttributes: Record<string, string>
 }
 
 export function AttributesInput({
-  nodeId,
+  rootId,
   attributesInput,
   setAttributesInput,
   parsedAttributes
 }: AttributesInputProps) {
-  const inputId = `attributes-for-node-${nodeId}`
+  const inputId = `attributes-for-root-${rootId}`
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={inputId} className="text-sm font-medium">

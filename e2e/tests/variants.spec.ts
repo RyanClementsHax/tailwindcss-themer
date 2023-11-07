@@ -2,7 +2,7 @@ import { expect } from '@playwright/test'
 import { test } from '../test_repos/test'
 
 test('can use the theme name as a variant', async ({ page, testRepo }) => {
-  const node = await testRepo.openWithConfig({
+  const root = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -22,9 +22,9 @@ test('can use the theme name as a variant', async ({ page, testRepo }) => {
     ]
   })
 
-  await node.setClass('darkTheme')
+  await root.setClass('darkTheme')
 
-  await node.setClass('darkTheme:bg-primary')
+  await root.setClass('darkTheme:bg-primary')
 
   await expect(page).toHaveScreenshot()
 })
@@ -33,7 +33,7 @@ test('can use the theme name as a variant and styles apply to the element with t
   page,
   testRepo
 }) => {
-  const node = await testRepo.openWithConfig({
+  const root = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -53,7 +53,7 @@ test('can use the theme name as a variant and styles apply to the element with t
     ]
   })
 
-  await node.setClasses(['darkTheme', 'darkTheme:bg-primary'])
+  await root.setClasses(['darkTheme', 'darkTheme:bg-primary'])
 
   await expect(page).toHaveScreenshot()
 })

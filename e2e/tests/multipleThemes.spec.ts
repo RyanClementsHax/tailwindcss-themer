@@ -5,7 +5,7 @@ test('can enable multiple themes at the same time in separate trees', async ({
   page,
   testRepo
 }) => {
-  const node1 = await testRepo.openWithConfig({
+  const root1 = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -33,20 +33,20 @@ test('can enable multiple themes at the same time in separate trees', async ({
     ]
   })
 
-  await node1.setClass('themeOne')
+  await root1.setClass('themeOne')
 
-  const node2 = await testRepo.createNode()
+  const root2 = await testRepo.createRoot()
 
-  await node2.setClass('themeTwo')
+  await root2.setClass('themeTwo')
 
   await expect(page).toHaveScreenshot({ fullPage: true })
 })
 
-test('if multiple themes enabled on same node, the last one defined in the config shows', async ({
+test('if multiple themes enabled on same root, the last one defined in the config shows', async ({
   page,
   testRepo
 }) => {
-  const node1 = await testRepo.openWithConfig({
+  const root1 = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -74,11 +74,11 @@ test('if multiple themes enabled on same node, the last one defined in the confi
     ]
   })
 
-  await node1.setClasses(['themeOne', 'themeTwo'])
+  await root1.setClasses(['themeOne', 'themeTwo'])
 
   await expect(page).toHaveScreenshot()
 
-  const node2 = await testRepo.openWithConfig({
+  const root2 = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -106,7 +106,7 @@ test('if multiple themes enabled on same node, the last one defined in the confi
     ]
   })
 
-  await node2.setClasses(['themeOne', 'themeTwo'])
+  await root2.setClasses(['themeOne', 'themeTwo'])
 
   await expect(page).toHaveScreenshot()
 })
@@ -115,7 +115,7 @@ test('themes can be overwritten by themes enabled higher in the tree by using cl
   page,
   testRepo
 }) => {
-  const node1 = await testRepo.openWithConfig({
+  const root1 = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -143,15 +143,15 @@ test('themes can be overwritten by themes enabled higher in the tree by using cl
     ]
   })
 
-  await node1.setClass('themeOne')
+  await root1.setClass('themeOne')
 
-  const node2 = await node1.createNode()
+  const root2 = await root1.createRoot()
 
-  await node2.setClass('themeTwo')
+  await root2.setClass('themeTwo')
 
   await expect(page).toHaveScreenshot({ fullPage: true })
 
-  const node3 = await testRepo.openWithConfig({
+  const root3 = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
@@ -179,11 +179,11 @@ test('themes can be overwritten by themes enabled higher in the tree by using cl
     ]
   })
 
-  await node3.setClass('themeOne')
+  await root3.setClass('themeOne')
 
-  const node4 = await node1.createNode()
+  const root4 = await root1.createRoot()
 
-  await node4.setClass('themeTwo')
+  await root4.setClass('themeTwo')
 
   await expect(page).toHaveScreenshot({ fullPage: true })
 })

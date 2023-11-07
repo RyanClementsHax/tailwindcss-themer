@@ -2,22 +2,22 @@ import { useMemo, useRef, useState } from 'react'
 import { AttributesInput } from './AttributesInput'
 import { ThemedItem } from './ThemedItem'
 
-export interface ThemeNodeProps {
-  nodeId: string
+export interface ThemeRootProps {
+  rootId: string
 }
 
-export function ThemeNode({ nodeId }: ThemeNodeProps) {
+export function ThemeRoot({ rootId }: ThemeRootProps) {
   const [parsedAttributes, attributesInput, setAttributesInput] =
     useParsedAttributes()
-  const [numThemeNodes, setNumThemeNodes] = useState(0)
+  const [numThemeRoots, setNumThemeRoots] = useState(0)
   return (
     <section
-      data-testid={`theme-node-${nodeId}`}
+      data-testid={`theme-root-${rootId}`}
       className="flex w-full flex-col gap-5 rounded-md bg-white px-8 py-5 shadow-md"
     >
-      <h2 className="text-2xl font-bold">Theme node {nodeId}</h2>
+      <h2 className="text-2xl font-bold">Theme root {rootId}</h2>
       <AttributesInput
-        nodeId={nodeId}
+        rootId={rootId}
         attributesInput={attributesInput}
         setAttributesInput={setAttributesInput}
         parsedAttributes={parsedAttributes}
@@ -25,15 +25,15 @@ export function ThemeNode({ nodeId }: ThemeNodeProps) {
       <hr />
       <ThemedContent
         attributes={parsedAttributes}
-        nodeId={nodeId}
-        numThemeNodes={numThemeNodes}
+        rootId={rootId}
+        numThemeRoots={numThemeRoots}
       />
       <button
         type="submit"
         className="button self-start whitespace-nowrap ring-1 ring-slate-300"
-        onClick={() => setNumThemeNodes(num => num + 1)}
+        onClick={() => setNumThemeRoots(num => num + 1)}
       >
-        Add theme node to {nodeId}
+        Add theme root to {rootId}
       </button>
     </section>
   )
@@ -64,15 +64,15 @@ const useParsedAttributes = (): [
 }
 
 interface ThemedContentProps {
-  nodeId: string
-  numThemeNodes: number
+  rootId: string
+  numThemeRoots: number
   attributes: Record<string, string>
 }
 
 function ThemedContent({
   attributes,
-  numThemeNodes,
-  nodeId
+  numThemeRoots,
+  rootId
 }: ThemedContentProps) {
   return (
     <div className="flex flex-col gap-2 text-sm">
@@ -80,10 +80,10 @@ function ThemedContent({
       <div className="rounded-md bg-indigo-50 p-5">
         <div {...attributes}>
           <div className="flex flex-col items-start gap-5">
-            <ThemedItem nodeId={nodeId} />
-            {Array.from({ length: numThemeNodes }, (_, i) => {
-              const childNodeId = `${nodeId}.${i + 1}`
-              return <ThemeNode key={childNodeId} nodeId={childNodeId} />
+            <ThemedItem rootId={rootId} />
+            {Array.from({ length: numThemeRoots }, (_, i) => {
+              const childRootId = `${rootId}.${i + 1}`
+              return <ThemeRoot key={childRootId} rootId={childRootId} />
             })}
           </div>
         </div>

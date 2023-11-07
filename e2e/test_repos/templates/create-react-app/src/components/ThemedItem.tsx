@@ -1,15 +1,16 @@
 import { useState } from 'react'
 
 export interface ThemedItemProps {
-  nodeId: string
+  rootId: string
 }
 
-export function ThemedItem({ nodeId }: ThemedItemProps) {
+export function ThemedItem({ rootId }: ThemedItemProps) {
   const [className, setClassName] = useState('bg-primary')
-  const inputId = `themed-item-classes-for-${nodeId}`
+  const inputId = `themed-item-classes-for-${rootId}`
   return (
     <div className="flex flex-col gap-5 rounded-md bg-white p-5 shadow-sm">
       <div className="flex flex-col gap-2">
+        <span className="text-sm font-bold">Themed item</span>
         <label htmlFor={inputId} className="text-sm font-medium">
           Classes
         </label>
