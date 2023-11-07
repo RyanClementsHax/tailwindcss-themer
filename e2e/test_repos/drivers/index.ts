@@ -228,7 +228,10 @@ function getTemplateTmpDirPaths(): string[] {
 }
 
 export function parseClasses(config: MultiThemePluginOptions): string[] {
-  const themeNameClasses = config.themes?.map(x => x.name) ?? []
+  const themeNameClasses = [
+    'defaultTheme',
+    ...(config.themes?.map(x => x.name) ?? [])
+  ]
   const preloadedVariantStyles = themeNameClasses.flatMap(themeName =>
     styleVariantsToKeep.map(style => `${themeName}:${style}`)
   )
