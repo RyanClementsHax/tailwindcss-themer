@@ -233,7 +233,7 @@ export function parseClasses(config: MultiThemePluginOptions): string[] {
     ...(config.themes?.map(x => x.name) ?? [])
   ]
   const preloadedVariantStyles = themeNameClasses.flatMap(themeName =>
-    styleVariantsToKeep.map(style => `${themeName}:${style}`)
+    stylesToKeep.map(style => `${themeName}:${style}`)
   )
   const mediaQueries =
     config.themes?.map(x => x.mediaQuery ?? '')?.filter(x => !!x) ?? []
@@ -242,11 +242,12 @@ export function parseClasses(config: MultiThemePluginOptions): string[] {
     ...themeNameClasses,
     ...preloadedVariantStyles,
     ...mediaQueries,
-    ...selectors
+    ...selectors,
+    ...stylesToKeep
   ]
 }
 
-// Preventing purging of these styles makes writing variant tests easier
-// since otherwise they'd have to define the styles they use when opening
+// Preventing purging of these styles makes writing tests with arbitrary classes
+// easier since otherwise they'd have to define the styles they use when opening
 // the repo instance
-const styleVariantsToKeep = ['bg-primary']
+const stylesToKeep = ['bg-primary', 'font-title']

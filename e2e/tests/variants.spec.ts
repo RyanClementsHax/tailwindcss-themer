@@ -25,7 +25,7 @@ test('can use the theme name as a variant to enable a style when that theme is e
     ]
   })
 
-  await root.setClass('darkTheme')
+  await root.addClass('darkTheme')
 
   await root.item.overwriteClassTo('darkTheme:bg-primary')
 
@@ -60,7 +60,7 @@ test('variants only enable the style when the theme is enabled', async ({
 
   await expect(page).toHaveScreenshot()
 
-  await root.setClass('darkTheme')
+  await root.addClass('darkTheme')
 
   await expect(page).toHaveScreenshot()
 })
@@ -89,7 +89,7 @@ test('can use the theme name as a variant and styles apply to the element with t
     ]
   })
 
-  await root.setClasses(['darkTheme', 'darkTheme:bg-primary'])
+  await root.addClasses(['darkTheme', 'darkTheme:bg-primary'])
 
   await expect(page).toHaveScreenshot()
 })
@@ -122,7 +122,7 @@ test('can use the defaultTheme variant to apply a style only when the default th
 
   await expect(page).toHaveScreenshot()
 
-  await root.setClass('defaultTheme')
+  await root.addClass('defaultTheme')
 
   await expect(page).toHaveScreenshot()
 })

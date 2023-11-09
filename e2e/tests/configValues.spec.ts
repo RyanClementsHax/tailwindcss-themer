@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test'
 import { test } from '../test_repos/test'
 
-test('can enable a theme using the theme name as a class if no selectors explicitly provided', async ({
+test('handles the DEFAULT key by removing it from the generated class name', async ({
   page,
   testRepo
 }) => {
@@ -9,7 +9,9 @@ test('can enable a theme using the theme name as a class if no selectors explici
     defaultTheme: {
       extend: {
         colors: {
-          primary: 'blue'
+          primary: {
+            DEFAULT: 'blue'
+          }
         }
       }
     },
@@ -18,142 +20,127 @@ test('can enable a theme using the theme name as a class if no selectors explici
         name: 'darkTheme',
         extend: {
           colors: {
-            primary: 'red'
+            primary: {
+              DEFAULT: 'red'
+            }
           }
         }
       }
     ]
   })
+
+  await expect(page).toHaveScreenshot()
 
   await root.addClass('darkTheme')
 
   await expect(page).toHaveScreenshot()
 })
 
-test('cant enable a theme using the theme name as a class if any selectors provided', async ({
-  page,
-  testRepo
-}) => {
+// TODO: fix this test's snapshots
+test('handles the DEFAULT key even when nested', async ({ page, testRepo }) => {
   const root = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
-          primary: 'blue'
+          primary: {
+            DEFAULT: {
+              500: {
+                DEFAULT: 'blue'
+              }
+            }
+          }
         }
       }
     },
     themes: [
       {
         name: 'darkTheme',
-        selectors: ['.dark-mode'],
         extend: {
           colors: {
-            primary: 'red'
+            primary: {
+              DEFAULT: {
+                500: {
+                  DEFAULT: 'red'
+                }
+              }
+            }
           }
         }
       }
     ]
   })
+
+  await root.item.overwriteClassTo('bg-primary-500')
+
+  await expect(page).toHaveScreenshot()
 
   await root.addClass('darkTheme')
 
   await expect(page).toHaveScreenshot()
 })
 
-test('cant enable theme with theme name if selectors configured with empty array', async ({
-  page,
-  testRepo
-}) => {
+test('allows for fonts to be styled', async ({ page, testRepo }) => {
   const root = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
           primary: 'blue'
+        },
+        fontFamily: {
+          title: 'Helvetica'
         }
       }
     },
     themes: [
       {
         name: 'darkTheme',
-        selectors: [],
         extend: {
-          colors: {
-            primary: 'red'
+          fontFamily: {
+            title: 'Times New Roman'
           }
         }
       }
     ]
   })
+
+  await root.item.addClass('font-title')
+
+  await expect(page).toHaveScreenshot()
 
   await root.addClass('darkTheme')
 
   await expect(page).toHaveScreenshot()
 })
 
-test('can enable the theme with a custom selector', async ({
-  page,
-  testRepo
-}) => {
+test('allows for array values to be styled', async ({ page, testRepo }) => {
   const root = await testRepo.openWithConfig({
     defaultTheme: {
       extend: {
         colors: {
           primary: 'blue'
+        },
+        fontFamily: {
+          title: ['Helvetica']
         }
       }
     },
     themes: [
       {
         name: 'darkTheme',
-        selectors: ['.dark-mode'],
         extend: {
-          colors: {
-            primary: 'red'
+          fontFamily: {
+            title: ['Times New Roman']
           }
         }
       }
     ]
   })
 
-  await root.addClass('dark-mode')
-
-  await expect(page).toHaveScreenshot()
-})
-
-test('can enable the theme with multiple selectors', async ({
-  page,
-  testRepo
-}) => {
-  const root = await testRepo.openWithConfig({
-    defaultTheme: {
-      extend: {
-        colors: {
-          primary: 'blue'
-        }
-      }
-    },
-    themes: [
-      {
-        name: 'darkTheme',
-        selectors: ['.dark-mode', '[data-theme="dark"]'],
-        extend: {
-          colors: {
-            primary: 'red'
-          }
-        }
-      }
-    ]
-  })
-
-  await root.addClass('dark-mode')
+  await root.item.addClass('font-title')
 
   await expect(page).toHaveScreenshot()
 
-  await root.removeClass('dark-mode')
-
-  await expect(page).toHaveScreenshot()
-
-  await root.setAttribute('data-theme', 'dark')
+  await root.addClass('darkTheme')
 
   await expect(page).toHaveScreenshot()
 })

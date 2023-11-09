@@ -54,7 +54,7 @@ test('cant enable a theme using the theme name as a class if a media query provi
     ]
   })
 
-  await root.setClass('darkTheme')
+  await root.addClass('darkTheme')
 
   await expect(page).toHaveScreenshot()
 })

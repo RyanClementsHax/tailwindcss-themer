@@ -10,14 +10,15 @@ export interface TestRepo {
 
 export interface ThemeRoot {
   item: ThemedItem
-  setClasses(classNames: string[]): Promise<void>
-  setClass(className: string): Promise<void>
-  removeClass(className: string): Promise<void>
+  addClasses(newClasses: string[]): Promise<void>
+  addClass(newClass: string): Promise<void>
+  removeClass(classToRemove: string): Promise<void>
   setAttribute(key: string, value: string): Promise<void>
   createRoot(): Promise<ThemeRoot>
 }
 
 export interface ThemedItem {
+  addClass(newClass: string): Promise<void>
   overwriteClassTo(className: string): Promise<void>
 }
 
@@ -44,7 +45,7 @@ export const test = base.extend<{ testRepo: TestRepo }>({
 
     await use(testRepo)
 
-    await Promise.all(stopCallbacks.map(x => x()))
+    await Promise.all(stopCallbacks.map(stop => stop()))
   }
 })
 
@@ -58,7 +59,7 @@ class ThemeRootImpl implements ThemeRoot {
     this.item = new ThemedItemImpl(this.rootId, this.page)
   }
 
-  async setClasses(newClasses: string[]) {
+  async addClasses(newClasses: string[]) {
     const { className } = await this.#attributes.get()
     const classes = (className ?? '').split(' ')
     const classesToAdd = newClasses.filter(x => !classes.includes(x))
@@ -70,8 +71,8 @@ class ThemeRootImpl implements ThemeRoot {
     }
   }
 
-  async setClass(newClass: string) {
-    await this.setClasses([newClass])
+  async addClass(newClass: string) {
+    await this.addClasses([newClass])
   }
 
   async removeClass(classToRemove: string) {
@@ -143,6 +144,14 @@ class ThemedItemImpl implements ThemedItem {
     private readonly rootId: string,
     private readonly page: Page
   ) {}
+
+  async addClass(newClass: string): Promise<void> {
+    const value = await this.#classesInputLocator.inputValue()
+    const classes = (value ?? '').split(' ')
+    if (!classes.includes(newClass)) {
+      await this.overwriteClassTo([...classes, newClass].join(' ').trim())
+    }
+  }
 
   async overwriteClassTo(className: string): Promise<void> {
     await this.#classesInputLocator.fill(className)

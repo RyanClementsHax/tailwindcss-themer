@@ -33,11 +33,11 @@ test('can enable multiple themes at the same time in separate trees', async ({
     ]
   })
 
-  await root1.setClass('themeOne')
+  await root1.addClass('themeOne')
 
   const root2 = await testRepo.createRoot()
 
-  await root2.setClass('themeTwo')
+  await root2.addClass('themeTwo')
 
   await expect(page).toHaveScreenshot({ fullPage: true })
 })
@@ -74,7 +74,7 @@ test('if multiple themes enabled on same root, the last one defined in the confi
     ]
   })
 
-  await root1.setClasses(['themeOne', 'themeTwo'])
+  await root1.addClasses(['themeOne', 'themeTwo'])
 
   await expect(page).toHaveScreenshot()
 
@@ -106,7 +106,7 @@ test('if multiple themes enabled on same root, the last one defined in the confi
     ]
   })
 
-  await root2.setClasses(['themeOne', 'themeTwo'])
+  await root2.addClasses(['themeOne', 'themeTwo'])
 
   await expect(page).toHaveScreenshot()
 })
@@ -143,11 +143,11 @@ test('themes can be overwritten by themes enabled higher in the tree by using cl
     ]
   })
 
-  await root1.setClass('themeOne')
+  await root1.addClass('themeOne')
 
   const root2 = await root1.createRoot()
 
-  await root2.setClass('themeTwo')
+  await root2.addClass('themeTwo')
 
   await expect(page).toHaveScreenshot({ fullPage: true })
 
@@ -179,11 +179,11 @@ test('themes can be overwritten by themes enabled higher in the tree by using cl
     ]
   })
 
-  await root3.setClass('themeOne')
+  await root3.addClass('themeOne')
 
   const root4 = await root1.createRoot()
 
-  await root4.setClass('themeTwo')
+  await root4.addClass('themeTwo')
 
   await expect(page).toHaveScreenshot({ fullPage: true })
 })
