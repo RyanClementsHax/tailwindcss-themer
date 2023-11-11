@@ -3,39 +3,42 @@ import { test } from '../test_repos/test'
 
 test('can enable multiple themes at the same time in separate trees', async ({
   page,
-  testRepo
+  testRepos
 }) => {
-  const root1 = await testRepo.openWithConfig({
-    defaultTheme: {
-      extend: {
-        colors: {
-          primary: 'blue'
-        }
-      }
-    },
-    themes: [
-      {
-        name: 'themeOne',
+  const { repo, root: root1 } = await testRepos
+    .builder()
+    .withThemerConfig({
+      defaultTheme: {
         extend: {
           colors: {
-            primary: 'red'
+            primary: 'blue'
           }
         }
       },
-      {
-        name: 'themeTwo',
-        extend: {
-          colors: {
-            primary: 'green'
+      themes: [
+        {
+          name: 'themeOne',
+          extend: {
+            colors: {
+              primary: 'red'
+            }
+          }
+        },
+        {
+          name: 'themeTwo',
+          extend: {
+            colors: {
+              primary: 'green'
+            }
           }
         }
-      }
-    ]
-  })
+      ]
+    })
+    .open()
 
   await root1.addClass('themeOne')
 
-  const root2 = await testRepo.createRoot()
+  const root2 = await repo.createRoot()
 
   await root2.addClass('themeTwo')
 
@@ -44,68 +47,73 @@ test('can enable multiple themes at the same time in separate trees', async ({
 
 test('if multiple themes enabled on same root, the last one defined in the config shows', async ({
   page,
-  testRepo
+  testRepos
 }) => {
-  const root1 = await testRepo.openWithConfig({
-    defaultTheme: {
-      extend: {
-        colors: {
-          primary: 'blue'
-        }
-      }
-    },
-    themes: [
-      {
-        name: 'themeOne',
+  const { root: root1 } = await testRepos
+    .builder()
+    .withThemerConfig({
+      defaultTheme: {
         extend: {
           colors: {
-            primary: 'red'
+            primary: 'blue'
           }
         }
       },
-      {
-        name: 'themeTwo',
-        extend: {
-          colors: {
-            primary: 'green'
+      themes: [
+        {
+          name: 'themeOne',
+          extend: {
+            colors: {
+              primary: 'red'
+            }
+          }
+        },
+        {
+          name: 'themeTwo',
+          extend: {
+            colors: {
+              primary: 'green'
+            }
           }
         }
-      }
-    ]
-  })
+      ]
+    })
+    .open()
 
   await root1.addClasses(['themeOne', 'themeTwo'])
 
   await expect(page).toHaveScreenshot()
 
-  const root2 = await testRepo.openWithConfig({
-    defaultTheme: {
-      extend: {
-        colors: {
-          primary: 'blue'
-        }
-      }
-    },
-    themes: [
-      {
-        name: 'themeTwo',
+  const { root: root2 } = await testRepos
+    .builder()
+    .withThemerConfig({
+      defaultTheme: {
         extend: {
           colors: {
-            primary: 'green'
+            primary: 'blue'
           }
         }
       },
-      {
-        name: 'themeOne',
-        extend: {
-          colors: {
-            primary: 'red'
+      themes: [
+        {
+          name: 'themeTwo',
+          extend: {
+            colors: {
+              primary: 'green'
+            }
+          }
+        },
+        {
+          name: 'themeOne',
+          extend: {
+            colors: {
+              primary: 'red'
+            }
           }
         }
-      }
-    ]
-  })
-
+      ]
+    })
+    .open()
   await root2.addClasses(['themeOne', 'themeTwo'])
 
   await expect(page).toHaveScreenshot()
@@ -113,35 +121,38 @@ test('if multiple themes enabled on same root, the last one defined in the confi
 
 test('themes can be overwritten by themes enabled higher in the tree by using class names regardless of theme declaration order', async ({
   page,
-  testRepo
+  testRepos
 }) => {
-  const root1 = await testRepo.openWithConfig({
-    defaultTheme: {
-      extend: {
-        colors: {
-          primary: 'blue'
-        }
-      }
-    },
-    themes: [
-      {
-        name: 'themeOne',
+  const { root: root1 } = await testRepos
+    .builder()
+    .withThemerConfig({
+      defaultTheme: {
         extend: {
           colors: {
-            primary: 'red'
+            primary: 'blue'
           }
         }
       },
-      {
-        name: 'themeTwo',
-        extend: {
-          colors: {
-            primary: 'green'
+      themes: [
+        {
+          name: 'themeOne',
+          extend: {
+            colors: {
+              primary: 'red'
+            }
+          }
+        },
+        {
+          name: 'themeTwo',
+          extend: {
+            colors: {
+              primary: 'green'
+            }
           }
         }
-      }
-    ]
-  })
+      ]
+    })
+    .open()
 
   await root1.addClass('themeOne')
 
@@ -151,33 +162,36 @@ test('themes can be overwritten by themes enabled higher in the tree by using cl
 
   await expect(page).toHaveScreenshot({ fullPage: true })
 
-  const root3 = await testRepo.openWithConfig({
-    defaultTheme: {
-      extend: {
-        colors: {
-          primary: 'blue'
-        }
-      }
-    },
-    themes: [
-      {
-        name: 'themeTwo',
+  const { root: root3 } = await testRepos
+    .builder()
+    .withThemerConfig({
+      defaultTheme: {
         extend: {
           colors: {
-            primary: 'green'
+            primary: 'blue'
           }
         }
       },
-      {
-        name: 'themeOne',
-        extend: {
-          colors: {
-            primary: 'red'
+      themes: [
+        {
+          name: 'themeTwo',
+          extend: {
+            colors: {
+              primary: 'green'
+            }
+          }
+        },
+        {
+          name: 'themeOne',
+          extend: {
+            colors: {
+              primary: 'red'
+            }
           }
         }
-      }
-    ]
-  })
+      ]
+    })
+    .open()
 
   await root3.addClass('themeOne')
 

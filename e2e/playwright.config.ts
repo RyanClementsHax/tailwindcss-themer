@@ -11,6 +11,8 @@ import { defineConfig, devices } from '@playwright/test'
  */
 export default defineConfig({
   testDir: 'tests',
+  // some tests time out on slower laptops
+  timeout: 60_000,
   testMatch: ['**/*.spec.ts'],
   globalSetup: './test_repos/setup.ts',
   /* Run tests in files in parallel */

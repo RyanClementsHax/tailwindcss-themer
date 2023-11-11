@@ -1,10 +1,22 @@
-import { Page, test as base } from '@playwright/test'
+import { Page, TestInfo, test as base } from '@playwright/test'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 import { openWithConfig } from './drivers/create-react-app'
 import { StopServerCallback } from './drivers'
+import { Config as TailwindConfig } from 'tailwindcss'
+
+export interface TestRepos {
+  builder(): TestRepoBuilder
+}
+
+export interface TestRepoBuilder {
+  withBaseTailwindConfig(config: {
+    theme: TailwindConfig['theme']
+  }): TestRepoBuilder
+  withThemerConfig(config: MultiThemePluginOptions): TestRepoBuilder
+  open(): Promise<{ repo: TestRepo; root: ThemeRoot }>
+}
 
 export interface TestRepo {
-  openWithConfig(config: MultiThemePluginOptions): Promise<ThemeRoot>
   createRoot(): Promise<ThemeRoot>
 }
 
@@ -22,32 +34,83 @@ export interface ThemedItem {
   overwriteClassTo(className: string): Promise<void>
 }
 
-export const test = base.extend<{ testRepo: TestRepo }>({
-  testRepo: async ({ page }, use, testInfo) => {
+export const test = base.extend<{ testRepos: TestRepos }>({
+  testRepos: async ({ page }, use, testInfo) => {
     const stopCallbacks: StopServerCallback[] = []
 
-    const testRepo: TestRepo = {
-      async openWithConfig(config) {
-        const { url, stop: _stop } = await openWithConfig(config, {
-          instanceId: stopCallbacks.length + 1,
-          titlePath: testInfo.titlePath
-        })
-        stopCallbacks.push(_stop)
-        await page.goto(url)
-        return this.createRoot()
-      },
-      async createRoot() {
-        await page.getByRole('button', { name: /^add theme root$/i }).click()
-        const roots = await page.getByTestId(/theme-root-\d/).all()
-        return new ThemeRootImpl(roots.length.toString(), page)
+    const testRepos: TestRepos = {
+      builder() {
+        return new TestRepoBuilderImpl(
+          page,
+          testInfo,
+          () => stopCallbacks.length + 1,
+          stop => stopCallbacks.push(stop)
+        )
       }
     }
 
-    await use(testRepo)
+    await use(testRepos)
 
     await Promise.all(stopCallbacks.map(stop => stop()))
   }
 })
+
+class TestRepoBuilderImpl implements TestRepoBuilder {
+  #themerConfig: MultiThemePluginOptions | undefined
+  #baseTailwindConfig: { theme: TailwindConfig['theme'] } | undefined
+
+  constructor(
+    private readonly page: Page,
+    private readonly testInfo: TestInfo,
+    private readonly getInstanceId: () => number,
+    private readonly registerStopCallback: (stop: StopServerCallback) => void
+  ) {}
+
+  withBaseTailwindConfig(config: {
+    theme: TailwindConfig['theme']
+  }): TestRepoBuilder {
+    this.#baseTailwindConfig = config
+    return this
+  }
+
+  withThemerConfig(themerConfig: MultiThemePluginOptions): TestRepoBuilder {
+    this.#themerConfig = themerConfig
+    return this
+  }
+
+  async open(): Promise<{ repo: TestRepo; root: ThemeRoot }> {
+    if (!this.#themerConfig) {
+      throw new Error('cannot open without first defining the themer config')
+    }
+
+    const { url, stop: _stop } = await openWithConfig({
+      instanceId: this.getInstanceId(),
+      titlePath: this.testInfo.titlePath,
+      baseTailwindConfig: this.#baseTailwindConfig,
+      themerConfig: this.#themerConfig
+    })
+    this.registerStopCallback(_stop)
+
+    await this.page.goto(url)
+
+    const repo = new TestRepoImpl(this.page)
+
+    return {
+      repo,
+      root: await repo.createRoot()
+    }
+  }
+}
+
+class TestRepoImpl implements TestRepo {
+  constructor(private readonly page: Page) {}
+
+  async createRoot(): Promise<ThemeRoot> {
+    await this.page.getByRole('button', { name: /^add theme root$/i }).click()
+    const roots = await this.page.getByTestId(/theme-root-\d/).all()
+    return new ThemeRootImpl(roots.length.toString(), this.page)
+  }
+}
 
 class ThemeRootImpl implements ThemeRoot {
   public item: ThemedItem
