@@ -3,27 +3,30 @@ import { test } from '../test_repos/test'
 
 test('displays the default theme when no theme enabled', async ({
   page,
-  testRepo
+  testRepos
 }) => {
-  await testRepo.openWithConfig({
-    defaultTheme: {
-      extend: {
-        colors: {
-          primary: 'blue'
-        }
-      }
-    },
-    themes: [
-      {
-        name: 'darkTheme',
+  await testRepos
+    .builder()
+    .withThemerConfig({
+      defaultTheme: {
         extend: {
           colors: {
-            primary: 'red'
+            primary: 'blue'
           }
         }
-      }
-    ]
-  })
+      },
+      themes: [
+        {
+          name: 'darkTheme',
+          extend: {
+            colors: {
+              primary: 'red'
+            }
+          }
+        }
+      ]
+    })
+    .open()
 
   await expect(page).toHaveScreenshot()
 })

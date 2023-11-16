@@ -1,7 +1,7 @@
 # Config <!-- omit in toc -->
 
 - [Themes named `"dark"`](#themes-named-dark)
-- [This plugin's config overwrites what is in the normal tailwind config n collision](#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config-n-collision)
+- [This plugin's config overwrites what is in the normal tailwind config on collision](#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config-on-collision)
 - [Extend](#extend)
   - [Valid primitives](#valid-primitives)
   - [DEFAULT key](#default-key)
@@ -77,7 +77,7 @@ Because tailwind automatically adds the `dark` variant for users, defining a the
 
 Therefore, attempting to use `selectors` or `mediaQuery` for a theme named `dark` won't work at all. To prevent users of this plugin from encountering these silent bugs, this plugin crashes when that happens.
 
-## This plugin's config overwrites what is in the normal tailwind config n collision
+## This plugin's config overwrites what is in the normal tailwind config on collision
 
 Any config specified in this plugin's config, overwrites what is in the normal tailwind config if there is a collision.
 

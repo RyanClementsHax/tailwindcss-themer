@@ -11,12 +11,13 @@ import {
 import { type Config as TailwindConfig } from 'tailwindcss'
 
 export interface OpenOptions {
+  baseTailwindConfig?: { theme: TailwindConfig['theme'] }
+  themerConfig: MultiThemePluginOptions
   instanceId: number
   titlePath: string[]
 }
 
 export async function openWithConfig(
-  config: MultiThemePluginOptions,
   options: OpenOptions
 ): Promise<{ url: string; stop: StopServerCallback }> {
   const tmpDirName = [
@@ -32,12 +33,12 @@ export async function openWithConfig(
   const buildDir = instance.getBuildDir()
 
   if (!isAlreadyInitialized) {
-    const classesToPreventPurging = parseClasses(config)
+    const classesToPreventPurging = parseClasses(options.themerConfig)
 
     const tailwindConfig: TailwindConfig = {
       content: ['./src/**/*.{js,jsx,ts,tsx}'],
       safelist: classesToPreventPurging,
-      theme: {
+      theme: options.baseTailwindConfig?.theme ?? {
         extend: {}
       }
     }
@@ -46,7 +47,9 @@ export async function openWithConfig(
       'tailwind.config.js',
       `module.exports = {
         ...${JSON.stringify(tailwindConfig)},
-        plugins: [require('tailwindcss-themer')(${serialize(config)})]
+        plugins: [require('tailwindcss-themer')(${serialize(
+          options.themerConfig
+        )})]
       }`
     )
 
