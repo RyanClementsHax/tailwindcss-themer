@@ -200,3 +200,104 @@ test('overwrites tailwind config on collision', async ({ page, testRepos }) => {
 
   await expect(page).toHaveScreenshot()
 })
+
+test('supports top level callbacks', async ({ page, testRepos }) => {
+  const { root } = await testRepos
+    .builder()
+    .withThemerConfig({
+      defaultTheme: {
+        extend: {
+          colors: () => ({
+            primary: 'blue'
+          })
+        }
+      },
+      themes: [
+        {
+          name: 'darkTheme',
+          extend: {
+            colors: () => ({
+              primary: 'red'
+            })
+          }
+        }
+      ]
+    })
+    .open()
+
+  await expect(page).toHaveScreenshot()
+
+  await root.addClass('darkTheme')
+
+  await expect(page).toHaveScreenshot()
+})
+
+test('merges top level callback output with static values', async ({
+  page,
+  testRepos
+}) => {
+  const { root } = await testRepos
+    .builder()
+    .withThemerConfig({
+      defaultTheme: {
+        extend: {
+          colors: () => ({
+            primary: 'blue'
+          })
+        }
+      },
+      themes: [
+        {
+          name: 'darkTheme',
+          extend: {
+            colors: {
+              primary: 'red'
+            }
+          }
+        }
+      ]
+    })
+    .open()
+
+  await expect(page).toHaveScreenshot()
+
+  await root.addClass('darkTheme')
+
+  await expect(page).toHaveScreenshot()
+})
+
+test('merges objects with primitive values as defaults', async ({
+  page,
+  testRepos
+}) => {
+  const { root } = await testRepos
+    .builder()
+    .withThemerConfig({
+      defaultTheme: {
+        extend: {
+          colors: {
+            primary: 'blue'
+          }
+        }
+      },
+      themes: [
+        {
+          name: 'darkTheme',
+          extend: {
+            colors: {
+              primary: {
+                DEFAULT: 'red'
+              }
+            }
+          }
+        }
+      ]
+    })
+    .open()
+
+  await expect(page).toHaveScreenshot()
+
+  await root.addClass('darkTheme')
+
+  await expect(page).toHaveScreenshot()
+})
