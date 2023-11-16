@@ -98,7 +98,7 @@ test('allows for fonts to be styled', async ({ page, testRepos }) => {
             primary: 'blue'
           },
           fontFamily: {
-            title: 'Helvetica'
+            title: 'Arial'
           }
         }
       },
@@ -134,7 +134,7 @@ test('allows for array values to be styled', async ({ page, testRepos }) => {
             primary: 'blue'
           },
           fontFamily: {
-            title: ['Helvetica']
+            title: ['Arial']
           }
         }
       },
