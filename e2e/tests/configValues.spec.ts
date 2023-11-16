@@ -312,3 +312,200 @@ test.describe('merging config', () => {
     await expect(page).toHaveScreenshot()
   })
 })
+
+test.describe('colors', () => {
+  test('supports hex', async ({ page, testRepos }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: '#00f'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: '#f00'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  test('supports hex with alpha but strips alpha channel', async ({
+    page,
+    testRepos
+  }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: '#00f0'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: '#f000'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  test('supports rgb', async ({ page, testRepos }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'rgb(0, 0, 255)'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: 'rgb(255, 0, 0)'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  test('supports rgba but strips alpha channel', async ({
+    page,
+    testRepos
+  }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'rgb(0, 0, 255, 0.5)'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: 'rgb(255, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  test('supports hsl', async ({ page, testRepos }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'hsla(240, 100%, 50%)'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: 'hsla(0, 100%, 50%)'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  test('supports hsla but strips alpha channel', async ({
+    page,
+    testRepos
+  }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'hsla(240, 100%, 50%, 0.5)'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: 'hsla(0, 100%, 50%, 0.5)'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+})
