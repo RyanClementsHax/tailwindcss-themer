@@ -1,7 +1,9 @@
 # Config <!-- omit in toc -->
 
 - [Themes named `"dark"`](#themes-named-dark)
-- [This plugin's config overwrites what is in the normal tailwind config on collision](#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config-on-collision)
+- [Collisions with the normal tailwind config](#collisions-with-the-normal-tailwind-config)
+  - [This plugin's config overwrites what is in the normal tailwind config on collision](#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config-on-collision)
+  - [This plugin's config is overwritten by what is in the normal tailwind extension config on collison](#this-plugins-config-is-overwritten-by-what-is-in-the-normal-tailwind-extension-config-on-collison)
 - [Extend](#extend)
   - [Valid primitives](#valid-primitives)
   - [DEFAULT key](#default-key)
@@ -76,7 +78,9 @@ Because tailwind automatically adds the `dark` variant for users, defining a the
 
 Therefore, attempting to use `selectors` or `mediaQuery` for a theme named `dark` won't work at all. To prevent users of this plugin from encountering these silent bugs, this plugin crashes when that happens.
 
-## This plugin's config overwrites what is in the normal tailwind config on collision
+## Collisions with the normal tailwind config
+
+### This plugin's config overwrites what is in the normal tailwind config on collision
 
 Any config specified in this plugin's config, overwrites what is in the normal tailwind config if there is a collision.
 
@@ -84,13 +88,11 @@ Any config specified in this plugin's config, overwrites what is in the normal t
 // tailwind.config.js
 module.exports = {
   theme: {
-    extend: {
-      colors: {
-        // clobbered
-        primary: 'blue',
-        // not clobbered
-        secondary: 'green'
-      }
+    colors: {
+      // clobbered
+      primary: 'blue',
+      // not clobbered
+      secondary: 'green'
     }
   },
   plugins: [
@@ -112,6 +114,53 @@ module.exports = {
 `primary: 'blue'` gets clobbered by anything overriting it in the plugin's config. In this case it is when the default theme specifies `primary: 'red'`. This is because the plugin needs to replace `colors.primary` with `var(--colors-primary)` in order to get theming to work.
 
 If you want to use the default tailwind config in your theme configuration, see [Overwriting tailwind defaults](#overwriting-tailwind-defaults) and [Referencing tailwind's default theme](#referencing-tailwinds-default-theme).
+
+### This plugin's config is overwritten by what is in the normal tailwind extension config on collison
+
+In contrast to the normal tailwind config values as specified above, anything in the `theme.extend` value takes precendence over anything this plugin outputs.
+
+```js
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      // nothing in here is clobbered
+      colors: {
+        primary: 'blue',
+        secondary: 'green'
+      }
+    }
+  },
+  plugins: [
+    require('tailwindcss-themer')({
+      defaultTheme: {
+        extend: {
+          colors: {
+            // clobbered
+            primary: 'red',
+            // clobbered
+            secondary: 'yellow'
+          }
+        }
+      },
+      themes: [
+        {
+          name: 'my-theme',
+          extend: {
+            colors: {
+              // clobbered
+              primary: 'brown',
+              // clobbered
+              secondary: 'orange'
+            }
+          }
+        }
+      ]
+    })
+    // ...
+  ]
+}
+```
 
 ## Extend
 

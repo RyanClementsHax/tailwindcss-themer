@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test'
 import { test } from '../test_repos/test'
+import colors from 'tailwindcss/colors.js'
 
 test.describe('DEFAULT key', () => {
   test('removes the DEFAULT field name when it is a leaf', async ({
@@ -208,8 +209,49 @@ test.describe('fonts', () => {
 })
 
 test.describe('tailwind config collision', () => {
-  // TODO fix this test's snapshots
   test('overwrites tailwind config on collision', async ({
+    page,
+    testRepos
+  }) => {
+    const { root } = await testRepos
+      .builder()
+      .withBaseTailwindConfig({
+        theme: {
+          colors: {
+            ...colors,
+            primary: 'green'
+          }
+        }
+      })
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'blue'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: 'red'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  test('does not override the tailwind extension on collision', async ({
     page,
     testRepos
   }) => {

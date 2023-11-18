@@ -1,5 +1,6 @@
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  safelist: ['darkTheme'],
   theme: { extend: {} },
   plugins: [
     require('tailwindcss-themer')({
