@@ -17,7 +17,7 @@ jobs:
       - name: restore dependencies
         uses: bahmutov/npm-install@v1
       - name: release
-        run: HUSKY=0 npm run release
+        run: npm run release
         env:
           HUSKY: 0 # semantic-release does a push which would trigger the pre-push git hook
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
