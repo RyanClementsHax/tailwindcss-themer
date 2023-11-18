@@ -26,10 +26,25 @@ describe('customPropUtils', () => {
       )
     })
 
-    it('removes default path steps case insensitvely', () => {
+    it('removes default leaf path step case sensitively', () => {
       expect(
-        toCustomPropName(['default', 'that', 'DEFAULT', 'someOtherThing'])
-      ).toBe('--that-someOtherThing')
+        toCustomPropName([
+          'default',
+          'that',
+          'DEFAULT',
+          'someOtherThing',
+          'DEFAULT'
+        ])
+      ).toBe('--default-that-DEFAULT-someOtherThing')
+      expect(
+        toCustomPropName([
+          'default',
+          'that',
+          'DEFAULT',
+          'someOtherThing',
+          'default'
+        ])
+      ).toBe('--default-that-DEFAULT-someOtherThing-default')
     })
 
     it('throws when whitespace is encountered', () => {

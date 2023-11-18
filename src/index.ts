@@ -1,5 +1,5 @@
 import plugin from 'tailwindcss/plugin'
-import { Config, PluginAPI } from 'tailwindcss/types/config'
+import { PluginAPI } from 'tailwindcss/types/config'
 
 import {
   getThemesFromOptions,
@@ -54,7 +54,12 @@ const addThemeStyles = (themes: ThemeConfig[], api: PluginAPI): void => {
   const { addBase, e } = api
   for (const { name, selectors: _selectors, extend, mediaQuery } of themes) {
     const selectors =
-      _selectors ?? (name === defaultThemeName ? [':root'] : [`.${e(name)}`])
+      _selectors ??
+      (name === defaultThemeName
+        ? [':root']
+        : mediaQuery
+        ? []
+        : [`.${e(name)}`])
     if (selectors.length > 0) {
       addBase({
         [selectors.join(', ')]: resolveThemeExtensionAsCustomProps(extend, api)
@@ -77,14 +82,16 @@ const multiThemePlugin = plugin.withOptions<MultiThemePluginOptions>(
       addThemeVariants(themes, api)
       addThemeStyles(themes, api)
     },
-  (options = defaultOptions) =>
-    ({
+  (options = defaultOptions) => {
+    const extension = resolveThemeExtensionsAsTailwindExtension(
+      getThemesFromOptions(options)
+    )
+    return {
       theme: {
-        extend: resolveThemeExtensionsAsTailwindExtension(
-          getThemesFromOptions(options)
-        )
+        extend: extension
       }
-    }) as Config
+    }
+  }
 )
 
 export = multiThemePlugin

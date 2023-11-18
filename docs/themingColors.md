@@ -16,9 +16,7 @@ require('tailwindcss-themer')({
       },
       foo: {
         bar: {
-          DEFAULT: {
-            bazz: 'rgb(35, 0, 75)' // also parsed as a color
-          }
+          bazz: 'rgb(35, 0, 75)' // also parsed as a color
         }
       }
     }

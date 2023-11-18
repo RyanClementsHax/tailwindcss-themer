@@ -504,8 +504,6 @@ module.exports = {
 ```
 
 > Notice how we needed to set `color.primary` to a callback function. This is to properly handle opacity. See [Opacity](docs/themingColors.md#opacity) for more details.
-> \
-> Because it creates a theme extension for you, this is why it overwrites whatever is in the normal theme extension upon collision. See [This plugin's config overwrites what is in the normal tailwind config n collision](docs/config.md#this-plugins-config-overwrites-what-is-in-the-normal-tailwind-config-n-collision) for more details.
 
 It also injects css variables with proper scoping into tailwind's [base layer](https://tailwindcss.com/docs/adding-custom-styles#using-css-and-layer).
 
@@ -720,7 +718,7 @@ require('tailwindcss-themer')({
 
 The above config would generate a css variable of the name `--colors-myBrand-primary-500`. If for some reason, [camelCasing](https://en.wikipedia.org/wiki/Camel_case) is converted to [kebab-casing](https://www.theserverside.com/definition/Kebab-case), make sure you have tailwind `v3.0.12` or later installed as that version fixed that bug.
 
-If you use `DEFAULT` anywhere on a path to a variable, it is dropped off of the generated css variable name.
+If you use `DEFAULT` as a leaf value, it is dropped off of the generated css variable name.
 
 ```js
 require('tailwindcss-themer')({
@@ -741,31 +739,7 @@ require('tailwindcss-themer')({
 })
 ```
 
-The above config would generate a css variable of the name `--colors-brand1-primary`.
-
-Because of the way `DEFAULT` works, it is possible to have naming collisions. It is on the user of this plugin to ensure that none happen.
-
-```js
-require('tailwindcss-themer')({
-  defaultTheme: {
-    extend: {
-      colors: {
-        brand1: {
-          DEFAULT: {
-            primary: {
-              DEFAULT: 'red'
-            }
-          },
-          primary: 'blue'
-        }
-      }
-    }
-  }
-  // ...
-})
-```
-
-`colors.brand1.DEFAULT.primary.DEFAULT` and `colors.brand1.primary` both would generate a css variable named `--colors-brand1-primary`. See [Default key](docs/config.md#default-key) for more details.
+The above config would generate a css variable of the name `--colors-brand1-DEFAULT-primary`. See [Default key](docs/config.md#default-key) for more details.
 
 If anywhere in the path, an array is encountered, the index is used in the generated css variable name.
 
