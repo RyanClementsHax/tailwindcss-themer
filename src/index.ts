@@ -1,5 +1,5 @@
 import plugin from 'tailwindcss/plugin'
-import { Config, PluginAPI } from 'tailwindcss/types/config'
+import { PluginAPI } from 'tailwindcss/types/config'
 
 import {
   getThemesFromOptions,
@@ -82,14 +82,16 @@ const multiThemePlugin = plugin.withOptions<MultiThemePluginOptions>(
       addThemeVariants(themes, api)
       addThemeStyles(themes, api)
     },
-  (options = defaultOptions) =>
-    ({
+  (options = defaultOptions) => {
+    const extension = resolveThemeExtensionsAsTailwindExtension(
+      getThemesFromOptions(options)
+    )
+    return {
       theme: {
-        extend: resolveThemeExtensionsAsTailwindExtension(
-          getThemesFromOptions(options)
-        )
+        extend: extension
       }
-    }) as Config
+    }
+  }
 )
 
 export = multiThemePlugin

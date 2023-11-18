@@ -31,7 +31,6 @@ test('can enable a theme using a media query', async ({ page, testRepos }) => {
   await expect(page).toHaveScreenshot()
 })
 
-// TODO fix this test's snapshots
 test('cant enable a theme using the theme name as a class if a media query provided', async ({
   page,
   testRepos

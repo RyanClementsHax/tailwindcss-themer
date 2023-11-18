@@ -2,7 +2,7 @@ import { expect } from '@playwright/test'
 import { test } from '../test_repos/test'
 
 test.describe('DEFAULT key', () => {
-  test('handles the DEFAULT key by removing it from the generated class name', async ({
+  test('removes the DEFAULT field name when it is a leaf', async ({
     page,
     testRepos
   }) => {
@@ -40,8 +40,51 @@ test.describe('DEFAULT key', () => {
     await expect(page).toHaveScreenshot()
   })
 
-  // TODO: fix this test's snapshots
-  test('handles the DEFAULT key even when nested', async ({
+  test('doesnt remove the DEFAULT field name when not a leaf', async ({
+    page,
+    testRepos
+  }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: {
+                DEFAULT: {
+                  500: 'blue'
+                }
+              }
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: {
+                  DEFAULT: {
+                    500: 'red'
+                  }
+                }
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await root.item.overwriteClassTo('bg-primary-DEFAULT-500')
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  test('doesnt remove the DEFAULT field name when not a leaf even if one of its leaves has a DEFAULT field name', async ({
     page,
     testRepos
   }) => {
@@ -80,7 +123,7 @@ test.describe('DEFAULT key', () => {
       })
       .open()
 
-    await root.item.overwriteClassTo('bg-primary-500')
+    await root.item.overwriteClassTo('bg-primary-DEFAULT-500')
 
     await expect(page).toHaveScreenshot()
 

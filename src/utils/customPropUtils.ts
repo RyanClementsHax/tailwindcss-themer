@@ -40,7 +40,9 @@ export const toCustomPropName = (valuePath: string[]): string => {
     )
   }
   return escape(
-    `--${valuePath.filter(step => step.toLowerCase() !== 'default').join('-')}`
+    `--${valuePath
+      .filter((step, i) => !(i == valuePath.length - 1 && step == 'DEFAULT'))
+      .join('-')}`
   )
 }
 

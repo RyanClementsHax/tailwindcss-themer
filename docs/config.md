@@ -6,7 +6,6 @@
   - [Valid primitives](#valid-primitives)
   - [DEFAULT key](#default-key)
     - [Shorthand](#shorthand)
-    - [Gotcha's](#gotchas)
   - [Callbacks](#callbacks)
   - [Config mismatches](#config-mismatches)
   - [Referencing tailwind's default theme](#referencing-tailwinds-default-theme)
@@ -169,7 +168,7 @@ require('tailwindcss-themer')({
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -184,7 +183,7 @@ require('tailwindcss-themer')({
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -199,7 +198,7 @@ require('tailwindcss-themer')({
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
@@ -260,40 +259,40 @@ require('tailwindcss-themer')({
 You would then use the tailwind classes as normal
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
   </head>
   <body>
     <!-- this has a border radius of .25rem since that is the default -->
-    <input aria-label="my input" class="border rounded-woahh" />
+    <input aria-label="my input" class="rounded-woahh border" />
   </body>
 </html>
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
   </head>
   <body class="special-border-radius">
     <!-- this has a border radius of .5rem as specified in the special-border-radius config -->
-    <input aria-label="my input" class="border rounded-woahh" />
+    <input aria-label="my input" class="rounded-woahh border" />
   </body>
 </html>
 ```
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- ... -->
   </head>
   <body class="double-border-radius">
     <!-- this has a border radius of 1rem as specified in the double-border-radius config -->
-    <input aria-label="my input" class="border rounded-woahh" />
+    <input aria-label="my input" class="rounded-woahh border" />
   </body>
 </html>
 ```
@@ -377,7 +376,7 @@ Anything that can be parsed as a color is handled in a special way. See [Theming
 
 ### DEFAULT key
 
-Tailwind lets you specify default values for certain configuration.
+Tailwind lets you specify [default values for certain configuration](https://tailwindcss.com/docs/theme#core-plugins).
 
 For example, if you had a palette, but wanted to specify a default value for that palette, you could use the `DEFAULT` key.
 
@@ -443,63 +442,6 @@ require('tailwindcss-themer')({
 
 Styles like `text-primary` will now be themed.
 
-`DEFAULT` doesn't have to be set to a string. It could also be set to other values like objects.
-
-```js
-require('tailwindcss-themer')({
-  // ...
-  themes: [
-    {
-      name: 'my-theme',
-      extend: {
-        colors: {
-          primary: {
-            DEFAULT: {
-              100: '#000111'
-              //...
-            },
-            brand1: {
-              // ...
-            },
-            brand2: {
-              // ...
-            }
-          }
-        }
-      }
-    }
-  ]
-})
-```
-
-This generates classes like `text-primary-100`, `text-primary-brand1-200`, etc.
-
-You can even nest them.
-
-```js
-require('tailwindcss-themer')({
-  // ...
-  themes: [
-    {
-      name: 'my-theme',
-      extend: {
-        colors: {
-          brand1: {
-            DEFAULT: {
-              primary: {
-                DEFAULT: 'red'
-              }
-            }
-          }
-        }
-      }
-    }
-  ]
-})
-```
-
-This will generate classess like `text-brand1-primary`.
-
 #### Shorthand
 
 Because of how `DEFAULT` works, you can specify single default values as strings if that is the only value in the object.
@@ -541,38 +483,6 @@ require('tailwindcss-themer')({
   ]
 })
 ```
-
-#### Gotcha's
-
-Because of how `DEFAULT` works, it is possible to have naming collisions.
-
-Take the following for an example.
-
-```js
-require('tailwindcss-themer')({
-  // ...
-  themes: [
-    {
-      name: 'my-theme',
-      extend: {
-        colors: {
-          primary: {
-            DEFAULT: {
-              fontColor: 'red'
-            },
-            fontColor: {
-              DEFAULT: 'red'
-            }
-          }
-        }
-      }
-    }
-    // ...
-  ]
-})
-```
-
-`colors.primary.DEFAULT.fontColor` and `colors.primary.fontColor.DEFAULT` both create classes like `text-primary-fontColor`. It is on the consumer of this plugin to make sure these naming collisions don't happen.
 
 ### Callbacks
 
