@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "postinstall": "playwright install --with-deps",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "e2e:u": "npm run e2e -- -u"
   },
   "devDependencies": {
     "@playwright/test": "^1.38.1",

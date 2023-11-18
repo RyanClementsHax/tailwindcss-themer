@@ -54,7 +54,12 @@ const addThemeStyles = (themes: ThemeConfig[], api: PluginAPI): void => {
   const { addBase, e } = api
   for (const { name, selectors: _selectors, extend, mediaQuery } of themes) {
     const selectors =
-      _selectors ?? (name === defaultThemeName ? [':root'] : [`.${e(name)}`])
+      _selectors ??
+      (name === defaultThemeName
+        ? [':root']
+        : mediaQuery
+        ? []
+        : [`.${e(name)}`])
     if (selectors.length > 0) {
       addBase({
         [selectors.join(', ')]: resolveThemeExtensionAsCustomProps(extend, api)
