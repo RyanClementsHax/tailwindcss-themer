@@ -250,4 +250,11 @@ export function parseClasses(config: MultiThemePluginOptions): string[] {
 // Preventing purging of these styles makes writing tests with arbitrary classes
 // easier since otherwise they'd have to define the styles they use when opening
 // the repo instance
-const stylesToKeep = ['bg-primary', 'bg-primary-DEFAULT-500', 'font-title']
+const stylesToKeep = [
+  'bg-primary',
+  'bg-primary/75',
+  'bg-primary-DEFAULT-500',
+  'font-title',
+  'text-textColor',
+  'text-textColor/50'
+]

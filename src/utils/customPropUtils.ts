@@ -1,4 +1,4 @@
-import { isColor, toRgb, withOpacity } from './colorUtils'
+import { getAlpha, isColor, toRgb } from './colorUtils'
 
 /**
  * Code copied from the tailwind official codebase
@@ -54,10 +54,13 @@ export const toCustomPropName = (valuePath: string[]): string => {
 export const asCustomProp = (
   value: string | number,
   valuePath: string[]
-): string | ReturnType<typeof withOpacity> => {
+): string => {
   const customPropName = toCustomPropName(valuePath)
   if (isColor(value)) {
-    return withOpacity(customPropName)
+    const alpha = getAlpha(value)
+    return `rgb(var(${customPropName}) / ${
+      alpha == 1 ? '<alpha-value>' : alpha
+    })`
   } else {
     return `var(${customPropName})`
   }
