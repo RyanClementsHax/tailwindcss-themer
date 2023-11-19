@@ -430,7 +430,38 @@ test.describe('colors', () => {
     await expect(page).toHaveScreenshot()
   })
 
-  test('supports hex with alpha but strips alpha channel', async ({
+  test('supports hex with alpha', async ({ page, testRepos }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: '#0000ff80'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: '#ff000080'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  test('supports hex with alpha and an opacity modifier', async ({
     page,
     testRepos
   }) => {
@@ -440,7 +471,7 @@ test.describe('colors', () => {
         defaultTheme: {
           extend: {
             colors: {
-              primary: '#00f0'
+              primary: '#0000ff80'
             }
           }
         },
@@ -449,13 +480,15 @@ test.describe('colors', () => {
             name: 'darkTheme',
             extend: {
               colors: {
-                primary: '#f000'
+                primary: '#ff000080'
               }
             }
           }
         ]
       })
       .open()
+
+    await root.item.overwriteClassTo('bg-primary/75')
 
     await expect(page).toHaveScreenshot()
 
@@ -495,7 +528,38 @@ test.describe('colors', () => {
     await expect(page).toHaveScreenshot()
   })
 
-  test('supports rgba but strips alpha channel', async ({
+  test('supports rgba', async ({ page, testRepos }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'rgba(0, 0, 255, 0.5)'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: 'rgba(255, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  test('supports rgba with an opacity modifier', async ({
     page,
     testRepos
   }) => {
@@ -505,7 +569,7 @@ test.describe('colors', () => {
         defaultTheme: {
           extend: {
             colors: {
-              primary: 'rgb(0, 0, 255, 0.5)'
+              primary: 'rgba(0, 0, 255, 0.5)'
             }
           }
         },
@@ -514,13 +578,15 @@ test.describe('colors', () => {
             name: 'darkTheme',
             extend: {
               colors: {
-                primary: 'rgb(255, 0, 0, 0.5)'
+                primary: 'rgba(255, 0, 0, 0.5)'
               }
             }
           }
         ]
       })
       .open()
+
+    await root.item.overwriteClassTo('bg-primary/75')
 
     await expect(page).toHaveScreenshot()
 
@@ -560,7 +626,39 @@ test.describe('colors', () => {
     await expect(page).toHaveScreenshot()
   })
 
-  test('supports hsla but strips alpha channel', async ({
+  // https://github.com/RyanClementsHax/tailwindcss-themer/issues/74
+  test('supports hsla', async ({ page, testRepos }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'hsla(240, 100%, 50%, 0.5)'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: 'hsla(0, 100%, 50%, 0.5)'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  test('supports hsla with an opacity modifier', async ({
     page,
     testRepos
   }) => {
@@ -586,6 +684,82 @@ test.describe('colors', () => {
         ]
       })
       .open()
+
+    await root.item.overwriteClassTo('bg-primary/75')
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  // https://github.com/RyanClementsHax/tailwindcss-themer/issues/77
+  test('supports transparent', async ({ page, testRepos }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'blue',
+              textColor: 'orange'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: 'red',
+                textColor: 'transparent'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await root.item.addClass('text-textColor')
+
+    await expect(page).toHaveScreenshot()
+
+    await root.addClass('darkTheme')
+
+    await expect(page).toHaveScreenshot()
+  })
+
+  test('supports transparent with opacity modifier', async ({
+    page,
+    testRepos
+  }) => {
+    const { root } = await testRepos
+      .builder()
+      .withThemerConfig({
+        defaultTheme: {
+          extend: {
+            colors: {
+              primary: 'blue',
+              textColor: 'orange'
+            }
+          }
+        },
+        themes: [
+          {
+            name: 'darkTheme',
+            extend: {
+              colors: {
+                primary: 'red',
+                textColor: 'transparent'
+              }
+            }
+          }
+        ]
+      })
+      .open()
+
+    await root.item.addClass('text-textColor/50')
 
     await expect(page).toHaveScreenshot()
 

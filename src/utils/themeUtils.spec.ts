@@ -8,61 +8,23 @@ import {
 
 describe('themeUtils', () => {
   let pluginUtils: PluginUtils
-  let opacityConfig: { opacityVariable: string; opacityValue: string }
 
   beforeEach(() => {
     pluginUtils = mock<PluginUtils>({
       theme: jest.fn(x => x)
     })
-    opacityConfig = {
-      opacityValue: 'opacityValue',
-      opacityVariable: '--opacity-variable'
-    }
   })
-
-  const resolveOpacityCallbacks = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    themeExtensionValue: any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): any => {
-    if (
-      typeof themeExtensionValue === 'string' ||
-      typeof themeExtensionValue === 'number' ||
-      typeof themeExtensionValue === 'undefined' ||
-      Array.isArray(themeExtensionValue)
-    ) {
-      return themeExtensionValue
-    }
-    if (typeof themeExtensionValue === 'function') {
-      return themeExtensionValue(opacityConfig)
-    }
-    return Object.entries(themeExtensionValue).reduce(
-      (acc, [key, value]) => ({
-        ...acc,
-        [key]: resolveOpacityCallbacks(value)
-      }),
-      {}
-    )
-  }
 
   const resolveCallbacks = (
     extension: TailwindExtension
   ): TailwindExtension => {
-    const extensionWithResolvedThemeCbs = Object.entries(extension).reduce(
+    return Object.entries(extension).reduce(
       (acc, [key, value]) => ({
         ...acc,
         [key]: typeof value === 'function' ? value(pluginUtils) : value
       }),
       {}
     ) as TailwindExtension
-
-    if (extensionWithResolvedThemeCbs.colors) {
-      extensionWithResolvedThemeCbs.colors = resolveOpacityCallbacks(
-        extensionWithResolvedThemeCbs.colors
-      )
-    }
-
-    return extensionWithResolvedThemeCbs
   }
 
   describe('resolveThemeExtensionsAsTailwindExtension', () => {
@@ -670,8 +632,8 @@ describe('themeUtils', () => {
           )
         ).toEqual({
           colors: {
-            primary: 'rgba(var(--colors-primary), opacityValue)',
-            secondary: 'rgba(var(--colors-secondary), opacityValue)'
+            primary: 'rgb(var(--colors-primary) / <alpha-value>)',
+            secondary: 'rgb(var(--colors-secondary) / <alpha-value>)'
           }
         })
       })
@@ -777,7 +739,7 @@ describe('themeUtils', () => {
           helpers
         )
       ).toEqual({
-        '--colors-primary': '17, 70, 17'
+        '--colors-primary': '17 70 17'
       })
     })
 

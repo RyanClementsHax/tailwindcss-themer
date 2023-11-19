@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-conditional-expect */
 import {
   asCustomProp,
   toCustomPropName,
@@ -10,8 +9,9 @@ describe('customPropUtils', () => {
     it('if given a number it converts it to a string', () => {
       expect(toCustomPropValue(4)).toBe('4')
     })
+
     it('converts the value to rgb if it is a color', () => {
-      expect(toCustomPropValue('#fff')).toBe('255, 255, 255')
+      expect(toCustomPropValue('#fff')).toBe('255 255 255')
     })
 
     it('returns the value if it is not a color', () => {
@@ -55,36 +55,28 @@ describe('customPropUtils', () => {
   })
 
   describe('asCustomProp', () => {
-    it('converts the value to a custom prop with configured with opacity if it is a color', () => {
-      const result = asCustomProp('#fff', ['this', 'that'])
-
-      if (typeof result === 'function') {
-        expect(result({ opacityValue: 'value' })).toBe(
-          'rgba(var(--this-that), value)'
+    describe('colors', () => {
+      it('when given a number without an alpha, converts to custom prop with <alpha-value> as its alpha value', () => {
+        expect(asCustomProp('#fff', ['this', 'that'])).toBe(
+          'rgb(var(--this-that) / <alpha-value>)'
         )
-      } else {
-        throw new Error('expected to receive a function')
-      }
+      })
+
+      it('when given a number with an alpha, converts to custom prop with the alpha value as its alpha value', () => {
+        expect(asCustomProp('rgba(20, 0, 204, 0.72)', ['this', 'that'])).toBe(
+          'rgb(var(--this-that) / 0.72)'
+        )
+      })
     })
 
     it('converts the value to a custom prop if passed a string that is not a color', () => {
-      const result = asCustomProp('not a color', ['this', 'that'])
-
-      if (typeof result === 'string') {
-        expect(result).toBe('var(--this-that)')
-      } else {
-        throw new Error('expected to receive a string')
-      }
+      expect(asCustomProp('not a color', ['this', 'that'])).toBe(
+        'var(--this-that)'
+      )
     })
 
     it('converts the value to a custom prop if passed a number', () => {
-      const result = asCustomProp(4, ['this', 'that'])
-
-      if (typeof result === 'string') {
-        expect(result).toBe('var(--this-that)')
-      } else {
-        throw new Error('expected to receive a string')
-      }
+      expect(asCustomProp(4, ['this', 'that'])).toBe('var(--this-that)')
     })
   })
 })

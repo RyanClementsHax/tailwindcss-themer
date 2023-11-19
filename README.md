@@ -18,7 +18,7 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
 
 **🌑 Trivial dark theme**: Because dark theme is _just another theme_ implementing dark theme is as easy, no special config
 
-**🤖 Automatically handles colors and opacity**: Using [tailwind with css variables](https://tailwindcss.com/docs/customizing-colors#using-css-variables) can get [tricky with colors](https://www.youtube.com/watch?v=MAtaT8BZEAo), but this plugin handles all of that for you!
+**🤖 Automatically handles colors and opacity**: Using [tailwind with css variables](https://tailwindcss.com/docs/customizing-colors#using-css-variables) can get tricky with colors, but this plugin handles all of that for you!
 
 **😅 Easy theme management**: A simple, declarative api that lets you easily create and modify themes
 
@@ -38,8 +38,8 @@ An unopinionated, scalable, [tailwindcss](https://tailwindcss.com/) theming solu
   - [Use the classes like normal](#use-the-classes-like-normal)
   - [Enable your other theme](#enable-your-other-theme)
   - [Apply variants if you want](#apply-variants-if-you-want)
-- [Contributing](#contributing)
-- [Documentation](#documentation)
+- [Config documentation](#config-documentation)
+- [Migration documentation](#migration-documentation)
 - [Enabling your theme](#enabling-your-theme)
   - [Selectors](#selectors)
   - [Media query](#media-query)
@@ -190,14 +190,14 @@ If for some reason you need to apply classes only when certain themes are active
 
 See [Variants](#variants) for more details.
 
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidance on contributing.
-
-## Documentation
+## Config documentation
 
 - [Config](docs/config.md#config)
 - [Theming Colors](docs/themingColors.md#theming-colors)
+
+## Migration documentation
+
+See [migrating.md](./docs/migrating.md) for instructions on how to migrate between major versions.
 
 ## Enabling your theme
 
@@ -485,15 +485,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: ({ opacityVariable, opacityValue }) => {
-          if (opacityValue !== undefined) {
-            return `rgba(var(--colors-primary), ${opacityValue})`
-          }
-          if (opacityVariable !== undefined) {
-            return `rgba(var(--colors-primary), var(${opacityVariable}, 1))`
-          }
-          return `rgb(var(--colors-primary))`
-        }
+        primary: 'rgb(255 0 0 / <alpha-value>)'
       },
       fontFamily: {
         title: 'var(--font-family-title)'
@@ -503,20 +495,18 @@ module.exports = {
 }
 ```
 
-> Notice how we needed to set `color.primary` to a callback function. This is to properly handle opacity. See [Opacity](docs/themingColors.md#opacity) for more details.
-
 It also injects css variables with proper scoping into tailwind's [base layer](https://tailwindcss.com/docs/adding-custom-styles#using-css-and-layer).
 
 ```css
 /* this is configured by "defaultTheme" */
 :root {
-  --colors-primary: 255, 0, 0;
+  --colors-primary: 255 0 0;
   --font-family-title: Helvetica;
 }
 
 /* this is configured by the "my-theme" configuration */
 .my-theme {
-  --colors-primary: 0, 0, 255;
+  --colors-primary: 0 0 255;
   --font-family-title: ui-monospace;
 }
 ```
@@ -545,7 +535,7 @@ For comparison, this is what those classes looked like before without theming:
 
 .text-primary {
   --tw-text-opacity: 1;
-  color: rgb(255 0 0 1 / var(--tw-text-opacity));
+  color: rgb(255 0 0 / var(--tw-text-opacity));
 }
 ```
 
@@ -589,7 +579,7 @@ For example the above `defaultTheme` config generates the following css variable
 ```css
 /* this is configured by "defaultTheme" */
 :root {
-  --colors-primary: 255, 0, 0;
+  --colors-primary: 255 0 0;
   --font-family-title: Helvetica;
 }
 ```
@@ -632,12 +622,12 @@ For example, the above config in the `themes` section of the config generates th
 
 ```css
 .my-theme-1 {
-  --colors-primary: 255, 0, 0;
+  --colors-primary: 255 0 0;
   --font-family-title: Helvetica;
 }
 
 .my-theme-2 {
-  --colors-primary: 0, 0, 255;
+  --colors-primary: 0 0 255;
   --font-family-title: ui-monospace;
 }
 ```
