@@ -28,15 +28,14 @@ body:
     attributes:
       label: Your minimal, reproducible example
       description: |
-        Please add a link to a minimal reproduction.
+        Please add a link to a minimal reproduction. You can use this codesandbox template https://codesandbox.io/p/devbox/tailwindcss-themer-example-react-vite-typescript-hx2j7f if you would like.
         Note:
-        - Your bug may get fixed much faster if we can run your code and it doesn't have dependencies other than Next.js.
-        - To create a shareable code example for web, you can use CodeSandbox (https://codesandbox.io/s/new) or Stackblitz (https://stackblitz.com/).
+        - Your bug may get fixed much faster if we can run your code and it doesn't have dependencies other than a base framework and tailwindcss-themer
+        - To create your own shareable code example, you can use CodeSandbox (https://codesandbox.io/s/new) or Stackblitz (https://stackblitz.com/).
         - Please make sure the example is complete and runnable
-        - Feel free to fork any of the official CodeSandbox examples to reproduce your issue: https://github.com/RyanClementsHax/tailwindcss-themer/tree/main/examples
         - Please read these tips for providing a minimal example: https://stackoverflow.com/help/mcve.
       placeholder: |
-        e.g. Code Sandbox, Stackblitz, or Expo Snack
+        e.g. Code Sandbox, Stackblitz, or repo link
     validations:
       required: true
   - type: textarea
