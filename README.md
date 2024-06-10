@@ -683,6 +683,20 @@ The theme variant generated for the default theme is `defaultTheme` (e.g. `defau
 </html>
 ```
 
+If you've opted to use a prefix in your Tailwind CSS setup, it's essential to include `<prefix><theme name>` alongside the theme class. This ensures proper application of variants. For instance, if your prefix is `tw-` and your theme name is `dark-theme`, you'd use `dark-theme tw-dark-theme` together.
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- ... -->
+  </head>
+  <body class="dark-theme tw-dark-theme">
+    <!-- Properly utilize prefixes and themes -->
+    <h1 class="dark-theme:font-bold">Hello world!</h1>
+  </body>
+</html>
+```
 ### Naming
 
 As you probably could tell from above, the names of the generated css variables are the [kebab-cased](https://www.theserverside.com/definition/Kebab-case) version of the variable's path on the config object.
