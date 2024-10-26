@@ -1,6 +1,7 @@
 import eslint from '@eslint/js'
-import vitest from 'eslint-plugin-vitest'
 import tseslint from 'typescript-eslint'
+import vitest from 'eslint-plugin-vitest'
+import playwright from 'eslint-plugin-playwright'
 
 export default tseslint.config(
   {
@@ -8,7 +9,7 @@ export default tseslint.config(
       'lib',
       'examples',
       'coverage',
-      '**/.tmp',
+      'e2e/test_repos/templates',
       '**/test-results',
       '**/playwright-report'
     ]
@@ -57,5 +58,9 @@ export default tseslint.config(
   {
     files: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     ...vitest.configs.recommended
+  },
+  {
+    ...playwright.configs['flat/recommended'],
+    files: ['e2e/tests/**']
   }
 )

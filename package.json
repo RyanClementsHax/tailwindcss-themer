@@ -65,6 +65,7 @@
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^9.13.0",
+    "eslint-plugin-playwright": "^2.0.0",
     "eslint-plugin-vitest": "^0.5.4",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
