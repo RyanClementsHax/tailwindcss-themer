@@ -101,5 +101,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "exclude": ["node_modules", "lib", "examples", "e2e"],
-  "include": ["src", "./*.ts", "./*.js", "./*.mjs"]
+  "include": ["src", "./*.js", "./*.ts", "./*.mjs", "./*.mts"]
 }

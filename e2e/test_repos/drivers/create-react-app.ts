@@ -113,7 +113,6 @@ async function startServerWithRetry({
   while (attemptNumber <= maxAttempts) {
     attemptNumber++
     if (attemptNumber > 1) {
-      // eslint-disable-next-line no-console
       console.log(
         `Retrying (attempt ${attemptNumber}) starting the server because: ${failedReason}`
       )
