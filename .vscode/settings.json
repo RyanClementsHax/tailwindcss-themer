@@ -8,8 +8,8 @@
   "less.validate": false,
   "scss.validate": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.markdownlint": true,
-    "source.fixAll.stylelint": true
+    "source.fixAll.markdownlint": "explicit",
+    "source.fixAll.stylelint": "explicit"
   },
   "stylelint.validate": ["css", "scss", "postcss"]
 }

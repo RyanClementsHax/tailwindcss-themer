@@ -6,6 +6,14 @@ import {
   resolveThemeExtensionsAsTailwindExtension
 } from './themeUtils'
 
+declare module 'tailwindcss/types/config' {
+  interface ThemeConfig {
+    // For the purpose of testing, we should assume that anything could be set on the theme
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any
+  }
+}
+
 describe('themeUtils', () => {
   let pluginUtils: PluginUtils
 
