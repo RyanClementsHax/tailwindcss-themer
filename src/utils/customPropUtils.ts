@@ -34,7 +34,7 @@ const whitespaceRegex = /\s/g
 export const toCustomPropName = (valuePath: string[]): string => {
   if (valuePath.some(x => whitespaceRegex.test(x))) {
     throw new Error(
-      `cannot have whitespace in any property in a theme config, found "${valuePath.find(
+      `Cannot have whitespace in any property in a theme config, found "${valuePath.find(
         x => whitespaceRegex.test(x)
       )}"`
     )

@@ -23,55 +23,59 @@ const resolveThemeExtensionAsCustomPropsRecursionHelper = (
   themeExtensionValue: any,
   api: PluginAPI,
   pathSteps: string[] = []
-): { [key: string]: string } =>
-  typeof themeExtensionValue === 'undefined' || themeExtensionValue === null
-    ? {}
-    : Array.isArray(themeExtensionValue)
-    ? themeExtensionValue
-        .map((x, i) =>
-          resolveThemeExtensionAsCustomPropsRecursionHelper(x, api, [
-            ...pathSteps,
-            i.toString()
-          ])
-        )
-        .reduce((acc, curr) => ({ ...acc, ...curr }), {})
-    : typeof themeExtensionValue === 'function'
-    ? (() => {
-        if (pathSteps.length === 1) {
-          return resolveThemeExtensionAsCustomPropsRecursionHelper(
-            themeExtensionValue({ theme: api.theme }),
-            api,
-            pathSteps
-          )
-        } else {
-          throw new Error(
-            `callback found on path "${pathSteps.join(
-              '.'
-            )}" and they are only allowed at the top level`
-          )
-        }
-      })()
-    : typeof themeExtensionValue === 'object'
-    ? Object.entries(themeExtensionValue).reduce(
-        (acc, [key, value]) => ({
-          ...acc,
-          ...resolveThemeExtensionAsCustomPropsRecursionHelper(value, api, [
-            ...pathSteps,
-            key
-          ])
-        }),
-        {}
+): { [key: string]: string } => {
+  if (
+    typeof themeExtensionValue === 'undefined' ||
+    themeExtensionValue === null
+  ) {
+    return {}
+  } else if (Array.isArray(themeExtensionValue)) {
+    return themeExtensionValue
+      .map((x, i) =>
+        resolveThemeExtensionAsCustomPropsRecursionHelper(x, api, [
+          ...pathSteps,
+          i.toString()
+        ])
       )
-    : typeof themeExtensionValue === 'string' ||
-      typeof themeExtensionValue === 'number'
-    ? {
-        [toCustomPropName(pathSteps)]: toCustomPropValue(themeExtensionValue)
-      }
-    : (() => {
-        throw new Error(
-          `unusable value found in config on path "${pathSteps.join('.')}"`
-        )
-      })()
+      .reduce((acc, curr) => ({ ...acc, ...curr }), {})
+  } else if (typeof themeExtensionValue === 'function') {
+    if (pathSteps.length === 1) {
+      return resolveThemeExtensionAsCustomPropsRecursionHelper(
+        themeExtensionValue({ theme: api.theme }),
+        api,
+        pathSteps
+      )
+    } else {
+      throw new Error(
+        `Callback found on path "${pathSteps.join(
+          '.'
+        )}" and they are only allowed at the top level`
+      )
+    }
+  } else if (typeof themeExtensionValue === 'object') {
+    return Object.entries(themeExtensionValue).reduce(
+      (acc, [key, value]) => ({
+        ...acc,
+        ...resolveThemeExtensionAsCustomPropsRecursionHelper(value, api, [
+          ...pathSteps,
+          key
+        ])
+      }),
+      {}
+    )
+  } else if (
+    typeof themeExtensionValue === 'string' ||
+    typeof themeExtensionValue === 'number'
+  ) {
+    return {
+      [toCustomPropName(pathSteps)]: toCustomPropValue(themeExtensionValue)
+    }
+  } else {
+    throw new Error(
+      `Unusable value found in config on path "${pathSteps.join('.')}"`
+    )
+  }
+}
 
 /**
  * @param themeExtension - the theme extension to convert to custom props
@@ -116,43 +120,44 @@ const resolveThemeExtensionsAsTailwindExtensionRecursionHelper = (
   pathSteps: string[] = []
   // because we don't know where we are on the config object and types for it aren't that great
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any =>
-  typeof themeExtensionValue === 'undefined' || themeExtensionValue === null
-    ? themeExtensionValue
-    : Array.isArray(themeExtensionValue)
-    ? themeExtensionValue.map((x, i) =>
-        resolveThemeExtensionsAsTailwindExtensionRecursionHelper(x, [
+): any => {
+  if (
+    typeof themeExtensionValue === 'undefined' ||
+    themeExtensionValue === null
+  ) {
+    return themeExtensionValue
+  } else if (Array.isArray(themeExtensionValue)) {
+    return themeExtensionValue.map((x, i) =>
+      resolveThemeExtensionsAsTailwindExtensionRecursionHelper(x, [
+        ...pathSteps,
+        i.toString()
+      ])
+    )
+  } else if (typeof themeExtensionValue === 'function') {
+    if (pathSteps.length === 1) {
+      return toThemeExtensionResolverCallback(themeExtensionValue, pathSteps)
+    } else {
+      throw new Error(
+        `Callback found on path "${pathSteps.join(
+          '.'
+        )}" and they are only allowed at the top level`
+      )
+    }
+  } else if (typeof themeExtensionValue === 'object') {
+    return Object.entries(themeExtensionValue).reduce(
+      (acc, [key, value]) => ({
+        ...acc,
+        [key]: resolveThemeExtensionsAsTailwindExtensionRecursionHelper(value, [
           ...pathSteps,
-          i.toString()
+          key
         ])
-      )
-    : typeof themeExtensionValue === 'function'
-    ? (() => {
-        if (pathSteps.length === 1) {
-          return toThemeExtensionResolverCallback(
-            themeExtensionValue,
-            pathSteps
-          )
-        } else {
-          throw new Error(
-            `callback found on path "${pathSteps.join(
-              '.'
-            )}" and they are only allowed at the top level`
-          )
-        }
-      })()
-    : typeof themeExtensionValue === 'object'
-    ? Object.entries(themeExtensionValue).reduce(
-        (acc, [key, value]) => ({
-          ...acc,
-          [key]: resolveThemeExtensionsAsTailwindExtensionRecursionHelper(
-            value,
-            [...pathSteps, key]
-          )
-        }),
-        {}
-      )
-    : asCustomProp(themeExtensionValue, pathSteps)
+      }),
+      {}
+    )
+  } else {
+    return asCustomProp(themeExtensionValue, pathSteps)
+  }
+}
 
 const mergeAndResolveCallbacks: MergeWithCustomizer = (objectVal, srcVal) => {
   if (typeof objectVal === 'undefined') {
@@ -167,10 +172,10 @@ const mergeAndResolveCallbacks: MergeWithCustomizer = (objectVal, srcVal) => {
         typeof objectValResolved === 'function' ||
         typeof srcValResolved === 'function'
       ) {
-        throw new Error('nested callbacks are not supported in tailwind config')
+        throw new Error('Nested callbacks are not supported')
       } else if (typeof objectValResolved !== typeof srcValResolved) {
         throw new Error(
-          'all callbacks must return values with types mergable with other themes e.g. a callback that returns a string must be set to a property that other themes dont have objects set to it'
+          'All callbacks must return values with types mergable with other themes e.g. a callback that returns a string must be set to a property that other themes dont have objects set to it'
         )
       }
       return merge(objectValResolved, srcValResolved)

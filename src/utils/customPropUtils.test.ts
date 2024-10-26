@@ -2,7 +2,8 @@ import { describe, it, expect } from 'vitest'
 import {
   asCustomProp,
   toCustomPropName,
-  toCustomPropValue
+  toCustomPropValue,
+  escape
 } from './customPropUtils'
 
 describe('customPropUtils', () => {
@@ -78,6 +79,15 @@ describe('customPropUtils', () => {
 
     it('converts the value to a custom prop if passed a number', () => {
       expect(asCustomProp(4, ['this', 'that'])).toBe('var(--this-that)')
+    })
+  })
+
+  describe('escape', () => {
+    it('escapes special characters', () => {
+      expect(escape('()[]{}')).toBe('\\(\\)\\[\\]\\{\\}')
+    })
+    it('returns empty string when given undefined', () => {
+      expect(escape(undefined)).toBe('')
     })
   })
 })
