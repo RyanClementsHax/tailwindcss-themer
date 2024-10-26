@@ -17,7 +17,13 @@ export default defineConfig({
         'json'
       ],
       // So we get coverage reports even if tests fail
-      reportOnFailure: true
+      reportOnFailure: true,
+      thresholds: {
+        lines: 80,
+        branches: 80,
+        functions: 80,
+        statements: 80
+      }
     }
   }
 })
