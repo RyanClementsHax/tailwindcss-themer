@@ -1,4 +1,5 @@
-import { mock } from 'jest-mock-extended'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { mock } from 'vitest-mock-extended'
 import { PluginAPI } from 'tailwindcss/types/config'
 import { PluginUtils, TailwindExtension, Theme } from '../config'
 import {
@@ -19,7 +20,7 @@ describe('themeUtils', () => {
 
   beforeEach(() => {
     pluginUtils = mock<PluginUtils>({
-      theme: jest.fn(x => x)
+      theme: vi.fn(x => x)
     })
   })
 
@@ -543,6 +544,36 @@ describe('themeUtils', () => {
         })
       })
 
+      it('resolves callbacks when they overlap with static values but the function is declared on the earlier theme', () => {
+        expect(
+          resolveCallbacks(
+            resolveThemeExtensionsAsTailwindExtension([
+              {
+                name: 'first',
+                extend: {
+                  colors: ({ theme }) => ({
+                    secondary: theme('some.different.key')
+                  })
+                }
+              },
+              {
+                name: 'second',
+                extend: {
+                  colors: {
+                    primary: 'first'
+                  }
+                }
+              }
+            ])
+          )
+        ).toEqual({
+          colors: {
+            primary: 'var(--colors-primary)',
+            secondary: 'var(--colors-secondary)'
+          }
+        })
+      })
+
       it('throws when a callback resolves to a type mismatch with a different theme', () => {
         expect(() =>
           resolveCallbacks(
@@ -616,6 +647,33 @@ describe('themeUtils', () => {
         ).toThrow()
       })
 
+      it('throws if functions return functions', () => {
+        expect(() =>
+          resolveCallbacks(
+            resolveThemeExtensionsAsTailwindExtension([
+              {
+                name: 'test1',
+                extend: {
+                  doubleFunc: ({ theme }: { theme: Theme }) => ({
+                    primary: theme('some.key')
+                  })
+                }
+              },
+              {
+                name: 'test2',
+                extend: {
+                  doubleFunc:
+                    ({ theme }: { theme: Theme }) =>
+                    () => ({
+                      primary: theme('some.key')
+                    })
+                }
+              }
+            ])
+          )
+        ).toThrow()
+      })
+
       it('resolves color properties with opacity', () => {
         expect(
           resolveCallbacks(
@@ -653,8 +711,8 @@ describe('themeUtils', () => {
 
     beforeEach(() => {
       helpers = mock<PluginAPI>({
-        e: jest.fn(x => `escaped-${x}`),
-        theme: jest.fn(x => x) as PluginAPI['theme']
+        e: vi.fn(x => `escaped-${x}`),
+        theme: vi.fn(x => x) as PluginAPI['theme']
       })
     })
 
@@ -838,6 +896,23 @@ describe('themeUtils', () => {
                 bar: ({ theme }: { theme: Theme }) => ({
                   primary: theme('some.key')
                 })
+              }
+            },
+            helpers
+          )
+        ).toThrow()
+      })
+    })
+
+    describe('unresolvable values', () => {
+      it('throws when it finds an unusable value', () => {
+        expect(() =>
+          resolveThemeExtensionAsCustomProps(
+            {
+              foo: {
+                bar: {
+                  bing: BigInt(123)
+                }
               }
             },
             helpers

@@ -1,10 +1,11 @@
+import { describe, it, expect } from 'vitest'
 import {
   defaultThemeName,
   getThemesFromOptions,
   validateOptions
 } from './optionsUtils'
 
-describe('themeUtils', () => {
+describe('optionsUtils', () => {
   describe('getThemesFromOptions', () => {
     it('returns an empty default theme if none provided', () => {
       expect(getThemesFromOptions({ themes: [] })).toEqual([

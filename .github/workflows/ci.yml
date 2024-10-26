@@ -15,6 +15,10 @@ jobs:
           node-version: 22
       - name: restore dependencies
         uses: bahmutov/npm-install@v1
+      - name: restore dependencies
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: e2e
       - run: npm run lint:all
   type_check:
     name: type check
@@ -39,8 +43,11 @@ jobs:
       - name: restore dependencies
         uses: bahmutov/npm-install@v1
       - run: npm run test
+      - name: report coverage
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
   e2e:
-    timeout-minutes: 60
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

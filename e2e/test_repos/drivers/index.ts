@@ -157,7 +157,7 @@ class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
         })
       }, 20_000)
       serveProcess.stderr.pipe(process.stderr)
-      serveProcess.stdout.on('data', chunk => {
+      serveProcess.stdout.on('data', (chunk: { toString(): string }) => {
         if (finishedMonitoring) return
         const newChunk = chunk.toString()
         stdout += newChunk
@@ -187,7 +187,9 @@ class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
         } catch (e: unknown) {
           clearTimeout(failTimeout)
           finishedMonitoring = true
-          void stop().then(() => reject(e))
+          void stop().then(() =>
+            reject(e instanceof Error ? e : new Error(JSON.stringify(e)))
+          )
         }
       })
     })

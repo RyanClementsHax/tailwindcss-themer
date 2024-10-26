@@ -1,4 +1,5 @@
-import { mock } from 'jest-mock-extended'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { mock } from 'vitest-mock-extended'
 import { PluginAPI } from 'tailwindcss/types/config'
 import multiThemePlugin from '.'
 import { Theme } from './config'
@@ -9,8 +10,8 @@ describe('multiThemePlugin', () => {
 
   beforeEach(() => {
     api = mock<PluginAPI>({
-      e: jest.fn(x => `escaped-${x}`),
-      theme: jest.fn(x => x) as PluginAPI['theme']
+      e: vi.fn(x => `escaped-${x}`),
+      theme: vi.fn(x => x) as PluginAPI['theme']
     })
   })
 

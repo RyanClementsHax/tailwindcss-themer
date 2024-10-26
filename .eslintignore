@@ -1,6 +1,0 @@
-node_modules
-yarn.lock
-lib
-dist
-examples
-coverage
