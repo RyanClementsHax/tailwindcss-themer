@@ -39,6 +39,9 @@ jobs:
       - name: restore dependencies
         uses: bahmutov/npm-install@v1
       - run: npm run test
+      - name: report coverage
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
   e2e:
     timeout-minutes: 60
     runs-on: ubuntu-latest
