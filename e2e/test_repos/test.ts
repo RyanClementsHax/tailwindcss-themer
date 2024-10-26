@@ -187,6 +187,8 @@ class ThemeRootImpl implements ThemeRoot {
     const attributesInputLocator = this.#attributesInputLocator
     return {
       async get(): Promise<Record<string, string>> {
+        // We'll pinky promise here 🤞
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return JSON.parse(await attributesInputLocator.inputValue())
       },
       async patch(updates: Record<string, string>): Promise<void> {
