@@ -1,4 +1,5 @@
-import { mock } from 'jest-mock-extended'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { mock } from 'vitest-mock-extended'
 import { PluginAPI } from 'tailwindcss/types/config'
 import { PluginUtils, TailwindExtension, Theme } from '../config'
 import {
@@ -19,7 +20,7 @@ describe('themeUtils', () => {
 
   beforeEach(() => {
     pluginUtils = mock<PluginUtils>({
-      theme: jest.fn(x => x)
+      theme: vi.fn(x => x)
     })
   })
 
@@ -653,8 +654,8 @@ describe('themeUtils', () => {
 
     beforeEach(() => {
       helpers = mock<PluginAPI>({
-        e: jest.fn(x => `escaped-${x}`),
-        theme: jest.fn(x => x) as PluginAPI['theme']
+        e: vi.fn(x => `escaped-${x}`),
+        theme: vi.fn(x => x) as PluginAPI['theme']
       })
     })
 
