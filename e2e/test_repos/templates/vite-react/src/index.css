@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  @apply bg-indigo-100;
+}
+
+.input {
+  @apply rounded-md border-0 px-4 py-3 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none;
+}
+
+.input.small {
+  @apply px-2 py-1;
+}
+
+.button {
+  @apply rounded-md border-0 px-4 py-3 shadow-md ring-inset hover:ring-2 hover:ring-inset hover:ring-indigo-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none active:bg-indigo-300;
+}
