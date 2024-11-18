@@ -2,59 +2,18 @@ import url from 'node:url'
 import path from 'node:path'
 import fse from 'fs-extra'
 import { spawn } from 'cross-spawn'
-import { $, execa } from 'execa'
+import { execa } from 'execa'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 import pidTree from 'pidtree'
+import type {
+  IsolatedRepoInstance,
+  IsolatedRepoInstanceOptions,
+  BuildOptions,
+  StartServerOptions,
+  StartServerResult
+} from './types'
 
 // based off of https://github.com/remix-run/remix/blob/6a9b8d6b836f05a47af9ca6e6f1f3898a2fba8ec/integration/helpers/create-fixture.ts
-
-export type Template = 'create-react-app'
-
-export interface IsolatedRepoInstance {
-  writeFile(fileName: string, data: string): Promise<{ filePath: string }>
-  getBuildDir(): string
-  build(options: BuildOptions): Promise<void>
-  startServer(options: StartServerOptions): Promise<StartServerResult>
-}
-
-export type StartServerResult = ServerStarted | ServerNotStarted
-
-export interface ServerStarted {
-  started: true
-  url: string
-  stop: StopServerCallback
-}
-
-export type StopServerCallback = () => Promise<void>
-
-export interface ServerNotStarted {
-  started: false
-  reason: string
-}
-
-export interface BuildOptions {
-  command: [string, ReadonlyArray<string>]
-  env: Record<string, string>
-}
-
-export interface StartServerOptions {
-  command: [string, ReadonlyArray<string>]
-  env: Record<string, string>
-  isServerStarted: (context: {
-    stdout: string
-    template: Template
-  }) => IsServerStartedResult
-}
-
-export type IsServerStartedResult =
-  | { started: true; url: string }
-  | { started: false; continueWaiting: true }
-  | { started: false; continueWaiting: false; reason: string }
-
-export interface IsolatedRepoInstanceOptions {
-  tmpDirName: string
-  template: Template
-}
 
 const tmpDirNameRegex = /^[a-zA-Z0-9_,\-.]+$/
 
@@ -84,24 +43,8 @@ export async function createIsolatedRepoInstance(
   }
 }
 
-export async function setupTemplates(): Promise<void> {
-  const templateDirPaths = getTemplateDirPaths()
-  for (const templateDirPath of templateDirPaths) {
-    const nodeModulesPath = path.join(templateDirPath, 'node_modules')
-    if (!(await fse.exists(nodeModulesPath))) {
-      await $({ cwd: templateDirPath })`npm install`
-    }
-  }
-}
-
-export async function cleanupTmpDirs(): Promise<void> {
-  for (const tmpDir of getTemplateTmpDirPaths()) {
-    await fse.rm(tmpDir, { recursive: true, force: true })
-  }
-}
-
 interface IsolatedRepoInstanceConfig {
-  template: Template
+  template: string
   tmpDirPath: string
   templateDirPath: string
 }
@@ -198,35 +141,20 @@ class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
 
 const TMP_DIR = '.tmp'
 const TEMPLATES_DIR = 'templates'
-const reposDirPath = url.fileURLToPath(new URL('..', import.meta.url))
+const reposDirPath = url.fileURLToPath(new URL('.', import.meta.url))
 
-function getTemplates(): Template[] {
-  // Using typescript to force exhaustiveness
-  return Object.keys({
-    'create-react-app': true
-  } satisfies Record<Template, boolean>) as Template[]
+export function getTemplateDirPath(template: string) {
+  return path.resolve(reposDirPath, TEMPLATES_DIR, template, 'repo')
 }
 
-function getTemplateDirPath(template: Template) {
-  return path.resolve(reposDirPath, TEMPLATES_DIR, template)
-}
-
-function getTemplateTmpDirPath(template: Template) {
+export function getTemplateTmpDirPath(template: string) {
   const templateDirPath = getTemplateDirPath(template)
   return path.join(templateDirPath, TMP_DIR)
 }
 
-function getTmpDirPath(template: Template, tmpDirName: string) {
+function getTmpDirPath(template: string, tmpDirName: string) {
   const templateDirPath = getTemplateTmpDirPath(template)
   return path.join(templateDirPath, tmpDirName)
-}
-
-function getTemplateDirPaths(): string[] {
-  return getTemplates().map(template => getTemplateDirPath(template))
-}
-
-function getTemplateTmpDirPaths(): string[] {
-  return getTemplates().map(template => getTemplateTmpDirPath(template))
 }
 
 export function parseClasses(config: MultiThemePluginOptions): string[] {

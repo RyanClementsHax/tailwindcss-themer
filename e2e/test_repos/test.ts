@@ -1,8 +1,8 @@
 import { Page, TestInfo, test as base } from '@playwright/test'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
-import { openWithConfig } from './drivers/create-react-app'
-import { StopServerCallback } from './drivers'
+import { StopServerCallback } from './types'
 import { Config as TailwindConfig } from 'tailwindcss'
+import { resolveDriver } from '.'
 
 export interface TestRepos {
   builder(): TestRepoBuilder
@@ -36,12 +36,17 @@ export interface ThemedItem {
 
 export const test = base.extend<{ testRepos: TestRepos }>({
   testRepos: async ({ page }, use, testInfo) => {
+    const template = test.info().project.metadata.template as unknown
+    if (typeof template !== 'string') {
+      throw new Error('"template" must be a string')
+    }
     const stopCallbacks: StopServerCallback[] = []
 
     const testRepos: TestRepos = {
       builder() {
         return new TestRepoBuilderImpl(
           page,
+          template,
           testInfo,
           () => stopCallbacks.length + 1,
           stop => stopCallbacks.push(stop)
@@ -61,6 +66,7 @@ class TestRepoBuilderImpl implements TestRepoBuilder {
 
   constructor(
     private readonly page: Page,
+    private readonly template: string,
     private readonly testInfo: TestInfo,
     private readonly getInstanceId: () => number,
     private readonly registerStopCallback: (stop: StopServerCallback) => void
@@ -83,7 +89,10 @@ class TestRepoBuilderImpl implements TestRepoBuilder {
       throw new Error('Cannot open without first defining the themer config')
     }
 
-    const { url, stop: _stop } = await openWithConfig({
+    const driver = await resolveDriver(this.template)
+
+    const { url, stop: _stop } = await driver.open({
+      template: this.template,
       instanceId: this.getInstanceId(),
       titlePath: this.testInfo.titlePath,
       baseTailwindConfig: this.#baseTailwindConfig,

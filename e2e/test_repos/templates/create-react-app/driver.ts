@@ -1,23 +1,15 @@
 import serialize from 'serialize-javascript'
 import getPort from 'get-port'
-import { MultiThemePluginOptions } from '@/utils/optionsUtils'
-import {
+import type {
   ServerStarted,
   StartServerResult,
   StopServerCallback,
-  createIsolatedRepoInstance,
-  parseClasses
-} from '.'
+  OpenOptions
+} from '../../types'
+import { createIsolatedRepoInstance, parseClasses } from '../../utils'
 import { type Config as TailwindConfig } from 'tailwindcss'
 
-export interface OpenOptions {
-  baseTailwindConfig?: { theme: TailwindConfig['theme'] }
-  themerConfig: MultiThemePluginOptions
-  instanceId: number
-  titlePath: string[]
-}
-
-export async function openWithConfig(
+export async function open(
   options: OpenOptions
 ): Promise<{ url: string; stop: StopServerCallback }> {
   const tmpDirName = [
@@ -26,7 +18,7 @@ export async function openWithConfig(
   ].join('-')
 
   const { instance, isAlreadyInitialized } = await createIsolatedRepoInstance({
-    template: 'create-react-app',
+    template: options.template,
     tmpDirName
   })
 

@@ -5,5 +5,5 @@
     "target": "esnext"
   },
   "include": ["."],
-  "exclude": ["test_repos/templates"]
+  "exclude": ["test_repos/templates", "!test_repos/templates/*/driver"]
 }
