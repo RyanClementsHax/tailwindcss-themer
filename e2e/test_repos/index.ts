@@ -4,36 +4,9 @@ import { fileURLToPath } from 'url'
 import { $ } from 'execa'
 import fse from 'fs-extra'
 import { getRepoDirPath, getRepoTmpDirPath } from './utils'
-import { Driver } from './types'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-
-export const resolveDriver = async (repo: string): Promise<Driver> => {
-  const driverPath = path.join(__dirname, 'repos', repo, 'driver')
-  try {
-    const module = (await import(driverPath)) as unknown
-
-    if (
-      !module ||
-      typeof module !== 'object' ||
-      !('default' in module) ||
-      !module.default ||
-      typeof module.default !== 'object' ||
-      !('open' in module.default) ||
-      typeof module.default.open !== 'function'
-    ) {
-      throw new Error(
-        `Module ${driverPath} does not export a default value with method named 'open'`
-      )
-    }
-
-    return module.default as Driver
-  } catch (error) {
-    console.error(`Failed to import or use driver for repo: ${repo}`, error)
-    throw error // Fail the test if the driver fails to load
-  }
-}
 
 export const getRepos = () => {
   const directory = path.resolve(__dirname)

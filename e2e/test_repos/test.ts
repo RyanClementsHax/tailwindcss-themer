@@ -1,8 +1,7 @@
 import { Page, TestInfo, test as base } from '@playwright/test'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
-import { StopServerCallback } from './types'
 import { Config as TailwindConfig } from 'tailwindcss'
-import { resolveDriver } from '.'
+import { StopServerCallback, resolveDriver } from './drivers'
 
 export interface TestRepos {
   builder(): TestRepoBuilder
