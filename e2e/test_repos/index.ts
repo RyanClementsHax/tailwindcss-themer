@@ -12,20 +12,23 @@ const __dirname = path.dirname(__filename)
 export const resolveDriver = async (repo: string): Promise<Driver> => {
   const driverPath = path.join(__dirname, 'repos', repo, 'driver')
   try {
-    const driver = (await import(driverPath)) as unknown
+    const module = (await import(driverPath)) as unknown
 
     if (
-      typeof driver !== 'object' ||
-      !driver ||
-      !('open' in driver) ||
-      typeof driver.open !== 'function'
+      !module ||
+      typeof module !== 'object' ||
+      !('default' in module) ||
+      !module.default ||
+      typeof module.default !== 'object' ||
+      !('open' in module.default) ||
+      typeof module.default.open !== 'function'
     ) {
       throw new Error(
-        `Driver in ${driverPath} does not export a method named 'open'`
+        `Module ${driverPath} does not export a default value with method named 'open'`
       )
     }
 
-    return driver as Driver
+    return module.default as Driver
   } catch (error) {
     console.error(`Failed to import or use driver for repo: ${repo}`, error)
     throw error // Fail the test if the driver fails to load

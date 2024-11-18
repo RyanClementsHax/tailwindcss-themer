@@ -10,14 +10,15 @@ import type {
   IsolatedRepoInstanceOptions,
   BuildOptions,
   StartServerOptions,
-  StartServerResult
+  StartServerResult,
+  ServerStarted
 } from './types'
 
 // based off of https://github.com/remix-run/remix/blob/6a9b8d6b836f05a47af9ca6e6f1f3898a2fba8ec/integration/helpers/create-fixture.ts
 
 const tmpDirNameRegex = /^[a-zA-Z0-9_,\-.]+$/
 
-export async function createIsolatedRepoInstance(
+export async function defineIsolatedRepoInstance(
   options: IsolatedRepoInstanceOptions
 ): Promise<{ isAlreadyInitialized: boolean; instance: IsolatedRepoInstance }> {
   if (!options.tmpDirName.match(tmpDirNameRegex)) {
@@ -188,3 +189,33 @@ const stylesToKeep = [
   'text-textColor',
   'text-textColor/50'
 ]
+
+export async function startServerWithRetry({
+  maxAttempts,
+  startServer
+}: {
+  maxAttempts: number
+  startServer: () => Promise<StartServerResult>
+}): Promise<ServerStarted> {
+  let attemptNumber = 0
+  let failedReason = 'unknown'
+  while (attemptNumber <= maxAttempts) {
+    attemptNumber++
+    if (attemptNumber > 1) {
+      console.log(
+        `Retrying (attempt ${attemptNumber}) starting the server because: ${failedReason}`
+      )
+    }
+
+    const result = await startServer()
+
+    if (result.started) {
+      return result
+    } else {
+      failedReason = result.reason
+    }
+  }
+  throw new Error(
+    `Attempted to start server ${attemptNumber} times but couldn't start the server\n\n${failedReason}`
+  )
+}
