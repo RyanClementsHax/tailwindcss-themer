@@ -1,10 +1,10 @@
 import type { FullConfig } from '@playwright/test'
-import { cleanupTmpDirs, setupTemplates } from '.'
+import { cleanupTmpDirs, setupRepos } from '.'
 
 export default async function setup(config: FullConfig): Promise<void> {
-  const templates = config.projects
-    .map(project => project.metadata.template as unknown)
-    .filter(template => typeof template === 'string')
-  await cleanupTmpDirs(templates)
-  await setupTemplates(templates)
+  const repos = config.projects
+    .map(project => project.metadata.repo as unknown)
+    .filter(repo => typeof repo === 'string')
+  await cleanupTmpDirs(repos)
+  await setupRepos(repos)
 }

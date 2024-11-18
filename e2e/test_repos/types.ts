@@ -1,7 +1,6 @@
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 import { type Config as TailwindConfig } from 'tailwindcss'
 
-// TODO: rename 'repo' to 'project' in all files
 export interface IsolatedRepoInstance {
   writeFile(fileName: string, data: string): Promise<{ filePath: string }>
   getBuildDir(): string
@@ -34,7 +33,7 @@ export interface StartServerOptions {
   env: Record<string, string>
   isServerStarted: (context: {
     stdout: string
-    template: string
+    repo: string
   }) => IsServerStartedResult
 }
 
@@ -45,11 +44,11 @@ export type IsServerStartedResult =
 
 export interface IsolatedRepoInstanceOptions {
   tmpDirName: string
-  template: string
+  repo: string
 }
 
 export interface OpenOptions {
-  template: string
+  repo: string
   baseTailwindConfig?: { theme: TailwindConfig['theme'] }
   themerConfig: MultiThemePluginOptions
   instanceId: number

@@ -22,11 +22,10 @@ jobs:
       - name: restore dependencies
         uses: bahmutov/npm-install@v1
         with:
-          working-directory: e2e/test_repos/templates/vite-react
+          working-directory: e2e/test_repos/repos/vite-react
       - run: npm run lint:all
       - run: npm run lint
-        with:
-          working-directory: e2e/test_repos/templates/vite-react
+        working-directory: e2e/test_repos/repos/vite-react
   type_check:
     name: type check
     runs-on: ubuntu-latest

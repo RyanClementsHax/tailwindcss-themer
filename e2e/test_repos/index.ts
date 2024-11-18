@@ -3,14 +3,14 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { $ } from 'execa'
 import fse from 'fs-extra'
-import { getTemplateDirPath, getTemplateTmpDirPath } from './utils'
+import { getRepoDirPath, getRepoTmpDirPath } from './utils'
 import { Driver } from './types'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-export const resolveDriver = async (template: string): Promise<Driver> => {
-  const driverPath = path.join(__dirname, 'templates', template, 'driver')
+export const resolveDriver = async (repo: string): Promise<Driver> => {
+  const driverPath = path.join(__dirname, 'repos', repo, 'driver')
   try {
     const driver = (await import(driverPath)) as unknown
 
@@ -27,47 +27,32 @@ export const resolveDriver = async (template: string): Promise<Driver> => {
 
     return driver as Driver
   } catch (error) {
-    console.error(
-      `Failed to import or use driver for template: ${template}`,
-      error
-    )
+    console.error(`Failed to import or use driver for repo: ${repo}`, error)
     throw error // Fail the test if the driver fails to load
   }
 }
 
-export const getTemplates = () => {
-  // Resolve the directory where this file is located
+export const getRepos = () => {
   const directory = path.resolve(__dirname)
-
-  // Read all items in the directory
   const items = fs.readdirSync(directory)
-
-  // Filter items to include only directories
-  const folders = items.filter(item => {
-    const itemPath = path.join(directory, item)
-    return fs.statSync(itemPath).isDirectory()
-  })
-
-  return folders
+  return items.filter(item =>
+    fs.statSync(path.join(directory, item)).isDirectory()
+  )
 }
 
-export async function setupTemplates(templates: string[]): Promise<void> {
+export async function setupRepos(repos: string[]): Promise<void> {
   // TODO: move into driver
-  for (const templateDirPath of templates.map(template =>
-    getTemplateDirPath(template)
-  )) {
-    const nodeModulesPath = path.join(templateDirPath, 'node_modules')
+  for (const repoDirPath of repos.map(repo => getRepoDirPath(repo))) {
+    const nodeModulesPath = path.join(repoDirPath, 'node_modules')
     if (!(await fse.exists(nodeModulesPath))) {
-      await $({ cwd: templateDirPath })`npm install`
+      await $({ cwd: repoDirPath })`npm install`
     }
   }
 }
 
-export async function cleanupTmpDirs(templates: string[]): Promise<void> {
+export async function cleanupTmpDirs(repos: string[]): Promise<void> {
   // TODO: move into driver
-  for (const tmpDir of templates.map(template =>
-    getTemplateTmpDirPath(template)
-  )) {
+  for (const tmpDir of repos.map(repo => getRepoTmpDirPath(repo))) {
     await fse.rm(tmpDir, { recursive: true, force: true })
   }
 }

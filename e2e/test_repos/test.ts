@@ -36,9 +36,9 @@ export interface ThemedItem {
 
 export const test = base.extend<{ testRepos: TestRepos }>({
   testRepos: async ({ page }, use, testInfo) => {
-    const template = test.info().project.metadata.template as unknown
-    if (typeof template !== 'string') {
-      throw new Error('"template" must be a string')
+    const repo = test.info().project.metadata.repo as unknown
+    if (typeof repo !== 'string') {
+      throw new Error('"repo" must be a string')
     }
     const stopCallbacks: StopServerCallback[] = []
 
@@ -46,7 +46,7 @@ export const test = base.extend<{ testRepos: TestRepos }>({
       builder() {
         return new TestRepoBuilderImpl(
           page,
-          template,
+          repo,
           testInfo,
           () => stopCallbacks.length + 1,
           stop => stopCallbacks.push(stop)
@@ -66,7 +66,7 @@ class TestRepoBuilderImpl implements TestRepoBuilder {
 
   constructor(
     private readonly page: Page,
-    private readonly template: string,
+    private readonly repo: string,
     private readonly testInfo: TestInfo,
     private readonly getInstanceId: () => number,
     private readonly registerStopCallback: (stop: StopServerCallback) => void
@@ -89,10 +89,10 @@ class TestRepoBuilderImpl implements TestRepoBuilder {
       throw new Error('Cannot open without first defining the themer config')
     }
 
-    const driver = await resolveDriver(this.template)
+    const driver = await resolveDriver(this.repo)
 
     const { url, stop: _stop } = await driver.open({
-      template: this.template,
+      repo: this.repo,
       instanceId: this.getInstanceId(),
       titlePath: this.testInfo.titlePath,
       baseTailwindConfig: this.#baseTailwindConfig,

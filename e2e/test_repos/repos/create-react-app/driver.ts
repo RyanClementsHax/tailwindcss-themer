@@ -18,7 +18,7 @@ export async function open(
   ].join('-')
 
   const { instance, isAlreadyInitialized } = await createIsolatedRepoInstance({
-    template: options.template,
+    repo: options.repo,
     tmpDirName
   })
 
@@ -63,7 +63,7 @@ export async function open(
         env: {
           PORT: port.toFixed(0)
         },
-        isServerStarted: ({ stdout, template }) => {
+        isServerStarted: ({ stdout, repo }) => {
           const startupLogMatch: RegExpMatchArray | null = stdout.match(
             /Accepting connections at\s+http:\/\/localhost:(\d+)\s/
           )
@@ -74,7 +74,7 @@ export async function open(
               return {
                 started: false,
                 continueWaiting: false,
-                reason: `Expected ${template} to start on port ${port}, but it started on port ${parsedPort}`
+                reason: `Expected ${repo} to start on port ${port}, but it started on port ${parsedPort}`
               }
             }
 

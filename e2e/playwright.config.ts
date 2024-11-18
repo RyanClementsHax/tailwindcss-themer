@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
-import { getTemplates } from './test_repos'
+import { getRepos } from './test_repos'
 
 /**
  * Read environment variables from file.
@@ -36,26 +36,26 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: ['create-react-app'].flatMap(template => {
+  projects: ['create-react-app'].flatMap(repo => {
     const initProject = {
-      name: `chromium - ${template}`,
+      name: `chromium - ${repo}`,
       use: { ...devices['Desktop Chrome'] },
-      metadata: { template }
+      metadata: { repo }
     }
     return [
       // Runs before all other projects to initialize all int tests builds without concurrency problems
       initProject,
       {
-        name: `firefox - ${template}`,
+        name: `firefox - ${repo}`,
         use: { ...devices['Desktop Firefox'] },
-        metadata: { template },
+        metadata: { repo },
         // Counts on the first project to initialize all int test builds to reuse for a performance boost
         dependencies: [initProject.name]
       },
       {
-        name: `webKit - ${template}`,
+        name: `webKit - ${repo}`,
         use: { ...devices['Desktop Safari'] },
-        metadata: { template },
+        metadata: { repo },
         // Counts on the first project to initialize all int test builds to reuse for a performance boost
         dependencies: [initProject.name]
       }

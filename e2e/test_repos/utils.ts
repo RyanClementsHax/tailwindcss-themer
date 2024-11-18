@@ -25,8 +25,8 @@ export async function createIsolatedRepoInstance(
       `Could not run open instance of repo with tmp dir name ${options.tmpDirName} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters (regex: ${tmpDirNameRegex})`
     )
   }
-  const templateDirPath = getTemplateDirPath(options.template)
-  const tmpDirPath = getTmpDirPath(options.template, options.tmpDirName)
+  const repoDirPath = getRepoDirPath(options.repo)
+  const tmpDirPath = getTmpDirPath(options.repo, options.tmpDirName)
   let isAlreadyInitialized = false
   if (await fse.exists(tmpDirPath)) {
     isAlreadyInitialized = true
@@ -36,17 +36,17 @@ export async function createIsolatedRepoInstance(
   return {
     isAlreadyInitialized,
     instance: new IsolatedRepoInstanceImpl({
-      template: options.template,
+      repo: options.repo,
       tmpDirPath,
-      templateDirPath
+      repoDirPath
     })
   }
 }
 
 interface IsolatedRepoInstanceConfig {
-  template: string
+  repo: string
   tmpDirPath: string
-  templateDirPath: string
+  repoDirPath: string
 }
 
 class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
@@ -64,7 +64,7 @@ class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
 
   async build({ command, env }: BuildOptions) {
     await execa(command[0], command[1], {
-      cwd: this.config.templateDirPath,
+      cwd: this.config.repoDirPath,
       env
     })
   }
@@ -77,7 +77,7 @@ class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
           PATH: process.env['PATH'],
           ...options.env
         },
-        cwd: this.config.templateDirPath
+        cwd: this.config.repoDirPath
       })
       const stop = async () => {
         if (!serveProcess.pid) return
@@ -107,7 +107,7 @@ class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
         try {
           const result = options.isServerStarted({
             stdout,
-            template: this.config.template
+            repo: this.config.repo
           })
           finishedMonitoring = result.started
           if (result.started) {
@@ -140,21 +140,21 @@ class IsolatedRepoInstanceImpl implements IsolatedRepoInstance {
 }
 
 const TMP_DIR = '.tmp'
-const TEMPLATES_DIR = 'templates'
+const REPOS_DIR = 'repos'
 const reposDirPath = url.fileURLToPath(new URL('.', import.meta.url))
 
-export function getTemplateDirPath(template: string) {
-  return path.resolve(reposDirPath, TEMPLATES_DIR, template, 'repo')
+export function getRepoDirPath(repo: string) {
+  return path.resolve(reposDirPath, REPOS_DIR, repo, 'repo')
 }
 
-export function getTemplateTmpDirPath(template: string) {
-  const templateDirPath = getTemplateDirPath(template)
-  return path.join(templateDirPath, TMP_DIR)
+export function getRepoTmpDirPath(repo: string) {
+  const repoDirPath = getRepoDirPath(repo)
+  return path.join(repoDirPath, TMP_DIR)
 }
 
-function getTmpDirPath(template: string, tmpDirName: string) {
-  const templateDirPath = getTemplateTmpDirPath(template)
-  return path.join(templateDirPath, tmpDirName)
+function getTmpDirPath(repo: string, tmpDirName: string) {
+  const repoDirPath = getRepoTmpDirPath(repo)
+  return path.join(repoDirPath, tmpDirName)
 }
 
 export function parseClasses(config: MultiThemePluginOptions): string[] {

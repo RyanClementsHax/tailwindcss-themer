@@ -9,7 +9,7 @@ export default tseslint.config(
       'lib',
       'examples',
       'coverage',
-      'e2e/test_repos/templates',
+      'e2e/test_repos/repos',
       '**/test-results',
       '**/playwright-report'
     ]
