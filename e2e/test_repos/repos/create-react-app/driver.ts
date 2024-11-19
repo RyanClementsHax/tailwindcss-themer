@@ -1,7 +1,10 @@
 import { defineDriver } from '../../drivers'
 
 export default defineDriver({
-  getBuildCommandOptions: ({ tailwindConfigFilePath, buildDirPath }) => ({
+  installCommand: {
+    command: ['npm', ['install']]
+  },
+  getBuildCommand: ({ tailwindConfigFilePath, buildDirPath }) => ({
     command: ['npm', ['run', 'build']],
     env: {
       TAILWIND_CONFIG_PATH: tailwindConfigFilePath,

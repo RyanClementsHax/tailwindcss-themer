@@ -8,13 +8,13 @@ import type { StartServerResult } from './types'
 // based off of https://github.com/remix-run/remix/blob/6a9b8d6b836f05a47af9ca6e6f1f3898a2fba8ec/integration/helpers/create-fixture.ts
 
 export interface RepoInstanceOptions {
-  tmpDirName: string
+  instanceDirPath: string
   repoDirPath: string
 }
 
 export interface CommandOptions {
   command: [string, readonly string[]]
-  env: Record<string, string>
+  env?: Record<string, string>
 }
 
 export interface StartServerOptions {
@@ -38,47 +38,42 @@ export interface RepoInstance {
   startServer(options: StartServerOptions): Promise<StartServerResult>
 }
 
-const tmpDirNameRegex = /^[a-zA-Z0-9_,\-.]+$/
+const instanceDirPathRegex = /^[a-zA-Z0-9_,\\/\-.]+$/
 
 export async function defineRepoInstance(
   options: RepoInstanceOptions
 ): Promise<{ isAlreadyInitialized: boolean; instance: RepoInstance }> {
-  if (!options.tmpDirName.match(tmpDirNameRegex)) {
+  if (!options.instanceDirPath.match(instanceDirPathRegex)) {
     throw new Error(
-      `Could not run open instance of repo with tmp dir name ${options.tmpDirName} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters (regex: ${tmpDirNameRegex})`
+      `Could not run open instance of repo with instance directory path ${options.instanceDirPath} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters (regex: ${instanceDirPathRegex})`
     )
   }
-  const tmpDirPath = getTmpDirPath(options.repoDirPath, options.tmpDirName)
   let isAlreadyInitialized = false
-  if (await fse.exists(tmpDirPath)) {
+  if (await fse.exists(options.instanceDirPath)) {
     isAlreadyInitialized = true
   } else {
-    await fse.ensureDir(tmpDirPath)
+    await fse.ensureDir(options.instanceDirPath)
   }
   return {
     isAlreadyInitialized,
     instance: new RepoInstanceImpl({
-      tmpDirPath,
+      instanceDirPath: options.instanceDirPath,
       repoDirPath: options.repoDirPath
     })
   }
 }
 
 class RepoInstanceImpl implements RepoInstance {
-  constructor(
-    private options: Omit<RepoInstanceOptions, 'tmpDirName'> & {
-      tmpDirPath: string
-    }
-  ) {}
+  constructor(private options: RepoInstanceOptions) {}
 
   async writeFile(fileName: string, data: string) {
-    const filePath = path.join(this.options.tmpDirPath, fileName)
+    const filePath = path.join(this.options.instanceDirPath, fileName)
     await fse.writeFile(filePath, data)
     return { filePath }
   }
 
   get buildDirPath(): string {
-    return path.join(this.options.tmpDirPath, 'build')
+    return path.join(this.options.instanceDirPath, 'build')
   }
 
   async execute({ command, env }: CommandOptions) {
@@ -156,10 +151,4 @@ class RepoInstanceImpl implements RepoInstance {
       })
     })
   }
-}
-
-const TMP_DIR = '.tmp'
-
-function getTmpDirPath(repoDirPath: string, tmpDirName: string) {
-  return path.join(repoDirPath, TMP_DIR, tmpDirName)
 }

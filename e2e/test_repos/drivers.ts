@@ -1,4 +1,7 @@
 import path from 'path'
+import url from 'url'
+import fse from 'fs-extra'
+import { execa } from 'execa'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 import { type Config as TailwindConfig } from 'tailwindcss'
 import {
@@ -6,7 +9,6 @@ import {
   defineRepoInstance,
   StartServerOptions
 } from './repo_instance'
-import { getRepoDirPath, getRepoRootPath, parseClasses } from './utils'
 import serialize from 'serialize-javascript'
 import getPort from 'get-port'
 import { ServerStarted, StartServerResult, StopServerCallback } from './types'
@@ -18,17 +20,17 @@ export interface OpenOptions {
 }
 
 export interface Driver {
+  install: () => Promise<void>
+  cleanup: () => Promise<void>
   open: (
     options: OpenOptions
   ) => Promise<{ url: string; stop: StopServerCallback }>
 }
 
 export const resolveDriver = async (repo: string): Promise<Driver> => {
-  // TODO: centralize helpers?
-  const repoDirPath = getRepoDirPath(repo)
-  const driverPath = path.join(getRepoRootPath(repo), 'driver')
+  const repoPaths = getRepoPaths(repo)
   try {
-    const module = (await import(driverPath)) as unknown
+    const module = (await import(repoPaths.driverFilePath)) as unknown
 
     if (
       !module ||
@@ -38,13 +40,13 @@ export const resolveDriver = async (repo: string): Promise<Driver> => {
       typeof module.default !== 'object'
     ) {
       throw new Error(
-        `Module ${driverPath} does not export a default driver options object`
+        `Module ${repoPaths.driverFilePath} does not export a default driver options object`
       )
     }
 
     return new DriverImpl({
       ...(module.default as DriverOptions),
-      repoDirPath
+      repoPaths
     })
   } catch (error) {
     console.error(`Failed to import or use driver for repo: ${repo}`, error)
@@ -55,8 +57,9 @@ export const resolveDriver = async (repo: string): Promise<Driver> => {
 export type { StopServerCallback }
 
 export interface DriverOptions {
-  repoDirPath: string
-  getBuildCommandOptions: ({
+  repoPaths: RepoPaths
+  installCommand: CommandOptions
+  getBuildCommand: ({
     tailwindConfigFilePath,
     buildDirPath
   }: {
@@ -73,20 +76,47 @@ export interface DriverOptions {
 }
 
 // Quality of life helper to define driver options
-export const defineDriver = <T extends Omit<DriverOptions, 'repoDirPath'>>(
+export const defineDriver = <T extends Omit<DriverOptions, 'repoPaths'>>(
   options: T
 ): T => options
 
 class DriverImpl implements Driver {
   constructor(private driverOptions: DriverOptions) {}
+  async install() {
+    const nodeModulesPath = path.join(
+      this.driverOptions.repoPaths.repoDirPath,
+      'node_modules'
+    )
+    if (!(await fse.exists(nodeModulesPath))) {
+      await execa(
+        this.driverOptions.installCommand.command[0],
+        this.driverOptions.installCommand.command[1],
+        {
+          cwd: this.driverOptions.repoPaths.repoDirPath,
+          env: this.driverOptions.installCommand.env
+        }
+      )
+    }
+  }
+  async cleanup() {
+    await fse.rm(this.driverOptions.repoPaths.tmpDirPath, {
+      recursive: true,
+      force: true
+    })
+  }
   async open(openOptions: OpenOptions) {
     const { instance, isAlreadyInitialized } = await defineRepoInstance({
-      repoDirPath: this.driverOptions.repoDirPath,
-      tmpDirName: openOptions.instanceId
+      repoDirPath: this.driverOptions.repoPaths.repoDirPath,
+      instanceDirPath: path.join(
+        this.driverOptions.repoPaths.tmpDirPath,
+        openOptions.instanceId
+      )
     })
 
     if (!isAlreadyInitialized) {
-      const classesToPreventPurging = parseClasses(openOptions.themerConfig)
+      const classesToPreventPurging = this.#parseClasses(
+        openOptions.themerConfig
+      )
 
       const tailwindConfig: TailwindConfig = {
         content: ['./src/**/*.{js,jsx,ts,tsx}'],
@@ -106,7 +136,7 @@ class DriverImpl implements Driver {
         }`
       )
 
-      const buildCommandOptions = this.driverOptions.getBuildCommandOptions({
+      const buildCommandOptions = this.driverOptions.getBuildCommand({
         tailwindConfigFilePath,
         buildDirPath: instance.buildDirPath
       })
@@ -159,5 +189,56 @@ class DriverImpl implements Driver {
     throw new Error(
       `Attempted to start server ${attemptNumber} times but couldn't start the server\n\n${failedReason}`
     )
+  }
+
+  #parseClasses(config: MultiThemePluginOptions): string[] {
+    const themeNameClasses = [
+      'defaultTheme',
+      ...(config.themes?.map(x => x.name) ?? [])
+    ]
+    // Preventing purging of these styles makes writing tests with arbitrary classes
+    // easier since otherwise they'd have to define the styles they use when opening
+    // the repo instance
+    const stylesToKeep = [
+      'bg-primary',
+      'bg-primary/75',
+      'bg-primary-DEFAULT-500',
+      'font-title',
+      'text-textColor',
+      'text-textColor/50'
+    ]
+    const preloadedVariantStyles = themeNameClasses.flatMap(themeName =>
+      stylesToKeep.map(style => `${themeName}:${style}`)
+    )
+    const mediaQueries =
+      config.themes?.map(x => x.mediaQuery ?? '')?.filter(x => !!x) ?? []
+    const selectors = config.themes?.flatMap(x => x.selectors ?? []) ?? []
+    return [
+      ...themeNameClasses,
+      ...preloadedVariantStyles,
+      ...mediaQueries,
+      ...selectors,
+      ...stylesToKeep
+    ]
+  }
+}
+
+const reposDirPath = url.fileURLToPath(new URL('.', import.meta.url))
+
+interface RepoPaths {
+  rootDirPath: string
+  driverFilePath: string
+  repoDirPath: string
+  tmpDirPath: string
+}
+
+function getRepoPaths(repo: string): RepoPaths {
+  const rootDirPath = path.resolve(reposDirPath, 'repos', repo)
+  const repoDirPath = path.join(rootDirPath, 'repo')
+  return {
+    rootDirPath,
+    driverFilePath: path.join(rootDirPath, 'driver'),
+    repoDirPath: path.join(rootDirPath, 'repo'),
+    tmpDirPath: path.join(repoDirPath, '.tmp')
   }
 }
