@@ -36,7 +36,7 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: ['tailwindv3'].flatMap(repo => {
+  projects: getRepos().flatMap(repo => {
     const initProject = {
       name: `chromium - ${repo}`,
       use: { ...devices['Desktop Chrome'] },

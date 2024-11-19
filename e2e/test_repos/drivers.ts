@@ -1,5 +1,4 @@
 import path from 'path'
-import url from 'url'
 import fse from 'fs-extra'
 import { execa } from 'execa'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
@@ -12,6 +11,7 @@ import {
 import serialize from 'serialize-javascript'
 import getPort from 'get-port'
 import { ServerStarted, StartServerResult, StopServerCallback } from './types'
+import { getRepoPaths, RepoPaths } from './paths'
 
 export interface OpenOptions {
   baseTailwindConfig?: { theme: TailwindConfig['theme'] }
@@ -220,25 +220,5 @@ class DriverImpl implements Driver {
       ...selectors,
       ...stylesToKeep
     ]
-  }
-}
-
-const reposDirPath = url.fileURLToPath(new URL('.', import.meta.url))
-
-interface RepoPaths {
-  rootDirPath: string
-  driverFilePath: string
-  repoDirPath: string
-  tmpDirPath: string
-}
-
-function getRepoPaths(repo: string): RepoPaths {
-  const rootDirPath = path.resolve(reposDirPath, 'repos', repo)
-  const repoDirPath = path.join(rootDirPath, 'repo')
-  return {
-    rootDirPath,
-    driverFilePath: path.join(rootDirPath, 'driver'),
-    repoDirPath: path.join(rootDirPath, 'repo'),
-    tmpDirPath: path.join(repoDirPath, '.tmp')
   }
 }

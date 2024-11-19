@@ -1,13 +1,10 @@
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import { resolveDriver } from './drivers'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+import { REPOS_DIR_PATH } from './paths'
 
 export const getRepos = () => {
-  const directory = path.resolve(__dirname)
+  const directory = REPOS_DIR_PATH
   const items = fs.readdirSync(directory)
   return items.filter(item =>
     fs.statSync(path.join(directory, item)).isDirectory()
