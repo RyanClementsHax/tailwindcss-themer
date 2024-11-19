@@ -19,7 +19,15 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: e2e
+      # e2e repos need the plugin to be built
+      - run: npm run build
+      - name: restore dependencies
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: e2e/test_repos/repos/tailwindv3/repo
       - run: npm run lint:all
+      - run: npm run lint
+        working-directory: e2e/test_repos/repos/tailwindv3/repo
   type_check:
     name: type check
     runs-on: ubuntu-latest
@@ -31,7 +39,15 @@ jobs:
           node-version: 22
       - name: restore dependencies
         uses: bahmutov/npm-install@v1
+      # e2e repos need the plugin to be built
+      - run: npm run build
+      - name: restore dependencies
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: e2e/test_repos/repos/tailwindv3/repo
       - run: npm run type-check
+      - run: npm run type-check
+        working-directory: e2e/test_repos/repos/tailwindv3/repo
   test:
     runs-on: ubuntu-latest
     steps:

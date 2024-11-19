@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
+import { getRepos } from './test_repos'
 
 /**
  * Read environment variables from file.
@@ -35,47 +36,51 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: [
-    // Runs before all other projects to initialize all int tests builds without concurrency problems
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] }
-    },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-      // Counts on the first project to initialize all int test builds to reuse for a performance boost
-      dependencies: ['chromium']
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-      // Counts on the first project to initialize all int test builds to reuse for a performance boost
-      dependencies: ['chromium']
+  projects: getRepos().flatMap(repo => {
+    const initProject = {
+      name: `chromium - ${repo}`,
+      use: { ...devices['Desktop Chrome'] },
+      metadata: { repo }
     }
+    return [
+      // Runs before all other projects to initialize all int tests builds without concurrency problems
+      initProject,
+      {
+        name: `firefox - ${repo}`,
+        use: { ...devices['Desktop Firefox'] },
+        metadata: { repo },
+        // Counts on the first project to initialize all int test builds to reuse for a performance boost
+        dependencies: [initProject.name]
+      },
+      {
+        name: `webKit - ${repo}`,
+        use: { ...devices['Desktop Safari'] },
+        metadata: { repo },
+        // Counts on the first project to initialize all int test builds to reuse for a performance boost
+        dependencies: [initProject.name]
+      }
 
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
+      /* Test against mobile viewports. */
+      // {
+      //   name: 'Mobile Chrome',
+      //   use: { ...devices['Pixel 5'] },
+      // },
+      // {
+      //   name: 'Mobile Safari',
+      //   use: { ...devices['iPhone 12'] },
+      // },
 
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
-  ]
+      /* Test against branded browsers. */
+      // {
+      //   name: 'Microsoft Edge',
+      //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+      // },
+      // {
+      //   name: 'Google Chrome',
+      //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+      // },
+    ]
+  })
 
   /* Run your local dev server before starting the tests */
   // webServer: {
