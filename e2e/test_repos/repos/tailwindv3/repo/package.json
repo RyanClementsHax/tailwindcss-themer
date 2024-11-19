@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "TAILWIND_CONFIG_PATH=./dev/tailwind.config.js vite",
     "build": "tsc -b && vite build",
+    "type-check": "tsc --pretty --noEmit -p tsconfig.app.json && tsc --pretty --noEmit -p tsconfig.node.json",
     "lint": "eslint . --fix",
     "preview": "vite preview",
     "serve": "serve"

@@ -37,6 +37,12 @@ jobs:
           node-version: 22
       - name: restore dependencies
         uses: bahmutov/npm-install@v1
+      - name: restore dependencies
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: e2e/test_repos/repos/tailwindv3/repo
+      - run: npm run type-check
+        working-directory: e2e/test_repos/repos/tailwindv3/repo
       - run: npm run type-check
   test:
     runs-on: ubuntu-latest
