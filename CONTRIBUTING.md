@@ -46,9 +46,9 @@ All examples are located in the `examples` directory of this repo.
 
 1. Run `pnpm run watch` in the root of `tailwindcss-themer` to build the plugin and watch for any changes
 2. Replace the `"tailwindcss-themer": "latest"` line in the example project's `package.json` with `"tailwindcss-themer": "file:../../"`
-3. Run`pnpm install` in the repo's root directory
-4. Run `pnpm run start` in the selected example's directory
-5. After making a change to the plugin, restart the example's server (i.e. rerun `pnpm run start`) so that it picks up the changes
+3. Run `npm install` in the repo's root directory (The examples use `npm` as a package manager, not `pnpm`)
+4. Run `npm run start` in the selected example's directory
+5. After making a change to the plugin, restart the example's server (i.e. rerun `npm run start`) so that it picks up the changes
 
 ### Running e2e tests
 
