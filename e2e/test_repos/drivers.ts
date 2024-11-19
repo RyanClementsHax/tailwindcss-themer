@@ -1,15 +1,15 @@
 import path from 'path'
-import { fileURLToPath } from 'url'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 import { type Config as TailwindConfig } from 'tailwindcss'
-import { defineRepoInstance } from './repo_instance'
+import {
+  CommandOptions,
+  defineRepoInstance,
+  StartServerOptions
+} from './repo_instance'
 import { getRepoDirPath, getRepoRootPath, parseClasses } from './utils'
 import serialize from 'serialize-javascript'
 import getPort from 'get-port'
 import { ServerStarted, StartServerResult, StopServerCallback } from './types'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 export interface OpenOptions {
   baseTailwindConfig?: { theme: TailwindConfig['theme'] }
@@ -57,6 +57,20 @@ export type { StopServerCallback }
 
 export interface DriverOptions {
   repoDirPath: string
+  getBuildCommandOptions: ({
+    tailwindConfigFilePath,
+    buildDirPath
+  }: {
+    tailwindConfigFilePath: string
+    buildDirPath: string
+  }) => CommandOptions
+  getStartServerOptions: ({
+    port,
+    buildDir
+  }: {
+    port: number
+    buildDir: string
+  }) => StartServerOptions
 }
 
 // Quality of life helper to define driver options
@@ -65,25 +79,23 @@ export const defineDriver = <T extends Omit<DriverOptions, 'repoDirPath'>>(
 ): T => options
 
 class DriverImpl implements Driver {
-  constructor(private options: DriverOptions) {}
-  async open(options: OpenOptions) {
-    const tmpDirName = [
-      ...options.titlePath.map(x => x.replace(/ /g, '_')),
-      options.instanceId
-    ].join('-')
-
+  constructor(private driverOptions: DriverOptions) {}
+  async open(openOptions: OpenOptions) {
     const { instance, isAlreadyInitialized } = await defineRepoInstance({
-      repoDirPath: this.options.repoDirPath,
-      tmpDirName
+      repoDirPath: this.driverOptions.repoDirPath,
+      tmpDirName: [
+        ...openOptions.titlePath.map(x => x.replace(/ /g, '_')),
+        openOptions.instanceId
+      ].join('-')
     })
 
     if (!isAlreadyInitialized) {
-      const classesToPreventPurging = parseClasses(options.themerConfig)
+      const classesToPreventPurging = parseClasses(openOptions.themerConfig)
 
       const tailwindConfig: TailwindConfig = {
         content: ['./src/**/*.{js,jsx,ts,tsx}'],
         safelist: classesToPreventPurging,
-        theme: options.baseTailwindConfig?.theme ?? {
+        theme: openOptions.baseTailwindConfig?.theme ?? {
           extend: {}
         }
       }
@@ -93,50 +105,27 @@ class DriverImpl implements Driver {
         `module.exports = {
           ...${JSON.stringify(tailwindConfig)},
           plugins: [require('tailwindcss-themer')(${serialize(
-            options.themerConfig
+            openOptions.themerConfig
           )})]
         }`
       )
 
-      await instance.build({
-        command: ['npm', ['run', 'build']],
-        env: {
-          TAILWIND_CONFIG_PATH: tailwindConfigFilePath,
-          BUILD_PATH: instance.buildDir
-        }
+      const buildCommandOptions = this.driverOptions.getBuildCommandOptions({
+        tailwindConfigFilePath,
+        buildDirPath: instance.buildDirPath
       })
+      await instance.execute(buildCommandOptions)
     }
 
     const { url, stop } = await this.#startServerWithRetry({
       maxAttempts: 2,
-      async startServer() {
+      startServer: async () => {
         const port = await getPort()
-        return await instance.startServer({
-          command: ['npm', ['run', 'serve', '--', instance.buildDir]],
-          env: {
-            PORT: port.toFixed(0)
-          },
-          isServerStarted: ({ stdout, repoDirPath }) => {
-            const startupLogMatch: RegExpMatchArray | null = stdout.match(
-              /Accepting connections at\s+http:\/\/localhost:(\d+)\s/
-            )
-            if (startupLogMatch) {
-              const parsedPort = parseInt(startupLogMatch[1], 10)
-
-              if (port !== parsedPort) {
-                return {
-                  started: false,
-                  continueWaiting: false,
-                  reason: `Expected ${repoDirPath} to start on port ${port}, but it started on port ${parsedPort}`
-                }
-              }
-
-              return { started: true, url: `http://localhost:${port}` }
-            }
-
-            return { started: false, continueWaiting: true }
-          }
+        const startServerOptions = this.driverOptions.getStartServerOptions({
+          port,
+          buildDir: instance.buildDirPath
         })
+        return await instance.startServer(startServerOptions)
       }
     })
 

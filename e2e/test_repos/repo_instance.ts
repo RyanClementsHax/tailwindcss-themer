@@ -12,8 +12,8 @@ export interface RepoInstanceOptions {
   repoDirPath: string
 }
 
-export interface BuildOptions {
-  command: [string, ReadonlyArray<string>]
+export interface CommandOptions {
+  command: [string, readonly string[]]
   env: Record<string, string>
 }
 
@@ -32,9 +32,9 @@ export type IsServerStartedResult =
   | { started: false; continueWaiting: false; reason: string }
 
 export interface RepoInstance {
-  readonly buildDir: string
+  readonly buildDirPath: string
   writeFile(fileName: string, data: string): Promise<{ filePath: string }>
-  build(options: BuildOptions): Promise<void>
+  execute(options: CommandOptions): Promise<void>
   startServer(options: StartServerOptions): Promise<StartServerResult>
 }
 
@@ -78,11 +78,12 @@ class RepoInstanceImpl implements RepoInstance {
     return { filePath }
   }
 
-  get buildDir(): string {
+  get buildDirPath(): string {
     return path.join(this.config.tmpDirPath, 'build')
   }
 
-  async build({ command, env }: BuildOptions) {
+  // TODO: rename to execute
+  async execute({ command, env }: CommandOptions) {
     await execa(command[0], command[1], {
       cwd: this.config.repoDirPath,
       env
