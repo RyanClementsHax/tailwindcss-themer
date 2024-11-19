@@ -9,6 +9,10 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - name: setup node
         uses: actions/setup-node@v2
         with:
