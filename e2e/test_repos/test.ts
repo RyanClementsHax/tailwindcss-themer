@@ -43,13 +43,13 @@ export const test = base.extend<{ testRepos: TestRepos }>({
 
     const testRepos: TestRepos = {
       builder() {
-        return new TestRepoBuilderImpl(
+        return new TestRepoBuilderImpl({
           page,
           repo,
           testInfo,
-          () => stopCallbacks.length + 1,
-          stop => stopCallbacks.push(stop)
-        )
+          getOccurrence: () => stopCallbacks.length + 1,
+          registerStopCallback: stop => stopCallbacks.push(stop)
+        })
       }
     }
 
@@ -59,17 +59,19 @@ export const test = base.extend<{ testRepos: TestRepos }>({
   }
 })
 
+interface TestRepoBuilderOptions {
+  page: Page
+  repo: string
+  testInfo: TestInfo
+  getOccurrence: () => number
+  registerStopCallback: (stop: StopServerCallback) => void
+}
+
 class TestRepoBuilderImpl implements TestRepoBuilder {
   #themerConfig: MultiThemePluginOptions | undefined
   #baseTailwindConfig: { theme: TailwindConfig['theme'] } | undefined
 
-  constructor(
-    private readonly page: Page,
-    private readonly repo: string,
-    private readonly testInfo: TestInfo,
-    private readonly getInstanceId: () => number,
-    private readonly registerStopCallback: (stop: StopServerCallback) => void
-  ) {}
+  constructor(private readonly options: TestRepoBuilderOptions) {}
 
   withBaseTailwindConfig(config: {
     theme: TailwindConfig['theme']
@@ -88,19 +90,21 @@ class TestRepoBuilderImpl implements TestRepoBuilder {
       throw new Error('Cannot open without first defining the themer config')
     }
 
-    const driver = await resolveDriver(this.repo)
+    const driver = await resolveDriver(this.options.repo)
 
     const { url, stop } = await driver.open({
-      instanceId: this.getInstanceId(),
-      titlePath: this.testInfo.titlePath,
+      instanceId: [
+        ...this.options.testInfo.titlePath.map(x => x.replace(/ /g, '_')),
+        this.options.getOccurrence()
+      ].join('-'),
       baseTailwindConfig: this.#baseTailwindConfig,
       themerConfig: this.#themerConfig
     })
-    this.registerStopCallback(stop)
+    this.options.registerStopCallback(stop)
 
-    await this.page.goto(url)
+    await this.options.page.goto(url)
 
-    const repo = new TestRepoImpl(this.page)
+    const repo = new TestRepoImpl(this.options.page)
 
     return {
       repo,

@@ -14,8 +14,7 @@ import { ServerStarted, StartServerResult, StopServerCallback } from './types'
 export interface OpenOptions {
   baseTailwindConfig?: { theme: TailwindConfig['theme'] }
   themerConfig: MultiThemePluginOptions
-  instanceId: number
-  titlePath: string[]
+  instanceId: string
 }
 
 export interface Driver {
@@ -83,10 +82,7 @@ class DriverImpl implements Driver {
   async open(openOptions: OpenOptions) {
     const { instance, isAlreadyInitialized } = await defineRepoInstance({
       repoDirPath: this.driverOptions.repoDirPath,
-      tmpDirName: [
-        ...openOptions.titlePath.map(x => x.replace(/ /g, '_')),
-        openOptions.instanceId
-      ].join('-')
+      tmpDirName: openOptions.instanceId
     })
 
     if (!isAlreadyInitialized) {

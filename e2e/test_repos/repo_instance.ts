@@ -64,28 +64,26 @@ export async function defineRepoInstance(
   }
 }
 
-interface RepoInstanceConfig {
-  tmpDirPath: string
-  repoDirPath: string
-}
-
 class RepoInstanceImpl implements RepoInstance {
-  constructor(private config: RepoInstanceConfig) {}
+  constructor(
+    private options: Omit<RepoInstanceOptions, 'tmpDirName'> & {
+      tmpDirPath: string
+    }
+  ) {}
 
   async writeFile(fileName: string, data: string) {
-    const filePath = path.join(this.config.tmpDirPath, fileName)
+    const filePath = path.join(this.options.tmpDirPath, fileName)
     await fse.writeFile(filePath, data)
     return { filePath }
   }
 
   get buildDirPath(): string {
-    return path.join(this.config.tmpDirPath, 'build')
+    return path.join(this.options.tmpDirPath, 'build')
   }
 
-  // TODO: rename to execute
   async execute({ command, env }: CommandOptions) {
     await execa(command[0], command[1], {
-      cwd: this.config.repoDirPath,
+      cwd: this.options.repoDirPath,
       env
     })
   }
@@ -98,7 +96,7 @@ class RepoInstanceImpl implements RepoInstance {
           PATH: process.env['PATH'],
           ...options.env
         },
-        cwd: this.config.repoDirPath
+        cwd: this.options.repoDirPath
       })
       const stop = async () => {
         if (!serveProcess.pid) return
@@ -128,7 +126,7 @@ class RepoInstanceImpl implements RepoInstance {
         try {
           const result = options.isServerStarted({
             stdout,
-            repoDirPath: this.config.repoDirPath
+            repoDirPath: this.options.repoDirPath
           })
           finishedMonitoring = result.started
           if (result.started) {
