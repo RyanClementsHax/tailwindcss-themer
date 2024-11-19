@@ -90,14 +90,13 @@ class TestRepoBuilderImpl implements TestRepoBuilder {
 
     const driver = await resolveDriver(this.repo)
 
-    const { url, stop: _stop } = await driver.open({
-      repo: this.repo,
+    const { url, stop } = await driver.open({
       instanceId: this.getInstanceId(),
       titlePath: this.testInfo.titlePath,
       baseTailwindConfig: this.#baseTailwindConfig,
       themerConfig: this.#themerConfig
     })
-    this.registerStopCallback(_stop)
+    this.registerStopCallback(stop)
 
     await this.page.goto(url)
 

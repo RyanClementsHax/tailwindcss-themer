@@ -2,22 +2,21 @@ import url from 'node:url'
 import path from 'node:path'
 import { MultiThemePluginOptions } from '@/utils/optionsUtils'
 
-const TMP_DIR = '.tmp'
 const REPOS_DIR = 'repos'
 const reposDirPath = url.fileURLToPath(new URL('.', import.meta.url))
 
+export function getRepoRootPath(repo: string) {
+  return path.resolve(reposDirPath, REPOS_DIR, repo)
+}
+
 export function getRepoDirPath(repo: string) {
-  return path.resolve(reposDirPath, REPOS_DIR, repo, 'repo')
+  return path.join(getRepoRootPath(repo), 'repo')
 }
 
 export function getRepoTmpDirPath(repo: string) {
   const repoDirPath = getRepoDirPath(repo)
-  return path.join(repoDirPath, TMP_DIR)
-}
-
-export function getTmpDirPath(repo: string, tmpDirName: string) {
-  const repoDirPath = getRepoTmpDirPath(repo)
-  return path.join(repoDirPath, tmpDirName)
+  // TODO: remove
+  return path.join(repoDirPath, '.tmp')
 }
 
 export function parseClasses(config: MultiThemePluginOptions): string[] {

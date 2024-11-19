@@ -4,13 +4,12 @@ import { spawn } from 'cross-spawn'
 import { execa } from 'execa'
 import pidTree from 'pidtree'
 import type { StartServerResult } from './types'
-import { getRepoDirPath, getTmpDirPath } from './utils'
 
 // based off of https://github.com/remix-run/remix/blob/6a9b8d6b836f05a47af9ca6e6f1f3898a2fba8ec/integration/helpers/create-fixture.ts
 
 export interface RepoInstanceOptions {
   tmpDirName: string
-  repo: string
+  repoDirPath: string
 }
 
 export interface BuildOptions {
@@ -23,7 +22,7 @@ export interface StartServerOptions {
   env: Record<string, string>
   isServerStarted: (context: {
     stdout: string
-    repo: string
+    repoDirPath: string
   }) => IsServerStartedResult
 }
 
@@ -49,8 +48,7 @@ export async function defineRepoInstance(
       `Could not run open instance of repo with tmp dir name ${options.tmpDirName} because it uses characters not safe for creating a directory name for temporary files. Please use file name safe characters (regex: ${tmpDirNameRegex})`
     )
   }
-  const repoDirPath = getRepoDirPath(options.repo)
-  const tmpDirPath = getTmpDirPath(options.repo, options.tmpDirName)
+  const tmpDirPath = getTmpDirPath(options.repoDirPath, options.tmpDirName)
   let isAlreadyInitialized = false
   if (await fse.exists(tmpDirPath)) {
     isAlreadyInitialized = true
@@ -60,15 +58,13 @@ export async function defineRepoInstance(
   return {
     isAlreadyInitialized,
     instance: new RepoInstanceImpl({
-      repo: options.repo,
       tmpDirPath,
-      repoDirPath
+      repoDirPath: options.repoDirPath
     })
   }
 }
 
 interface RepoInstanceConfig {
-  repo: string
   tmpDirPath: string
   repoDirPath: string
 }
@@ -131,7 +127,7 @@ class RepoInstanceImpl implements RepoInstance {
         try {
           const result = options.isServerStarted({
             stdout,
-            repo: this.config.repo
+            repoDirPath: this.config.repoDirPath
           })
           finishedMonitoring = result.started
           if (result.started) {
@@ -161,4 +157,10 @@ class RepoInstanceImpl implements RepoInstance {
       })
     })
   }
+}
+
+const TMP_DIR = '.tmp'
+
+function getTmpDirPath(repoDirPath: string, tmpDirName: string) {
+  return path.join(repoDirPath, TMP_DIR, tmpDirName)
 }
