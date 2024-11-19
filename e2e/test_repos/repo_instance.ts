@@ -3,7 +3,6 @@ import fse from 'fs-extra'
 import { spawn } from 'cross-spawn'
 import { execa } from 'execa'
 import pidTree from 'pidtree'
-import type { StartServerResult } from './types'
 
 // based off of https://github.com/remix-run/remix/blob/6a9b8d6b836f05a47af9ca6e6f1f3898a2fba8ec/integration/helpers/create-fixture.ts
 
@@ -36,6 +35,21 @@ export interface RepoInstance {
   writeFile(fileName: string, data: string): Promise<{ filePath: string }>
   execute(options: CommandOptions): Promise<void>
   startServer(options: StartServerOptions): Promise<StartServerResult>
+}
+
+export type StartServerResult = ServerStarted | ServerNotStarted
+
+export type StopServerCallback = () => Promise<void>
+
+export interface ServerStarted {
+  started: true
+  url: string
+  stop: StopServerCallback
+}
+
+export interface ServerNotStarted {
+  started: false
+  reason: string
 }
 
 const instanceDirPathRegex = /^[a-zA-Z0-9_,\\/\-.]+$/

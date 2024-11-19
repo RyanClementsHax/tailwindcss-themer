@@ -6,11 +6,13 @@ import { type Config as TailwindConfig } from 'tailwindcss'
 import {
   CommandOptions,
   defineRepoInstance,
-  StartServerOptions
+  StartServerOptions,
+  ServerStarted,
+  StartServerResult,
+  StopServerCallback
 } from './repo_instance'
 import serialize from 'serialize-javascript'
 import getPort from 'get-port'
-import { ServerStarted, StartServerResult, StopServerCallback } from './types'
 import { getRepoPaths, RepoPaths } from './paths'
 
 export interface OpenOptions {
