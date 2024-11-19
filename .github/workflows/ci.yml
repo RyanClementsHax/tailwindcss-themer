@@ -13,20 +13,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: restore dependencies
-        uses: bahmutov/npm-install@v1
-      - name: restore dependencies
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: e2e
+          cache: 'pnpm'
+      - name: install plugin
+        run: pnpm install
+      - name: install e2e
+        run: pnpm install
+        working-directory: e2e
+      - name: lint plugin and e2e
+        run: pnpm run lint:all
+      # lint the e2e repos
       # e2e repos need the plugin to be built
-      - run: npm run build
-      - name: restore dependencies
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: e2e/test_repos/repos/tailwindv3/repo
-      - run: npm run lint:all
-      - run: npm run lint
+      - run: pnpm run build
+      - name: install tailwindv3
+        run: pnpm install
+        working-directory: e2e/test_repos/repos/tailwindv3/repo
+      - name: lint tailwindv3
+        run: pnpm run lint
         working-directory: e2e/test_repos/repos/tailwindv3/repo
   type_check:
     name: type check
@@ -37,16 +39,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: restore dependencies
-        uses: bahmutov/npm-install@v1
+          cache: 'pnpm'
+      - name: install plugin
+        run: pnpm install
+      - name: type-check plugin
+        run: pnpm run type-check
+      # type check the e2e repos
       # e2e repos need the plugin to be built
-      - run: npm run build
-      - name: restore dependencies
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: e2e/test_repos/repos/tailwindv3/repo
-      - run: npm run type-check
-      - run: npm run type-check
+      - run: pnpm run build
+      - name: install tailwindv3
+        run: pnpm install
+        working-directory: e2e/test_repos/repos/tailwindv3/repo
+      - name: type-check tailwindv3
+        run: pnpm run type-check
         working-directory: e2e/test_repos/repos/tailwindv3/repo
   test:
     runs-on: ubuntu-latest
@@ -56,9 +61,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: restore dependencies
-        uses: bahmutov/npm-install@v1
-      - run: npm run test
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm run test
       - name: report coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2
@@ -70,14 +75,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: restore dependencies
-        uses: bahmutov/npm-install@v1
-      - run: npm run build
-      - name: restore e2e dependencies
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: e2e
-      - run: npm run e2e
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm run build
+      - run: pnpm install
+        working-directory: e2e
+      - run: pnpm run e2e
         working-directory: e2e
       - name: upload playwright report
         uses: actions/upload-artifact@v4

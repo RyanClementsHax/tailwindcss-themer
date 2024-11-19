@@ -1,6 +1,6 @@
 {
-  "*.@(ts|tsx|js|jsx)": ["npm run lint:js", "npm run format"],
-  "*.json": ["npm run format"],
-  "*.*rc": ["npm run format -- --parser json"],
-  "*.@(css|scss)": ["npm run lint:styles", "npm run format"]
+  "*.@(ts|tsx|js|jsx)": ["pnpm run lint:js", "pnpm run format"],
+  "*.json": ["pnpm run format"],
+  "*.*rc": ["pnpm run format -- --parser json"],
+  "*.@(css|scss)": ["pnpm run lint:styles", "pnpm run format"]
 }

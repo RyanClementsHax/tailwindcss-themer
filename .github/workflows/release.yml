@@ -14,10 +14,9 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org/
-      - name: restore dependencies
-        uses: bahmutov/npm-install@v1
-      - name: release
-        run: npm run release
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm run release
         env:
           HUSKY: 0 # semantic-release does a push which would trigger the pre-push git hook
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
