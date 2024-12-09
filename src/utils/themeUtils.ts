@@ -67,6 +67,7 @@ const resolveThemeExtensionAsCustomPropsRecursionHelper = (
     typeof themeExtensionValue === 'string' ||
     typeof themeExtensionValue === 'number'
   ) {
+    // TODO: needs to handle multiple alpha values
     return {
       [toCustomPropName(pathSteps)]: toCustomPropValue(themeExtensionValue)
     }

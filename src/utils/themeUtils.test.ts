@@ -674,6 +674,7 @@ describe('themeUtils', () => {
         ).toThrow()
       })
 
+      // TODO: expand this
       it('resolves color properties with opacity', () => {
         expect(
           resolveCallbacks(
@@ -794,6 +795,7 @@ describe('themeUtils', () => {
       })
     })
 
+    // TODO: expand this
     it('resolves colors as rgb', () => {
       expect(
         resolveThemeExtensionAsCustomProps(

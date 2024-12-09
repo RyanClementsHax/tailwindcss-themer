@@ -56,6 +56,7 @@ export const asCustomProp = (
   valuePath: string[]
 ): string => {
   const customPropName = toCustomPropName(valuePath)
+  // TODO: needs to handle the new alpha prop
   if (isColor(value)) {
     const alpha = getAlpha(value)
     return `rgb(var(${customPropName}) / ${
