@@ -18,7 +18,7 @@
     "fs-extra": "^11.2.0",
     "get-port": "^7.1.0",
     "pidtree": "^0.6.0",
-    "serialize-javascript": "^6.0.2",
+    "serialize-javascript": "^7.0.5",
     "tailwindcss": "^3.4.14"
   }
 }
